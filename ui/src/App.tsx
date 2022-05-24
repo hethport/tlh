@@ -1,4 +1,4 @@
-import {Route, Routes} from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 import {
   createManuscriptUrl,
   documentMergerUrl,
@@ -8,49 +8,52 @@ import {
   manuscriptsUrlFragment,
   preferencesUrl,
   registerUrl,
+  transcriptioEditDocumentUrl,
   xmlComparatorUrl
 } from './urls';
-import {Home} from './Home';
-import {RegisterForm} from './forms/RegisterForm';
-import {LoginForm} from './forms/LoginForm';
-import {CreateManuscriptForm} from './forms/CreateManuscriptForm';
-import {DocumentEditorContainer} from './editor/DocumentEditorContainer';
-import {ManuscriptBase} from './manuscript/ManuscriptBase';
-import {XmlComparator} from './xmlComparator/XmlComparator';
-import {Preferences} from './Preferences';
-import {DocumentMergerContainer} from './documentMerger/DocumentMergerContainer';
-import {RequireAuth} from './RequireAuth';
-import {NavBar} from './NavBar';
-
+import { Home } from './Home';
+import { RegisterForm } from './forms/RegisterForm';
+import { LoginForm } from './forms/LoginForm';
+import { CreateManuscriptForm } from './forms/CreateManuscriptForm';
+import { DocumentEditorContainer } from './editor/DocumentEditorContainer';
+import { ManuscriptBase } from './manuscript/ManuscriptBase';
+import { XmlComparator } from './xmlComparator/XmlComparator';
+import { Preferences } from './Preferences';
+import { DocumentMergerContainer } from './documentMerger/DocumentMergerContainer';
+import { RequireAuth } from './RequireAuth';
+import { NavBar } from './NavBar';
+import { TranscriptioDocumentEditorContainer } from './transcriptioEditor/TranscriptioEditorContainer';
 export function App(): JSX.Element {
 
   return (
     <div className="flex flex-col h-screen max-h-screen">
-      <NavBar/>
+      <NavBar />
 
       <div className="p-2 h-full max-h-full flex-auto">
         <Routes>
-          <Route path={homeUrl} element={<Home/>}/>
+          <Route path={homeUrl} element={<Home />} />
 
-          <Route path={registerUrl} element={<RegisterForm/>}/>
+          <Route path={registerUrl} element={<RegisterForm />} />
 
-          <Route path={loginUrl} element={<LoginForm/>}/>
+          <Route path={loginUrl} element={<LoginForm />} />
 
           <Route path={createManuscriptUrl} element={
             <RequireAuth>
-              {() => <CreateManuscriptForm/>}
+              {() => <CreateManuscriptForm />}
             </RequireAuth>
-          }/>
+          } />
 
-          <Route path={`${manuscriptsUrlFragment}/:mainIdentifier/*`} element={<ManuscriptBase/>}/>
+          <Route path={`${manuscriptsUrlFragment}/:mainIdentifier/*`} element={<ManuscriptBase />} />
 
-          <Route path={editDocumentUrl} element={<DocumentEditorContainer/>}/>
+          <Route path={editDocumentUrl} element={<DocumentEditorContainer />} />
 
-          <Route path={xmlComparatorUrl} element={<XmlComparator/>}/>
+          <Route path={transcriptioEditDocumentUrl} element={<TranscriptioDocumentEditorContainer />} />
 
-          <Route path={preferencesUrl} element={<Preferences/>}/>
+          <Route path={xmlComparatorUrl} element={<XmlComparator />} />
 
-          <Route path={documentMergerUrl} element={<DocumentMergerContainer/>}/>
+          <Route path={preferencesUrl} element={<Preferences />} />
+
+          <Route path={documentMergerUrl} element={<DocumentMergerContainer />} />
         </Routes>
       </div>
     </div>
