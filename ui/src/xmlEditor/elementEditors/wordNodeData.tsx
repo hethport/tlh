@@ -23,6 +23,10 @@ function backgroundColor(node: XmlElementNode, isSelected: boolean, selectedMorp
     return 'bg-yellow-300';
   }
 
+  if (selectedMorphology === '???') {
+    return 'bg-red-500';
+  }
+
   return undefined;
 }
 
