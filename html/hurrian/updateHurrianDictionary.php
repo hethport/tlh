@@ -1,102 +1,75 @@
 <?php
+require_once '../mysqliconn.php';
 header('Access-Control-Allow-Origin: *');
 include('commonHurrian.php');
-$dbFileName = 'hurrianLexicalDatabase.sqlite';
-$dbExists = file_exists($dbFileName);
 $word = $_POST['word'];
 $analysis = $_POST['analysis'];
 list($segmentation, $translation, $tag, $template, $det) = explode(' @ ', $analysis);
 $pos = getPos($template);
 list($stem, $suffixes) = parseSegmentation($segmentation);
 
-//Datenbank öffnen oder erstellen
-$db = new SQLite3($dbFileName);
-if (!$dbExists)
-{
-  $sql = <<<SQL
-  CREATE TABLE 'lemmata' (
-    'lemma_id' INTEGER PRIMARY KEY,
-    'stem' TEXT,
-    'part_of_speech' TEXT,
-    'translation_de' TEXT,
-    'det' TEXT
-  );
-  CREATE TABLE 'suffix_chains' (
-    'suffix_chain_id' INTEGER PRIMARY KEY,
-    'suffixes' TEXT,
-    'morph_tag' TEXT,
-    'part_of_speech' TEXT
-  );
-  CREATE TABLE 'wordforms' (
-    'wordform_id' INTEGER PRIMARY KEY,
-    'transcription' TEXT,
-    'segmentation' TEXT,
-    'lemma_id' INTEGER,
-    'suffix_chain_id' INTEGER
-  );
-  SQL;
-  $db->exec($sql);
-}
+//Datenbank öffnen
+$db = connect_to_db('hurrian_lexical_database');
 
 //Lemma finden oder hinzufügen
 $findLemma = <<<SQL
 SELECT lemma_id
-FROM 'lemmata'
+FROM lemma
 WHERE stem = '$stem'
 AND part_of_speech = '$pos'
 AND translation_de = '$translation'
-AND det = '$det';
+AND determinative = '$det';
 SQL;
 $result = $db->query($findLemma);
-$row = $result->fetchArray();
+$row = $result->fetch_assoc();
 if (!$row) {
   $sql = <<<SQL
-  INSERT INTO 'lemmata' ('stem', 'part_of_speech', 'translation_de', 'det')
-  VALUES ('$stem', '$pos', '$translation', '$det');
+  INSERT INTO lemma (lemma_id, stem, part_of_speech, translation_de, determinative)
+  VALUES (null, '$stem', '$pos', '$translation', '$det');
   SQL;
-  $db->exec($sql);
+  $db->query($sql);
   $result = $db->query($findLemma);
-  $row = $result->fetchArray();
+  $row = $result->fetch_assoc();
 }
 $lemma_id = $row['lemma_id'];
 
 //Suffixkette finden oder hinzufügen
 $findSuffixChain = <<<SQL
 SELECT suffix_chain_id
-FROM 'suffix_chains'
+FROM suffix_chain
 WHERE suffixes = '$suffixes'
 AND morph_tag = '$tag'
 AND part_of_speech = '$pos';
 SQL;
 $result = $db->query($findSuffixChain);
-$row = $result->fetchArray();
+$row = $result->fetch_assoc();
 if (!$row) {
   $sql = <<<SQL
-  INSERT INTO 'suffix_chains' ('suffixes', 'morph_tag', 'part_of_speech')
-  VALUES ('$suffixes', '$tag', '$pos');
+  INSERT INTO suffix_chain (suffix_chain_id, suffixes, morph_tag, part_of_speech)
+  VALUES (null, '$suffixes', '$tag', '$pos');
   SQL;
-  $db->exec($sql);
+  $db->query($sql);
   $result = $db->query($findSuffixChain);
-  $row = $result->fetchArray();
+  $row = $result->fetch_assoc();
 }
 $suffix_chain_id = $row['suffix_chain_id'];
 
 //Wortform finden oder hinzufügen
 $findWordform = <<<SQL
 SELECT wordform_id
-FROM 'wordforms'
+FROM wordform
 WHERE transcription = '$word'
 AND segmentation = '$segmentation'
 AND lemma_id = '$lemma_id'
 AND suffix_chain_id = '$suffix_chain_id';
 SQL;
 $result = $db->query($findWordform);
-$row = $result->fetchArray();
+$row = $result->fetch_assoc();
   if (!$row) {
   $sql = <<<SQL
-  INSERT INTO 'wordforms' ('transcription', 'segmentation', 'lemma_id', 'suffix_chain_id')
-  VALUES ('$word', '$segmentation', '$lemma_id', '$suffix_chain_id')
+  INSERT INTO wordform (wordform_id, transcription, segmentation, lemma_id, suffix_chain_id)
+  VALUES (null, '$word', '$segmentation', '$lemma_id', '$suffix_chain_id')
   SQL;
-  $db->exec($sql);
+  $db->query($sql);
 }
 ?>

@@ -5,9 +5,9 @@ const password = '1234';
 const database = 'hpm';
 const port = 3406;
 
-function connect_to_db(): mysqli
+function connect_to_db($database=database): mysqli
 {
-  $db = mysqli_connect(host, user, password, database, port);
+  $db = mysqli_connect(host, user, password, $database, port);
 
   if ($db) {
     return $db;

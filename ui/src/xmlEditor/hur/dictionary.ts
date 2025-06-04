@@ -5,8 +5,10 @@ import { makeStandardAnalyses } from './standardAnalysis';
 import { setGlosses, saveGloss } from './glossUpdater';
 import { MorphologicalAnalysis, writeMorphAnalysisValue }
   from '../../model/morphologicalAnalysis';
+import { getHurrianDictionaryUrl } from '../../urls';
 import { convertDictionary, updateAndValidateDictionary } from './utility';
 import { isValid, normalize } from './morphologicalAnalysisValidator';
+import { sendMorphologicalAnalysisToTheServer } from './sendToTheServer';
 
 const dictionary: Map<string, Set<string>> = new Map();
 
@@ -80,25 +82,26 @@ export function sendMorphologicalAnalysisToTheServer(word: string, analysis: str
 }
 
 export function updateHurrianDictionary(node: XmlElementNode, number: number, value: string): void {
-  if (!isValid(value)) {
-    return;
-  }
-  value = normalize(value, false);
-  if (number === 1) {
-    delete node.attributes.firstAnalysisIsPlaceholder;
-  }
-  const transcription: string = node.attributes.trans || '';
-  let possibilities: Set<string> | undefined;
-  if (dictionary.has(transcription)) {
-    possibilities = dictionary.get(transcription);
-  }
-  else {
-    possibilities = new Set<string>();
-    dictionary.set(transcription, possibilities);
-  }
-  if (possibilities === undefined) {
-    throw new Error();
-
+  if (isValid(value)) {
+    value = normalize(value, false);
+    if (number === 1) {
+      delete node.attributes.firstAnalysisIsPlaceholder;
+    }
+    const transcription: string = node.attributes.trans || '';
+    let possibilities: Set<string> | undefined;
+    if (dictionary.has(transcription)) {
+      possibilities = dictionary.get(transcription);
+    }
+    else {
+      possibilities = new Set<string>();
+      dictionary.set(transcription, possibilities);
+    }
+    if (possibilities === undefined) {
+      throw new Error();
+    }
+    possibilities.add(value);
+    sendMorphologicalAnalysisToTheServer(transcription, value);
+    saveGloss(number, value);
   }
 }
 

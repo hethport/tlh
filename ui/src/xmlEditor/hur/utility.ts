@@ -1,4 +1,5 @@
 import { isValid, normalize } from './morphologicalAnalysisValidator';
+import { sendMorphologicalAnalysisToTheServer } from './sendToTheServer';
 
 export function convertDictionary(dictionary: Map<string, Set<string>>): { [key: string]: string[] } {
   const object: { [key: string]: string[] } = {};
@@ -29,7 +30,9 @@ export function updateAndValidateDictionary(dictionary: Map<string, Set<string>>
       const newSet: Set<string> = new Set();
       for (const value of values) {
         if (isValid(value)) {
+          const normalized = normalize(value, true);
           newSet.add(normalize(value, true));
+          sendMorphologicalAnalysisToTheServer(key, normalized);
         }
       }
       if (newSet.size > 0) {
@@ -38,7 +41,9 @@ export function updateAndValidateDictionary(dictionary: Map<string, Set<string>>
     } else {
       for (const value of values) {
         if (isValid(value)) {
-          currSet.add(normalize(value, true));
+          const normalized = normalize(value, true);
+          currSet.add(normalized);
+          sendMorphologicalAnalysisToTheServer(key, normalized);
         }
       }
     }

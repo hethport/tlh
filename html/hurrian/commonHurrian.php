@@ -1,7 +1,7 @@
 <?php
 function getPos($template)
 {
-  if ($template === 'noun' || $template === 'indecl')
+  if ($template === 'noun' || $template === 'indecl' || $template === '')
   {
     return $template;
   }

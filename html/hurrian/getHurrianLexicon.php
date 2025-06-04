@@ -1,25 +1,18 @@
 <?php
+require_once '../mysqliconn.php';
 header('Access-Control-Allow-Origin: *');
 header('Content-Type: text/json');
-$dbFileName = 'hurrianLexicalDatabase.sqlite';
-if (file_exists($dbFileName))
+$db = connect_to_db('hurrian_lexical_database');
+$sql = <<<SQL
+SELECT stem, part_of_speech, translation_de
+FROM lemma;
+SQL;
+$result = $db->query($sql);
+$data = array();
+while ($row = $result->fetch_assoc())
 {
-  $db = new SQLite3($dbFileName);
-  $sql = <<<SQL
-  SELECT stem, part_of_speech, translation_de
-  FROM lemmata;
-  SQL;
-  $result = $db->query($sql);
-  $data = array();
-  while ($row = $result->fetchArray())
-  {
-    $key = $row['stem'].','.$row['part_of_speech'];
-    $data[$key][] = $row['translation_de'];
-  }
-  echo json_encode($data, JSON_UNESCAPED_UNICODE);
+  $key = $row['stem'].','.$row['part_of_speech'];
+  $data[$key][] = $row['translation_de'];
 }
-else
-{
-  echo '{}';
-}
+echo json_encode($data, JSON_UNESCAPED_UNICODE);
 ?>
