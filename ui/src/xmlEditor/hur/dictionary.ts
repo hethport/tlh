@@ -25,12 +25,10 @@ export function updateHurrianDictionary(node: XmlElementNode, number: number, va
 	saveGloss(number, value);
 }
 
-export function getDictionary(): {[key: string]: string[]}
-{
+export function getDictionary(): { [key: string]: string[] } {
   return convertDictionary(dictionary);
 }
 
-export function upgradeDictionary(object: {[key: string]: string[]}): void
-{
+export function upgradeDictionary(object: { [key: string]: string[] }): void {
   updateDictionary(dictionary, object);
 }

@@ -300,7 +300,7 @@ export function WordNodeEditor({node, path, updateEditedNode, setKeyHandlingEnab
 
         {state === 'AddMorphology'
           ? <MorphAnalysisOptionEditor initialMorphologicalAnalysis={nextMorphAnalysis()}
-                                       onSubmit={(newMa) => updateMorphology(morphologies.length, newMa)}
+                                       onSubmit={(newMa) => updateMorphology(Math.max(0, ...morphologies.map(({number}) => number)) + 1, newMa)}
                                        cancelUpdate={toggleAddMorphology}
                                        hurrian={language === 'Hur'}/>
           : (
