@@ -1,4 +1,4 @@
-import { isMultiMorphologicalAnalysis, MorphologicalAnalysis, MultiMorphologicalAnalysis, SingleMorphologicalAnalysis } from '../../model/morphologicalAnalysis';
+import { isMultiMorphologicalAnalysis, MorphologicalAnalysis, MultiMorphologicalAnalysis, SingleMorphologicalAnalysis, SingleMorphologicalAnalysisWithoutEnclitics } from '../../model/morphologicalAnalysis';
 import { isMultiEncliticsAnalysis, MultiEncliticsAnalysis } from '../../model/encliticsAnalysis';
 import { LetteredAnalysisOption, SelectableLetteredAnalysisOption } from '../../model/analysisOptions';
 import { useTranslation } from 'react-i18next';
