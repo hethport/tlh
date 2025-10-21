@@ -16,7 +16,7 @@ interface IState {
   attributes: Attributes;
 }
 
-const defaultEditType = DocumentEditTypes.Annotation;
+const defaultEditType = DocumentEditTypes.Correction;
 
 const defaultState: IState = {editor: undefined, editType: defaultEditType, attributes: attributesForDocEditType(defaultEditType)};
 
