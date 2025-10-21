@@ -1,14 +1,14 @@
-import {JSX, useState} from 'react';
-import {NodeDisplay, NodeDisplayIProps} from './NodeDisplay';
-import {useTranslation} from 'react-i18next';
-import {parseNewXml, XmlElementNode} from 'simple_xml';
+import { JSX, useState } from 'react';
+import { NodeDisplay, NodeDisplayIProps } from './NodeDisplay';
+import { useTranslation } from 'react-i18next';
+import { parseNewXml, XmlElementNode } from 'simple_xml';
 import classNames from 'classnames';
-import {writeXml} from './StandAloneOXTED';
+import { writeXml } from './StandAloneOXTED';
 import update from 'immutability-helper';
-import {FontSizeSelector} from './FontSizeSelector';
-import {NodePath} from './insertablePositions';
-import {tlhXmlEditorConfig} from './tlhXmlEditorConfig';
-import {XmlSourceEditor} from './XmlSourceEditor';
+import { FontSizeSelector } from './FontSizeSelector';
+import { NodePath } from './insertablePositions';
+import { tlhXmlEditorConfig } from './tlhXmlEditorConfig';
+import { XmlSourceEditor } from './XmlSourceEditor';
 
 export interface EditorLeftSideProps extends NodeDisplayIProps {
   filename: string;
@@ -32,35 +32,47 @@ export function EditorLeftSide({
   insertionData,
   updateNode,
   setKeyHandlingEnabled,
-  closeFile
+  closeFile,
 }: EditorLeftSideProps): JSX.Element {
+  const { t } = useTranslation('common');
 
-  const {t} = useTranslation('common');
-  const [state, setState] = useState<IState>({fontSize: 100, useSerifFont: false, xmlSource: undefined});
+  /* ---------- UI state ---------- */
+  const [uiState, setUiState] = useState<IState>({
+    fontSize: 100,
+    useSerifFont: false,
+    xmlSource: undefined,
+  });
 
-  function activateShowSource(): void {
+  const [hoveredPath, setHoveredPath] = useState<NodePath | null>(null);
+
+  const handleHoverEnter = (path: NodePath) => setHoveredPath(path);
+
+  const handleHoverLeave = () => setHoveredPath(null);
+
+  const setXmlSource = (value: string | undefined) =>
+    setUiState((s) => update(s, { xmlSource: { $set: value } }));
+
+  const activateShowSource = (): void => {
     setKeyHandlingEnabled(false);
     setXmlSource(writeXml(node as XmlElementNode, true));
-  }
+  };
 
-  function deactivateShowSource(): void {
+  const deactivateShowSource = (): void => {
     setKeyHandlingEnabled(true);
     setXmlSource(undefined);
-  }
+  };
 
-  const setXmlSource = (value: string | undefined): void => setState((state) => update(state, {xmlSource: {$set: value}}));
-
-  const onXmlSourceUpdate = (): void => parseNewXml(state.xmlSource as string, tlhXmlEditorConfig.readConfig)
-    .handle(
+  const onXmlSourceUpdate = (): void =>
+    parseNewXml(uiState.xmlSource as string, tlhXmlEditorConfig.readConfig).handle(
       (rootNode) => {
         updateNode(rootNode as XmlElementNode);
         deactivateShowSource();
       },
-      (value) => alert(value)
+      (err) => alert(err)
     );
 
-
-  const changeFontSize = (delta: number): void => setState((state) => update((state), {fontSize: {$apply: (value) => value + delta}}));
+  const changeFontSize = (delta: number) =>
+    setUiState((s) => update(s, { fontSize: { $apply: (v) => v + delta } }));
 
   return (
     <div className="flex flex-col h-full min-h-full max-h-full">
@@ -68,46 +80,94 @@ export function EditorLeftSide({
         <span className="font-bold">{filename}</span>
 
         <div className="float-right space-x-2">
-          <FontSizeSelector currentFontSize={state.fontSize} updateFontSize={changeFontSize}/>
+          <FontSizeSelector
+            currentFontSize={uiState.fontSize}
+            updateFontSize={changeFontSize}
+          />
 
-          {state.xmlSource
-            ? (
-              <>
-                <button className="px-2 rounded bg-red-500 text-white font-bold" onClick={deactivateShowSource} title={t('cancelEditXmlSource')}>
-                  &#x270E;
-                </button>
-                <button className="px-2 rounded bg-blue-500 text-white font-bold" onClick={onXmlSourceUpdate} title={t('applyXmlSourceChange')}>
-                  &#x270E;
-                </button>
-              </>
-            )
-            : (
-              <>
-                <button onClick={() => setState((state) => update(state, {useSerifFont: {$apply: (use) => !use}}))}
-                        className="mr-2 px-2 border border-slate-500 rounded">
-                  {state.useSerifFont ? t('useSerifLessFont') : t('useSerifFont')}
-                </button>
-                <button className="px-2 rounded bg-blue-500 text-white font-bold" onClick={activateShowSource} title={t('editSource') || 'editSource'}>
-                  &#x270E;
-                </button>
-              </>
-            )}
+          {uiState.xmlSource ? (
+            <>
+              <button
+                className="px-2 rounded bg-red-500 text-white font-bold"
+                onClick={deactivateShowSource}
+                title={t('cancelEditXmlSource')}
+              >
+                &#x270e;
+              </button>
 
-          {closeFile && <button className="px-2 rounded bg-red-600 text-white font-bold" onClick={closeFile} title={t('closeFile') || 'closeFile'}>
-            &#10799;
-          </button>}
+              <button
+                className="px-2 rounded bg-blue-500 text-white font-bold"
+                onClick={onXmlSourceUpdate}
+                title={t('applyXmlSourceChange')}
+              >
+                &#x270e;
+              </button>
+            </>
+          ) : (
+            <>
+              <button
+                onClick={() =>
+                  setUiState((s) =>
+                    update(s, { useSerifFont: { $apply: (u) => !u } })
+                  )
+                }
+                className="mr-2 px-2 border border-slate-500 rounded"
+              >
+                {uiState.useSerifFont
+                  ? t('useSerifLessFont')
+                  : t('useSerifFont')}
+              </button>
+
+              <button
+                className="px-2 rounded bg-blue-500 text-white font-bold"
+                onClick={activateShowSource}
+                title={t('editSource') || 'editSource'}
+              >
+                &#x270e;
+              </button>
+            </>
+          )}
+
+          {closeFile && (
+            <button
+              className="px-2 rounded bg-red-600 text-white font-bold"
+              onClick={closeFile}
+              title={t('closeFile') || 'closeFile'}
+            >
+              &#10799;
+            </button>
+          )}
         </div>
       </div>
 
       <div className="flex p-4 rounded-b border border-slate-300 shadow-md flex-auto overflow-auto">
-        {state.xmlSource
-          ? <XmlSourceEditor style={{fontSize: `${state.fontSize}%`}} source={state.xmlSource} onChange={setXmlSource}/>
-          : (
-            <div className={classNames(state.useSerifFont ? 'font-hpm-serif' : 'font-hpm')} style={{fontSize: `${state.fontSize}%`}}>
-              <NodeDisplay rootNode={node as XmlElementNode} node={node} currentSelectedPath={currentSelectedPath} onSelect={onNodeSelect}
-                           insertionData={insertionData} isLeftSide={true}/>
-            </div>
-          )}
+        {uiState.xmlSource ? (
+          <XmlSourceEditor
+            style={{ fontSize: `${uiState.fontSize}%` }}
+            source={uiState.xmlSource}
+            onChange={setXmlSource}
+          />
+        ) : (
+          <div
+            className={classNames(
+              uiState.useSerifFont ? 'font-hpm-serif' : 'font-hpm'
+            )}
+            style={{ fontSize: `${uiState.fontSize}%` }}
+          >
+
+            <NodeDisplay
+              rootNode={node as XmlElementNode}
+              node={node}
+              currentSelectedPath={currentSelectedPath}
+              onSelect={onNodeSelect}
+              insertionData={insertionData}
+              isLeftSide={true}
+              hoveredPath={hoveredPath}
+              onHoverEnter={handleHoverEnter}
+              onHoverLeave={handleHoverLeave}
+            />
+          </div>
+        )}
       </div>
     </div>
   );
