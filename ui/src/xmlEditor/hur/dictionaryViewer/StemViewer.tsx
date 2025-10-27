@@ -43,6 +43,8 @@ interface IProps {
   setDictionary: SetDictionary;
   initialUnfolded: boolean;
   allUnfolded: boolean;
+  englishTranslation: string;
+  onEnglishTranslationBlur: (eglishTranslation: string) => void;
 }
 
 function replaceStem(newStem: string, segmentation: string) {
@@ -207,7 +209,8 @@ type StemViewerState = {
 }
 
 export function StemViewer({stem, initialEntries, setDictionary, initialUnfolded,
-                            allUnfolded}: IProps): JSX.Element {
+                            allUnfolded, englishTranslation,
+                            onEnglishTranslationBlur}: IProps): JSX.Element {
   
   const [unfolded, setUnfolded] = useState(initialUnfolded);
   const initialState: StemViewerState = {
@@ -267,7 +270,9 @@ export function StemViewer({stem, initialEntries, setDictionary, initialUnfolded
             setDictionary((dictionary: Dictionary) => {
               return modifyGlobalPartOfSpeech(dictionary, initialEntries, value);
             });
-          }} />
+          }}
+          englishTranslation={englishTranslation}
+          onEnglishTranslationBlur={onEnglishTranslationBlur} />
         <br />
         {(unfolded || allUnfolded) && entries.map(
           (entry: Entry, index: number) => {

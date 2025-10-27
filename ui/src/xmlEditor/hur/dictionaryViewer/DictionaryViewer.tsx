@@ -10,6 +10,9 @@ import { SetDictionary } from '../dict/dictionary';
 import { compare } from '../common/comparison';
 import { blueButtonClasses } from '../../../defaultDesign';
 import { useTranslation } from 'react-i18next';
+import useLocalStorageState from 'use-local-storage-state';
+import { getEnglishTranslationKey } from '../translations/englishTranslations';
+import update from 'immutability-helper';
 
 interface IProps {
   entries: Entry[];
@@ -37,6 +40,16 @@ export function DictionaryViewer({entries, setDictionary}: IProps): JSX.Element 
   useEffect(() => {
     setUnfolded(true);
   });
+
+  const englishTranslationsLocalStorageKey = 'englishTranslations';
+  const [englishTranslations, setEnglishTranslations, englishTranslationsExtra] = useLocalStorageState<{[key: string]: string}>(englishTranslationsLocalStorageKey, {
+    defaultValue: {}
+  });
+  const englishTranslationsArePersistent = englishTranslationsExtra.isPersistent;
+
+  const englishTranslationsNote = englishTranslationsArePersistent
+    ? 'The English translations are being stored in the local storage properly.'
+    : 'WARNING: The English translations cannot be stored in the local storage for some reason.\nPlease, contact the developers before editing the English translations.';
   
   const grouped = groupBy(entries, keyFunc, valueFunc);
   
@@ -47,6 +60,7 @@ export function DictionaryViewer({entries, setDictionary}: IProps): JSX.Element 
       <div className="mt-2">
         Click on the button &quot;&#8744;&quot; or a stem&apos;s number to see its derivatives and inflected forms. <br /> 
         Click on a similar button next to a word to see its attestations. <br />
+        {englishTranslationsNote} <br />
         <br />
         {stems.map((stem: string, index: number) => {
           const group = grouped.get(stem);
@@ -55,6 +69,14 @@ export function DictionaryViewer({entries, setDictionary}: IProps): JSX.Element 
           const key = entries
             .map(entry => writeMorphAnalysisValue(entry.morphologicalAnalysis))
             .join('|');
+          const englishTranslationKey = getEnglishTranslationKey(stemObject.form,
+                                                                 stemObject.pos,
+                                                                 stemObject.translation);
+          const englishTranslation = englishTranslations[englishTranslationKey] || '';
+          const setEnglishTranslation = (newEnglishTranslation: string) =>
+          setEnglishTranslations(oldEnglishTranslations => update(
+            oldEnglishTranslations, {[englishTranslationKey]: {$set: newEnglishTranslation}}
+          ));
           return (
             <StemViewer
               stem={stemObject}
@@ -62,7 +84,9 @@ export function DictionaryViewer({entries, setDictionary}: IProps): JSX.Element 
               key={key} 
               setDictionary={setDictionary}
               initialUnfolded={unfolded}
-              allUnfolded={allUnfolded} />
+              allUnfolded={allUnfolded}
+              englishTranslation={englishTranslation}
+              onEnglishTranslationBlur={setEnglishTranslation} />
           );
         })}
       </div>
