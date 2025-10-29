@@ -1,6 +1,6 @@
 import { locallyStoreMap, loadMapFromLocalStorage } from '../dictLocalStorage/localStorageUtils';
 import { convertMapping } from '../common/utility';
-import { objectToMap } from '../common/utils';
+import { objectToMap, updateMapWithoutOverride } from '../common/utils';
 
 const fieldSeparator = ' @ ';
 export function getEnglishTranslationKey(stem: string, pos: string, germanTranslation: string): string {
@@ -35,5 +35,12 @@ export function getEnglishTranslations(): EnglishTranslationsObject {
 
 export function setEnglishTranslations(newEnglishTranslations: EnglishTranslationsObject): void {
   englishTranslations = objectToMap(newEnglishTranslations);
+  locallyStoreEnglishTranslations();
+}
+
+export function updateEnglishTranslations(newEnglishTranslationsObject: EnglishTranslationsObject): void {
+  const newEnglishTranslations = objectToMap(newEnglishTranslationsObject);
+  englishTranslations = updateMapWithoutOverride(englishTranslations,
+                                                 newEnglishTranslations);
   locallyStoreEnglishTranslations();
 }
