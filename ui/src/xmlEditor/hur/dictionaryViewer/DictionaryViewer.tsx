@@ -68,10 +68,14 @@ export function DictionaryViewer({entries, setDictionary, initialEnglishTranslat
                                                                  stemObject.pos,
                                                                  stemObject.translation);
           const englishTranslation = englishTranslations.get(englishTranslationKey) || '';
-          const setEnglishTranslation = (newEnglishTranslation: string) =>
-          setEnglishTranslations(oldEnglishTranslations => update(
-            oldEnglishTranslations, {$add: [[englishTranslationKey, newEnglishTranslation]]}
-          ));
+          const setEnglishTranslation = (newEnglishTranslation: string) => {
+            if (!(englishTranslation === '' && newEnglishTranslation === '')) {
+              setEnglishTranslations(oldEnglishTranslations => update(
+                oldEnglishTranslations, {$add: [[englishTranslationKey, newEnglishTranslation]]}
+              ));
+            }
+          };
+
           const updateEnglishTranslationKey = (newEnglishTranslationKey: string) =>
           setEnglishTranslations(oldEnglishTranslations => update(
             oldEnglishTranslations,
