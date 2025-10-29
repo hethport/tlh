@@ -72,6 +72,14 @@ export function DictionaryViewer({entries, setDictionary, initialEnglishTranslat
           setEnglishTranslations(oldEnglishTranslations => update(
             oldEnglishTranslations, {$add: [[englishTranslationKey, newEnglishTranslation]]}
           ));
+          const updateEnglishTranslationKey = (newEnglishTranslationKey: string) =>
+          setEnglishTranslations(oldEnglishTranslations => update(
+            oldEnglishTranslations,
+            {
+              $add: [[newEnglishTranslationKey, englishTranslation]],
+              $remove: [englishTranslationKey]
+            }
+          ));
           return (
             <StemViewer
               stem={stemObject}
@@ -81,7 +89,8 @@ export function DictionaryViewer({entries, setDictionary, initialEnglishTranslat
               initialUnfolded={unfolded}
               allUnfolded={allUnfolded}
               englishTranslation={englishTranslation}
-              onEnglishTranslationBlur={setEnglishTranslation} />
+              onEnglishTranslationBlur={setEnglishTranslation}
+              updateEnglishTranslationKey={updateEnglishTranslationKey}/>
           );
         })}
       </div>

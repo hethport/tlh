@@ -13,6 +13,7 @@ import { updateConcordanceKey } from '../concordance/concordance';
 import { replaceMorphologicalAnalysis } from '../corpus/corpus';
 import { areCorrect } from '../dict/morphologicalAnalysisValidator';
 import { getMorphTags } from '../morphologicalAnalysis/auxiliary';
+import { getEnglishTranslationKey } from '../translations/englishTranslations';
 
 const errorSymbol = <>&#9876;</>;
 
@@ -45,6 +46,7 @@ interface IProps {
   allUnfolded: boolean;
   englishTranslation: string;
   onEnglishTranslationBlur: (eglishTranslation: string) => void;
+  updateEnglishTranslationKey: (newEglishTranslationKey: string) => void;
 }
 
 function replaceStem(newStem: string, segmentation: string) {
@@ -210,7 +212,8 @@ type StemViewerState = {
 
 export function StemViewer({stem, initialEntries, setDictionary, initialUnfolded,
                             allUnfolded, englishTranslation,
-                            onEnglishTranslationBlur}: IProps): JSX.Element {
+                            onEnglishTranslationBlur,
+                            updateEnglishTranslationKey }: IProps): JSX.Element {
   
   const [unfolded, setUnfolded] = useState(initialUnfolded);
   const initialState: StemViewerState = {
@@ -249,6 +252,7 @@ export function StemViewer({stem, initialEntries, setDictionary, initialUnfolded
               setDictionary((dictionary: Dictionary) => {
                 return modifyGlobalEntries(dictionary, initialEntries, entries);
               });
+              updateEnglishTranslationKey(getEnglishTranslationKey(value, partOfSpeech, translation));
             }
           }}        
           onTranslationChange={(value: string) => {
@@ -263,6 +267,7 @@ export function StemViewer({stem, initialEntries, setDictionary, initialUnfolded
               setDictionary((dictionary: Dictionary) => {
                 return modifyGlobalEntries(dictionary, initialEntries, entries);
               });
+              updateEnglishTranslationKey(getEnglishTranslationKey(stemForm, partOfSpeech, value));
             }
           }}
           onPartOfSpeechChange={(value: string) => {
@@ -270,6 +275,7 @@ export function StemViewer({stem, initialEntries, setDictionary, initialUnfolded
             setDictionary((dictionary: Dictionary) => {
               return modifyGlobalPartOfSpeech(dictionary, initialEntries, value);
             });
+            updateEnglishTranslationKey(getEnglishTranslationKey(stemForm, value, translation));
           }}
           englishTranslation={englishTranslation}
           onEnglishTranslationBlur={onEnglishTranslationBlur} />
