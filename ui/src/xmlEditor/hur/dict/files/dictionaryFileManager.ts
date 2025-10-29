@@ -3,6 +3,7 @@ import { getGlosses, upgradeGlosses } from '../../translations/glossProvider';
 import { getPartsOfSpeech, setPartsOfSpeech } from '../../partsOfSpeech/partsOfSpeech';
 import { getConcordance, updateConcordance } from '../../concordance/concordance';
 import { getCorpus, updateCorpus } from '../../corpus/corpus';
+import { getEnglishTranslations, setEnglishTranslations } from '../../translations/englishTranslations';
 import { makeDownload } from '../../../../downloadHelper';
 
 export function downloadDictionary() {
@@ -11,7 +12,8 @@ export function downloadDictionary() {
   const partsOfSpeech = getPartsOfSpeech();
   const concordance = getConcordance();
   const corpus = getCorpus();
-  const obj = {partsOfSpeech, dictionary, glosses, concordance, corpus};
+  const englishTranslations = getEnglishTranslations();
+  const obj = {partsOfSpeech, dictionary, glosses, concordance, corpus, englishTranslations};
   const jsonText = JSON.stringify(obj, undefined, '\t');
   makeDownload(jsonText, 'Dictionary.json');
 }
@@ -32,5 +34,8 @@ export async function readDict(file: File) {
   upgradeGlosses(glosses);
   if ('corpus' in parsed) {
     updateCorpus(parsed.corpus);
+  }
+  if ('englishTranslations' in parsed) {
+    setEnglishTranslations(parsed.englishTranslations);
   }
 }
