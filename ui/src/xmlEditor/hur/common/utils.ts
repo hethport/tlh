@@ -24,6 +24,19 @@ export function objectToSetValuedMap<TValue>(object: {[key: string]: TValue[]}):
   return map;
 }
 
+export function updateMapWithoutOverride<TKey, TValue>(oldMap: Map<TKey, TValue>, newMap: Map<TKey, TValue>): Map<TKey, TValue> {
+  const map = new Map<TKey, TValue>();
+  for (const [key, value] of oldMap) {
+    map.set(key, value);
+  }
+  for (const [key, value] of newMap) {
+    if (!map.has(key)) {
+      map.set(key, value);
+    }
+  }
+  return map;
+}
+
 export function updateSetValuedMapWithOverride<TValue>(map: Map<string, Set<TValue>>,
                                                object: {[key: string]: TValue[]}): void {
   for (const [key, values] of Object.entries(object)) {
