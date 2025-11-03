@@ -92,7 +92,7 @@ export function EditorLeftSide({
                 onClick={deactivateShowSource}
                 title={t('cancelEditXmlSource')}
               >
-                &#x270e;
+                &#x270e; {t('cancelEditXmlSourceButton')}
               </button>
 
               <button
@@ -100,7 +100,7 @@ export function EditorLeftSide({
                 onClick={onXmlSourceUpdate}
                 title={t('applyXmlSourceChange')}
               >
-                &#x270e;
+                &#x270e; {t('applyXmlSourceChangeButton')}
               </button>
             </>
           ) : (
@@ -123,7 +123,7 @@ export function EditorLeftSide({
                 onClick={activateShowSource}
                 title={t('editSource') || 'editSource'}
               >
-                &#x270e;
+                &#x270e; XML
               </button>
             </>
           )}
@@ -134,7 +134,7 @@ export function EditorLeftSide({
               onClick={closeFile}
               title={t('closeFile') || 'closeFile'}
             >
-              &#10799;
+              &#10799; {t('closeFileButton')}
             </button>
           )}
         </div>
