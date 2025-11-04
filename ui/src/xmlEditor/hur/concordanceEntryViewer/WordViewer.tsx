@@ -10,7 +10,7 @@ interface IProps {
 
 export function WordViewer({ word }: IProps): JSX.Element {
   const { transliteration, segmentation, gloss } = word;
-  const parseResult = parseNewXml('<w>' + transliteration + '</w>', tlhXmlEditorConfig.readConfig);
+  const parseResult = parseNewXml(transliteration, tlhXmlEditorConfig.readConfig);
   
   return (
     <div className="corpus-word">
