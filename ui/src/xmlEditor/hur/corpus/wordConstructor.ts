@@ -4,9 +4,9 @@ import { readSelectedMorphology, SelectedMorphAnalysis }
 import { readMorphologiesFromNode, MorphologicalAnalysis } from '../../../model/morphologicalAnalysis';
 import { isSelected, getFirstSelectedMorphTag } from '../morphologicalAnalysis/auxiliary';
 import { makeGloss } from '../common/auxiliary';
-import { getText } from '../common/xmlUtilities';
 import { getTranslationAndMorphTag } from '../common/splitter';
-import { writeNodeWithDefaultWriteConfig } from 'simple_xml';
+import { xmlElementNode, writeNode, writeNodeWithDefaultWriteConfig } from 'simple_xml';
+import { tlhXmlEditorConfig } from '../../tlhXmlEditorConfig';
 
 export type Word = {
   transliteration: string;
@@ -101,7 +101,8 @@ export function makeWordFromMorphologies(transliteration: string,
 export function makeWord(node: XmlElementNode): Word {
   switch (node.tagName) {
     case 'w': {
-      const transliteration = getText(node);
+      const nodeCopyWithoutAttributes = xmlElementNode(node.tagName, undefined, node.children);
+      const transliteration = writeNode(nodeCopyWithoutAttributes, tlhXmlEditorConfig.writeConfig)[0];
       const selectedMorphologies: SelectedMorphAnalysis[] = node.attributes.mrp0sel !== undefined
         ? readSelectedMorphology(node.attributes.mrp0sel)
         : [];
