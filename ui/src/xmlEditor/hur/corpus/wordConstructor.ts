@@ -6,6 +6,7 @@ import { isSelected, getFirstSelectedMorphTag } from '../morphologicalAnalysis/a
 import { makeGloss } from '../common/auxiliary';
 import { getText } from '../common/xmlUtilities';
 import { getTranslationAndMorphTag } from '../common/splitter';
+import { writeNodeWithDefaultWriteConfig } from 'simple_xml';
 
 export type Word = {
   transliteration: string;
@@ -107,23 +108,10 @@ export function makeWord(node: XmlElementNode): Word {
       const morphologies = readMorphologiesFromNode(node, selectedMorphologies);
       return makeWordFromMorphologies(transliteration, morphologies);
     }
-    case 'wsep': {
-      return {
-        transliteration: node.attributes.c || node.tagName.toUpperCase(),
-        segmentation: '',
-        gloss: ''
-      };
-    }
-    case 'gap': {
-      return {
-        transliteration: node.attributes.c || node.tagName.toUpperCase(),
-        segmentation: '',
-        gloss: ''
-      };
-    }
     default: {
+      const transliteration = writeNodeWithDefaultWriteConfig(node)[0];
       return {
-        transliteration: node.tagName.toUpperCase(),
+        transliteration,
         segmentation: '',
         gloss: ''
       };
