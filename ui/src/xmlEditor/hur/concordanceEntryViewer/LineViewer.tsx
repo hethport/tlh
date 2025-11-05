@@ -10,7 +10,11 @@ interface IProps {
 export function LineViewer({ line }: IProps): JSX.Element {
   return (
     <div className="corpus-line">
-      {line.map((word: Word, index: number) => <WordViewer key={index} word={word} />)}
+      {line
+        .filter((word: Word) =>
+          word.transliteration !== undefined &&
+          !word.transliteration.startsWith('<AO:ParagrNr'))
+        .map((word: Word, index: number) => <WordViewer key={index} word={word} />)}
     </div>
   );
 }
