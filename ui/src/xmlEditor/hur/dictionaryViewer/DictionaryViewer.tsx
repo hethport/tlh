@@ -10,8 +10,12 @@ import { SetDictionary } from '../dict/dictionary';
 import { compare } from '../common/comparison';
 import { blueButtonClasses } from '../../../defaultDesign';
 import { useTranslation } from 'react-i18next';
-import { getEnglishTranslationKey, EnglishTranslations, setGlobalEnglishTranslations } from '../translations/englishTranslations';
+import { getEnglishTranslationKey, EnglishTranslations, setGlobalEnglishTranslations,
+  getGlobalEnglishTranslations
+} from '../translations/englishTranslations';
 import update from 'immutability-helper';
+import { EnglishTranslationsDownloader } from '../translations/files/EnglishTranslationsDownloader';
+import { EnglishTranslationsUploader } from '../translations/files/EnglishTranslationsUploader';
 
 interface IProps {
   entries: Entry[];
@@ -61,13 +65,14 @@ export function DictionaryViewer({entries, setDictionary, initialEnglishTranslat
           const group = grouped.get(stem);
           const entries: Entry[] = group === undefined ? [] : Array.from(group);
           const stemObject = new Stem((index + 1).toString() + '.@' + stem);
-          const key = entries
-            .map(entry => writeMorphAnalysisValue(entry.morphologicalAnalysis))
-            .join('|');
           const englishTranslationKey = getEnglishTranslationKey(stemObject.form,
                                                                  stemObject.pos,
                                                                  stemObject.translation);
           const englishTranslation = englishTranslations.get(englishTranslationKey) || '';
+          const key = entries
+            .map(entry => writeMorphAnalysisValue(entry.morphologicalAnalysis))
+            .concat([englishTranslation])
+            .join('|');
           const setEnglishTranslation = (newEnglishTranslation: string) => {
             if (!(englishTranslation === '' && newEnglishTranslation === '')) {
               setEnglishTranslations(oldEnglishTranslations => update(
@@ -105,6 +110,11 @@ export function DictionaryViewer({entries, setDictionary, initialEnglishTranslat
           <button type="button" className={blueButtonClasses} onClick={toggleAllUnfolded}>
             {allUnfolded ? t('foldAll') : t('unfoldAll')}
           </button>
+          <EnglishTranslationsDownloader />
+          <EnglishTranslationsUploader onUpload={() => {
+            const globalEnglishTranslations = getGlobalEnglishTranslations();
+            setEnglishTranslations(globalEnglishTranslations);
+          }}/>
         </div>
       </div>
     </div>
