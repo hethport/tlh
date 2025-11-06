@@ -6,7 +6,7 @@ import { Entry } from './Wordform';
 import { DictionaryDownloader } from '../dict/files/DictionaryDownloader';
 import { ChangesDownloader } from '../changes/ChangesDownloader';
 import { writeMorphAnalysisValue } from '../../../model/morphologicalAnalysis';
-import { SetDictionary } from '../dict/dictionary';
+import { SetDictionary, getGlobalDictionary } from '../dict/dictionary';
 import { compare } from '../common/comparison';
 import { blueButtonClasses } from '../../../defaultDesign';
 import { useTranslation } from 'react-i18next';
@@ -15,6 +15,7 @@ import { getEnglishTranslationKey, EnglishTranslations, setGlobalEnglishTranslat
 } from '../translations/englishTranslations';
 import update from 'immutability-helper';
 import { EnglishTranslationsDownloader } from '../translations/files/EnglishTranslationsDownloader';
+import { DictionaryUploader } from '../dict/files/DictionaryUploader';
 import { EnglishTranslationsUploader } from '../translations/files/EnglishTranslationsUploader';
 
 interface IProps {
@@ -111,6 +112,10 @@ export function DictionaryViewer({entries, setDictionary, initialEnglishTranslat
             {allUnfolded ? t('foldAll') : t('unfoldAll')}
           </button>
           <EnglishTranslationsDownloader />
+          <DictionaryUploader onUpload={() => {
+            const globalDictionary = getGlobalDictionary();
+            setDictionary(() => globalDictionary);
+          }}/>
           <EnglishTranslationsUploader onUpload={() => {
             const globalEnglishTranslations = getGlobalEnglishTranslations();
             setEnglishTranslations(globalEnglishTranslations);
