@@ -28,10 +28,16 @@ export async function readDict(file: File) {
   }
   if ('concordance' in parsed) {
     setConcordance(parsed.concordance);
-    dictionary = cleanUpDictionary(dictionary);
+    if (dictionary !== undefined) {
+      dictionary = cleanUpDictionary(dictionary);
+    }
   }
-  setDictionary(dictionary);
-  setGlosses(glosses);
+  if (dictionary !== undefined) {
+    setDictionary(dictionary);
+  }
+  if (glosses !== undefined) {
+    setGlosses(glosses);
+  }
   if ('corpus' in parsed) {
     setCorpus(parsed.corpus);
   }
