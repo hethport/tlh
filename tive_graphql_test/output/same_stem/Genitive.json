@@ -1,0 +1,26 @@
+{
+  "data": {
+    "findOrCreateMorphosyntacticWord": {
+      "id": 21,
+      "morphologicalAnalysis": {
+        "stem": {
+          "id": 15,
+          "form": "avari",
+          "pos": "noun",
+          "deu": "Feld",
+          "eng": ""
+        },
+        "suffixChain": {
+          "id": 17,
+          "suffixes": "ne-ve",
+          "morphTag": "RELAT.SG-GEN",
+          "pos": "noun"
+        }
+      },
+      "wordform": {
+        "id": 30,
+        "transcription": "avarribi"
+      }
+    }
+  }
+}

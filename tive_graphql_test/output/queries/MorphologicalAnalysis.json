@@ -1,0 +1,25 @@
+{
+  "data": {
+    "morphologicalAnalysis": {
+      "stem": {
+        "id": 2,
+        "form": "mel+aḫḫ",
+        "pos": "verb",
+        "deu": "vertreiben",
+        "eng": "drive away"
+      },
+      "suffixChain": {
+        "id": 3,
+        "suffixes": "o-m",
+        "morphTag": "TR.PFV-3A.SG"
+      },
+      "morphosyntacticWords": [
+        {
+          "wordform": {
+            "transcription": "melaḫḫum"
+          }
+        }
+      ]
+    }
+  }
+}

@@ -289,5 +289,7 @@
   "transliterationReviewDate": "Transliteration Review Date",
   "xmlConversionDate": "XML Conversion Date",
   "firstXmlReviewDate": "First XML Review Date",
-  "secondXmlReviewDate": "Second XML Review Date"
+  "secondXmlReviewDate": "Second XML Review Date",
+  "exportEnglishTranslations": "Export English translations",
+  "uploadEnglishTranslations": "Upload English translations"
 }

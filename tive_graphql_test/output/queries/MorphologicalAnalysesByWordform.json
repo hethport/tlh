@@ -1,0 +1,46 @@
+{
+  "data": {
+    "wordform": {
+      "id": 6,
+      "transcription": "pabanni",
+      "morphosyntacticWords": [
+        {
+          "id": 9,
+          "morphologicalAnalysis": {
+            "id": 4,
+            "stem": {
+              "id": 3,
+              "form": "paba+ni",
+              "pos": "noun",
+              "deu": "Berg",
+              "eng": "mountain"
+            },
+            "suffixChain": {
+              "id": 4,
+              "suffixes": "ne-e",
+              "morphTag": "RELAT.SG-DIR/LOC"
+            }
+          }
+        },
+        {
+          "id": 8,
+          "morphologicalAnalysis": {
+            "id": 7,
+            "stem": {
+              "id": 3,
+              "form": "paba+ni",
+              "pos": "noun",
+              "deu": "Berg",
+              "eng": "mountain"
+            },
+            "suffixChain": {
+              "id": 1,
+              "suffixes": "",
+              "morphTag": ".ABS"
+            }
+          }
+        }
+      ]
+    }
+  }
+}

@@ -289,5 +289,8 @@
   "transliterationReviewDate": "Transliteration Review Datum",
   "xmlConversionDate": "XML Konvertierungsdatum",
   "firstXmlReviewDate": "Erstes XML Konvertierungsdatum",
-  "secondXmlReviewDate": "Zweites XML Konvertierungsdatum"
+  "secondXmlReviewDate": "Zweites XML Konvertierungsdatum",
+  "guidelines": "Richtlinien",
+  "exportEnglishTranslations": "Englische Glossen exportieren",
+  "uploadEnglishTranslations": "Englische Glossen hochladen"
 }

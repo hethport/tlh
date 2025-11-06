@@ -1,0 +1,19 @@
+{
+  "data": {
+    "stem": {
+      "id": 1,
+      "form": "nāli",
+      "pos": "noun",
+      "deu": "Rehbock",
+      "eng": "deer",
+      "morphologicalAnalyses": [
+        {
+          "suffixChain": {
+            "suffixes": "",
+            "morphTag": ".ABS"
+          }
+        }
+      ]
+    }
+  }
+}
