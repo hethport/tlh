@@ -264,5 +264,7 @@
   "mainIdentifierType": "Identifikatortyp",
   "anonymousNote": "Notiz",
   "anonymousTransliterationInfo": "Dies ist ein anonymer Parser. Sie können das Parse-Ergebnis anzeigen und als XML exportieren, aber nicht in der Datenbank speichern.",
-  "guidelines": "Richtlinien"
+  "guidelines": "Richtlinien",
+  "exportEnglishTranslations": "Englische Glossen exportieren",
+  "uploadEnglishTranslations": "Englische Glossen hochladen"
 }
