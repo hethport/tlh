@@ -1,10 +1,11 @@
 import {convertDictionary, updateGlossesLexicon} from '../common/utility';
+import { objectToSetValuedMap } from '../common/utils';
 import { loadSetValuedMapFromLocalStorage, locallyStoreSetValuedMap }
   from '../dictLocalStorage/localStorageUtils';
 
 //Dieses Modul kann Bedeutungen von Stämmen speichern und nachschlagen.
 const localStorageKey = 'HurrianStemTranslations';
-export const glosses: Map<string, Set<string>> = loadSetValuedMapFromLocalStorage(localStorageKey);
+export let glosses: Map<string, Set<string>> = loadSetValuedMapFromLocalStorage(localStorageKey);
 export function locallyStoreHurrianStemTranslations(): void {
   locallyStoreSetValuedMap(glosses, localStorageKey);
 }
@@ -81,4 +82,8 @@ export function upgradeGlosses(object: {[key: string]: string[]}): void
 {
   updateGlossesLexicon(glosses, object);
   normalizeTranslationLexicon();
+}
+
+export function setGlosses(obj: { [key: string]: string[] }): void {
+  glosses = objectToSetValuedMap(obj);
 }

@@ -1,8 +1,8 @@
-import { getDictionary, upgradeDictionary, cleanUpDictionary } from '../dictionary';
-import { getGlosses, upgradeGlosses } from '../../translations/glossProvider';
+import { getDictionary, setDictionary, cleanUpDictionary } from '../dictionary';
+import { getGlosses, setGlosses } from '../../translations/glossProvider';
 import { getPartsOfSpeech, setPartsOfSpeech } from '../../partsOfSpeech/partsOfSpeech';
-import { getConcordance, updateConcordance } from '../../concordance/concordance';
-import { getCorpus, updateCorpus } from '../../corpus/corpus';
+import { getConcordance, setConcordance } from '../../concordance/concordance';
+import { getCorpus, setCorpus } from '../../corpus/corpus';
 import { getEnglishTranslations, updateEnglishTranslations } from '../../translations/englishTranslations';
 import { makeDownload } from '../../../../downloadHelper';
 
@@ -27,13 +27,13 @@ export async function readDict(file: File) {
     setPartsOfSpeech(parsed.partsOfSpeech);
   }
   if ('concordance' in parsed) {
-    updateConcordance(parsed.concordance);
+    setConcordance(parsed.concordance);
     dictionary = cleanUpDictionary(dictionary);
   }
-  upgradeDictionary(dictionary);
-  upgradeGlosses(glosses);
+  setDictionary(dictionary);
+  setGlosses(glosses);
   if ('corpus' in parsed) {
-    updateCorpus(parsed.corpus);
+    setCorpus(parsed.corpus);
   }
   if ('englishTranslations' in parsed) {
     updateEnglishTranslations(parsed.englishTranslations);

@@ -193,3 +193,7 @@ export function cleanUpDictionary(object: { [key: string]: string[] }): { [key: 
   }
   return newObject;
 }
+
+export function setDictionary(obj: { [key: string]: string[] }): void {
+  dictionary = objectToSetValuedMap(obj);
+}
