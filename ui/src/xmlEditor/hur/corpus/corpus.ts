@@ -6,10 +6,10 @@ import { makeWord, updateMorphologicalAnalysis, hasGivenAnalysis } from './wordC
 import { findLine, findLineStart, getParent } from './lineFinder';
 import { readMorphAnalysisValue } from '../morphologicalAnalysis/auxiliary';
 import { loadMapFromLocalStorage, locallyStoreMap } from '../dictLocalStorage/localStorageUtils';
-import { makeGlossFromMorphologicalAnalysis } from '../common/utils';
+import { makeGlossFromMorphologicalAnalysis, objectToMap } from '../common/utils';
 
 const localStorageKey = 'HurrianCorpus';
-const corpus: Map<string, Line> = loadMapFromLocalStorage(localStorageKey);
+let corpus: Map<string, Line> = loadMapFromLocalStorage(localStorageKey);
 cleanUpCorpus();
 export function locallyStoreHurrianCorpus(): void {
   locallyStoreMap(corpus, localStorageKey);
@@ -110,4 +110,8 @@ export function hasMultipleOccurences(analysis: string, attestation: string): bo
     }
   }
   return false;
+}
+
+export function setCorpus(obj: { [key: string]: Line }): void {
+  corpus = objectToMap(obj);
 }

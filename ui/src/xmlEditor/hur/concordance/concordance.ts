@@ -1,5 +1,6 @@
 import { convertDictionary } from '../common/utility';
-import { add, remove, replaceKey, updateSetValuedMapWithOverride } from '../common/utils';
+import { add, remove, replaceKey, updateSetValuedMapWithOverride,
+  objectToSetValuedMap } from '../common/utils';
 import { isValid, normalize } from '../dict/morphologicalAnalysisValidator';
 import { writeMorphAnalysisValue, MorphologicalAnalysis } from '../../../model/morphologicalAnalysis';
 import { readMorphAnalysisValue } from '../morphologicalAnalysis/auxiliary';
@@ -24,7 +25,7 @@ export class Attestation {
 }
 
 const localStorageKey = 'HurrianConcordance';
-const concordance: Map<string, Set<string>> = loadSetValuedMapFromLocalStorage(localStorageKey);
+let concordance: Map<string, Set<string>> = loadSetValuedMapFromLocalStorage(localStorageKey);
 export function locallyStoreHurrianConcordance(): void {
   locallyStoreSetValuedMap(concordance, localStorageKey);
 }
@@ -113,4 +114,8 @@ export function updateConcordanceKey(oldAnalysis: string, newAnalysis: string): 
 export function inConcordance(ma: MorphologicalAnalysis): boolean {
   const value = writeMorphAnalysisValue(ma);
   return concordance.has(value);
+}
+
+export function setConcordance(obj: { [key: string]: string[] }): void {
+  concordance = objectToSetValuedMap(obj);
 }
