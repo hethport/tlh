@@ -5,7 +5,7 @@ import { DictionaryUploader } from '../dict/files/DictionaryUploader';
 import { DictionaryViewer } from './DictionaryViewer';
 import { Entry } from './Wordform';
 import { groupBy } from '../common/utils';
-import { Dictionary, setGlobalDictionary } from '../dict/dictionary';
+import { Dictionary, setGlobalDictionary, getGlobalDictionary } from '../dict/dictionary';
 import { EnglishTranslations } from '../translations/englishTranslations';
 import { locallyStoreHurrianData } from '../dictLocalStorage/hurrianDataLocalStorage';
 
@@ -26,8 +26,8 @@ export function DictionaryViewerContainer({getInitialDictionary,
   const {t} = useTranslation('common');
   const initialDictionary = getInitialDictionary();
   const initialEnglishTranslations = getInitialEnglishTranslations();
-  const [loaded, setLoaded] = useState(initialDictionary.size > 0);
   const [dictionary, setDictionary] = useState(initialDictionary);
+  const loaded = dictionary.size > 0;
   
   const subentries: Subentry[] = [];
   
@@ -60,7 +60,10 @@ export function DictionaryViewerContainer({getInitialDictionary,
   return (
     <div className="container mx-auto">
       <h1 className="font-bold text-2xl text-center">{t('dictionaryViewer')}</h1>
-      {!loaded ? <DictionaryUploader onUpload={() => setLoaded(true)} /> :
+      {!loaded ? <DictionaryUploader onUpload={() => {
+        const globalDictionary = getGlobalDictionary();
+        setDictionary(() => globalDictionary);
+      }} /> :
       <DictionaryViewer entries={entries} setDictionary={setDictionary}
                         initialEnglishTranslations={initialEnglishTranslations} />}
     </div>
