@@ -64,7 +64,7 @@ function padDigits(a: string): string {
   return a.replaceAll(pattern, digit => '0' + digit);
 }
 
-function compare(a: string, b: string): number {
+export function compareLineNumbers(a: string, b: string): number {
   const newA = padDigits(a);
   const newB = padDigits(b);
   if (newA < newB) {
@@ -92,7 +92,7 @@ export function getAttestations(morphologicalAnalysis: MorphologicalAnalysis): A
   if (current === undefined) {
     return [];
   } else {
-    return Array.from(current).sort(compare).map((repr: string) => {
+    return Array.from(current).sort(compareLineNumbers).map((repr: string) => {
       const [text, line] = repr.split(sep);
       return new Attestation(text, line);
     });

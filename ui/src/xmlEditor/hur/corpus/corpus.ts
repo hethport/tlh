@@ -1,5 +1,5 @@
 import { updateMapping, convertMapping } from '../common/utility';
-import { Attestation, quickGetAttestations } from '../concordance/concordance';
+import { Attestation, quickGetAttestations, compareLineNumbers } from '../concordance/concordance';
 import { XmlElementNode, getElementByPath } from 'simple_xml';
 import { Line, makeLine } from './lineConstructor';
 import { makeWord, updateMorphologicalAnalysis, hasGivenAnalysis } from './wordConstructor';
@@ -14,6 +14,8 @@ cleanUpCorpus();
 export function locallyStoreHurrianCorpus(): void {
   locallyStoreMap(corpus, localStorageKey);
 }
+
+let lines = new Map<string, string[]>();
 
 function cleanUpCorpus(): void {
   for (const [key, line] of corpus.entries()) {
@@ -112,6 +114,42 @@ export function hasMultipleOccurences(analysis: string, attestation: string): bo
   return false;
 }
 
+function addLineToText(key: string): void {
+  if (key.includes(',')) {
+    const [text, line] = key.split(',', 2);
+    let values = lines.get(text);
+    if (values === undefined) {
+      values = [];
+      lines.set(text, values);
+    }
+    values.push(line);
+  }
+}
+
+function setLines(keys: string[]): void {
+  lines = new Map<string, string[]>();
+  for (const key of keys) {
+    addLineToText(key);
+  }
+}
+
 export function setCorpus(obj: { [key: string]: Line }): void {
   corpus = objectToMap(obj);
+  setLines(Object.keys(obj));
+}
+
+type TaggedLine = {
+  id: string;
+  line: Line;
+}
+
+export function getText(text: string): TaggedLine[] {
+  const textLines = lines.get(text);
+  if (textLines === undefined) {
+    return [];
+  } else {
+    return textLines.sort(compareLineNumbers).map(line => {
+      return {id: line, line: getLine(new Attestation(text, line))};
+    });
+  }
 }

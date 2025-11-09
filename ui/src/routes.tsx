@@ -53,6 +53,7 @@ import {ResetPasswordForm} from './forms/ResetPasswordForm';
 import {getGlobalDictionary} from './xmlEditor/hur/dict/dictionary';
 import {getGlobalEnglishTranslations} from './xmlEditor/hur/translations/englishTranslations';
 import {getChanges} from './xmlEditor/hur/changes/changesAccumulator';
+import {TextDisplay} from './xmlEditor/hur/concordanceEntryViewer/TextDisplay';
 
 export const router = createBrowserRouter([
     {
@@ -109,6 +110,9 @@ export const router = createBrowserRouter([
         {path: documentMergerUrl, element: <DocumentMergerContainer/>},
 
         {path: createAnonymousTransliterationUrl, element: <AnonymousTransliterationInput/>},
+
+        {path: 'texts/:text', element: <TextDisplay/>},
+
       ],
       errorElement: <ErrorBoundary/>
     }
