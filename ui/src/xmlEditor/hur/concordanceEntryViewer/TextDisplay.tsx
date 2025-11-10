@@ -9,7 +9,7 @@ export function TextDisplay(): ReactElement {
   return (
     <div>{lines.map(({ id, line }) => {
       return (<div className="display: table-row" key={id}>
-        <div className="info-box">{id}</div>
+        <div className="info-box no-line-break">{id}</div>
         <div className="display: table-cell">
           <LineViewer line={line} />
         </div>
