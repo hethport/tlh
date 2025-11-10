@@ -259,3 +259,19 @@ code {
 .error-mark {
   font-size: 30px;
 }
+
+.no-line-break {
+  white-space: nowrap;
+}
+
+/*
+.leftList, rightList {
+  display: inline;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.mergeList {
+  display: inline-block;
+  width: 50%;
+}*/
