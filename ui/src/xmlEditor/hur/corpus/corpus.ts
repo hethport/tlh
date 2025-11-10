@@ -9,7 +9,14 @@ import { loadMapFromLocalStorage, locallyStoreMap } from '../dictLocalStorage/lo
 import { makeGlossFromMorphologicalAnalysis, objectToMap, add } from '../common/utils';
 
 const localStorageKey = 'HurrianCorpus';
-let corpus: Map<string, Line> = loadMapFromLocalStorage(localStorageKey);
+type Corpus = Map<string, Line>;
+let corpus: Corpus;
+try {
+  corpus = loadMapFromLocalStorage(localStorageKey);
+} catch(SyntaxError) {
+  console.log('The corpus could not be loaded from the local storage.');
+  corpus = new Map();
+}
 cleanUpCorpus();
 export function locallyStoreHurrianCorpus(): void {
   locallyStoreMap(corpus, localStorageKey);

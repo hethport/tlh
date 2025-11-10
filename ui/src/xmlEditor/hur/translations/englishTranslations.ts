@@ -11,7 +11,13 @@ export type EnglishTranslations = Map<string, string>;
 type EnglishTranslationsObject = { [key: string]: string };
 
 const localStorageKey = 'englishTranslations';
-let englishTranslations: EnglishTranslations = loadMapFromLocalStorage(localStorageKey);
+let englishTranslations: EnglishTranslations;
+try {
+  englishTranslations = loadMapFromLocalStorage(localStorageKey);
+} catch(SyntaxError) {
+  console.log('The English translations could not be loaded from the local storage.');
+  englishTranslations = new Map();
+}
 function locallyStoreEnglishTranslations() {
   locallyStoreMap(englishTranslations, localStorageKey);
 }
