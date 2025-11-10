@@ -2,7 +2,7 @@ import { updateMapping } from '../common/utility';
 
 const textToCTHGroup = new Map<string, string>();
 
-fetch('textToCTHGroup.json')
+fetch('/textToCTHGroup.json')
   .then(response => {
     if (!response.ok) {
       throw new Error(`Unexpected response status ${response.status}`);
