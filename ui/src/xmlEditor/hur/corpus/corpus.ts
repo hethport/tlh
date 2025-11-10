@@ -6,7 +6,7 @@ import { makeWord, updateMorphologicalAnalysis, hasGivenAnalysis } from './wordC
 import { findLine, findLineStart, getParent } from './lineFinder';
 import { readMorphAnalysisValue } from '../morphologicalAnalysis/auxiliary';
 import { loadMapFromLocalStorage, locallyStoreMap } from '../dictLocalStorage/localStorageUtils';
-import { makeGlossFromMorphologicalAnalysis, objectToMap } from '../common/utils';
+import { makeGlossFromMorphologicalAnalysis, objectToMap, add } from '../common/utils';
 
 const localStorageKey = 'HurrianCorpus';
 let corpus: Map<string, Line> = loadMapFromLocalStorage(localStorageKey);
@@ -15,7 +15,20 @@ export function locallyStoreHurrianCorpus(): void {
   locallyStoreMap(corpus, localStorageKey);
 }
 
-let lines = new Map<string, string[]>();
+type LineNumbers = Map<string, Set<string>>;
+
+function defineLineNumbers(): LineNumbers {
+  const lineNumbers = new Map<string, Set<string>>();
+  for (const key of corpus.keys()) {
+    if (key.includes(',')) {
+      const [text, line] = key.split(',', 2);
+      add(lineNumbers, text, line);
+    }
+  }
+  return lineNumbers;
+}
+
+let lineNumbers = defineLineNumbers();
 
 function cleanUpCorpus(): void {
   for (const [key, line] of corpus.entries()) {
@@ -114,28 +127,9 @@ export function hasMultipleOccurences(analysis: string, attestation: string): bo
   return false;
 }
 
-function addLineToText(key: string): void {
-  if (key.includes(',')) {
-    const [text, line] = key.split(',', 2);
-    let values = lines.get(text);
-    if (values === undefined) {
-      values = [];
-      lines.set(text, values);
-    }
-    values.push(line);
-  }
-}
-
-function setLines(keys: string[]): void {
-  lines = new Map<string, string[]>();
-  for (const key of keys) {
-    addLineToText(key);
-  }
-}
-
 export function setCorpus(obj: { [key: string]: Line }): void {
   corpus = objectToMap(obj);
-  setLines(Object.keys(obj));
+  lineNumbers = defineLineNumbers();
 }
 
 type TaggedLine = {
@@ -144,11 +138,11 @@ type TaggedLine = {
 }
 
 export function getText(text: string): TaggedLine[] {
-  const textLines = lines.get(text);
+  const textLines = lineNumbers.get(text);
   if (textLines === undefined) {
     return [];
   } else {
-    return textLines.sort(compareLineNumbers).map(line => {
+    return Array.from(textLines).sort(compareLineNumbers).map(line => {
       return {id: line, line: getLine(new Attestation(text, line))};
     });
   }
