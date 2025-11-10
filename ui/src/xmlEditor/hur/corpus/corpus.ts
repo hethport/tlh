@@ -1,5 +1,5 @@
 import { updateMapping, convertMapping } from '../common/utility';
-import { Attestation, quickGetAttestations, compareLineNumbers } from '../concordance/concordance';
+import { Attestation, quickGetAttestations } from '../concordance/concordance';
 import { XmlElementNode, getElementByPath } from 'simple_xml';
 import { Line, makeLine } from './lineConstructor';
 import { makeWord, updateMorphologicalAnalysis, hasGivenAnalysis } from './wordConstructor';
@@ -7,6 +7,7 @@ import { findLine, findLineStart, getParent } from './lineFinder';
 import { readMorphAnalysisValue } from '../morphologicalAnalysis/auxiliary';
 import { loadMapFromLocalStorage, locallyStoreMap } from '../dictLocalStorage/localStorageUtils';
 import { makeGlossFromMorphologicalAnalysis, objectToMap, add } from '../common/utils';
+import { compareLineNumbers } from './lineNumberComparer';
 
 const localStorageKey = 'HurrianCorpus';
 type Corpus = Map<string, Line>;
