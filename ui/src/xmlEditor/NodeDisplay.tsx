@@ -45,13 +45,12 @@ const InsertButton = ({
     className={`
       inline-flex
       items-center justify-center
-      w-3 h-3
+      w-2 h-3
       ml-0.5
       rounded-full
-      bg-teal-100
+      bg-red-500
       text-sm font-medium
       transition-opacity duration-25
-      ${show ? 'opacity-100' : 'opacity-0 pointer-events-none'}
     `}
   >+</button>
 );

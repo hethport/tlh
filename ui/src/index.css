@@ -290,10 +290,11 @@ code {
 .modal-content {
   background: #fff;
   border-radius: 8px;
-  width: 90%;
-  max-width: 640px;
+  width: 100%;
+  max-width: 720px;
   padding: 20px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, .15);
+  overflow: hidden;
 }
 
 /* ---- header, body, footer – just for layout ---- */

@@ -395,7 +395,7 @@ export const HeaderEditor: React.FC<HeaderEditorProps> = ({
                 value={merge.editor}
                 onChange={e => setMerge({ ...merge, editor: e.target.value })}
               />
-              <label>{t('Docs (comma‑separated)')}</label>
+              <label>{t('Merged Document with labels')}</label>
               <input
                 type="text"
                 value={merge.docs}
