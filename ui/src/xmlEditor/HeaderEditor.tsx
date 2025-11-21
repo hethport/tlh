@@ -332,7 +332,7 @@ export const HeaderEditor: React.FC<HeaderEditorProps> = ({
         ))}
 
         {/* ---- delete button ----------------------------------- */}
-        <button type="button" className="danger" onClick={onDelete}>
+        <button type="button" className="px-2 rounded bg-red-500 font-bold text-white" onClick={onDelete}>
           {t('Delete event')}
         </button>
       </div>
@@ -473,16 +473,15 @@ export const HeaderEditor: React.FC<HeaderEditorProps> = ({
                   ))}
                   <button
                     type="button"
-                    className="primary"
+                    className="primary px-2 rounded bg-blue-500 text-white font-bold"
                     onClick={() => addMergedEvent(idx)}
                   >
                     {t('Add edit event to this merged doc')}
                   </button>
 
-                  {/* delete this merged <doc> */}
                   <button
                     type="button"
-                    style={{ marginLeft: '8px', background: '#f88' }}
+                    className="px-2 rounded bg-red-500 text-white font-bold"
                     onClick={() => deleteMergedDoc(idx)}
                   >
                     {t('Delete merged document')}

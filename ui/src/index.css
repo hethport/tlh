@@ -340,9 +340,7 @@ code {
 }
 .modal-content button {
   padding: 6px 12px;
-  border: 1px solid #777;
   border-radius: 4px;
-  background: #e0e0e0;
   cursor: pointer;
 }
 .modal-content button:hover {

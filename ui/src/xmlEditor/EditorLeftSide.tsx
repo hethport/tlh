@@ -97,7 +97,7 @@ export function EditorLeftSide({
 
           {uiState.xmlSource ? (
             <>
-              <button onClick={() => setModalOpen(true)}>Edit Header</button>
+              <button className="px-2 rounded bg-green-500 text-white font-bold" onClick={() => setModalOpen(true)}>Edit Header</button>
               <button
                 className="px-2 rounded bg-red-500 text-white font-bold"
                 onClick={deactivateShowSource}
