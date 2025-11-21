@@ -9,6 +9,7 @@ import { FontSizeSelector } from './FontSizeSelector';
 import { NodePath } from './insertablePositions';
 import { tlhXmlEditorConfig } from './tlhXmlEditorConfig';
 import { XmlSourceEditor } from './XmlSourceEditor';
+import { HeaderEditor } from './HeaderEditor';
 
 export interface EditorLeftSideProps extends NodeDisplayIProps {
   filename: string;
@@ -43,6 +44,14 @@ export function EditorLeftSide({
     xmlSource: undefined,
   });
 
+  const [modalOpen, setModalOpen] = useState(false);
+
+  const handleSave = (newXml: string) => {
+    uiState.xmlSource = newXml;
+    onXmlSourceUpdate();
+    setModalOpen(false);
+  };
+
   const [hoveredPath, setHoveredPath] = useState<NodePath | null>(null);
 
   const handleHoverEnter = (path: NodePath) => setHoveredPath(path);
@@ -66,6 +75,7 @@ export function EditorLeftSide({
     parseNewXml(uiState.xmlSource as string, tlhXmlEditorConfig.readConfig).handle(
       (rootNode) => {
         updateNode(rootNode as XmlElementNode);
+        console.log(uiState.xmlSource);
         deactivateShowSource();
       },
       (err) => alert(err)
@@ -87,6 +97,7 @@ export function EditorLeftSide({
 
           {uiState.xmlSource ? (
             <>
+              <button onClick={() => setModalOpen(true)}>Edit Header</button>
               <button
                 className="px-2 rounded bg-red-500 text-white font-bold"
                 onClick={deactivateShowSource}
@@ -169,6 +180,12 @@ export function EditorLeftSide({
           </div>
         )}
       </div>
+      <HeaderEditor
+        xml={uiState.xmlSource as string}
+        open={modalOpen}
+        onSave={handleSave}
+        onCancel={() => setModalOpen(false)}
+      />
     </div>
   );
 }

@@ -47,6 +47,14 @@ export function attributesForDocEditType(docEditType: DocumentEditTypes): Attrib
   }
 }
 
+export interface EditEvent {
+  type: DocumentEditTypes;
+  date: string;          // ISO‑timestamp
+  data?: string;          // ISO‑timestamp, same as date but some editors have manually changed this in many documents
+  editor: string;
+  extra: Record<string, string>;
+}
+
 export const nameForDocEditType = (docEditType: DocumentEditTypes, t: (s: string) => string): string => {
   return {
     [DocumentEditTypes.Annotation]: t('Annotation'),
@@ -55,7 +63,7 @@ export const nameForDocEditType = (docEditType: DocumentEditTypes, t: (s: string
     [DocumentEditTypes.KollationFoto]: t('KollationFoto'),
     [DocumentEditTypes.SecondKollationFoto]: t('SecondKollationFoto'),
     [DocumentEditTypes.Correction]: t('Correction'),
-    [DocumentEditTypes.SecondCorrection]: t('SecondCorrectino'),
+    [DocumentEditTypes.SecondCorrection]: t('SecondCorrection'),
     [DocumentEditTypes.KollationFragment]: t('KollationFragment'),
     [DocumentEditTypes.CorrectionWithoutFoto]: t('CorrectionWithoutFoto'),
     [DocumentEditTypes.TransliterationCreation]: t('TransliterationCreation'),
