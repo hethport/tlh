@@ -1,4 +1,4 @@
-import { getDictionary, setDictionary, cleanUpDictionary } from '../dictionary';
+import { getDictionary, setDictionary } from '../dictionary';
 import { getGlosses, setGlosses } from '../../translations/glossProvider';
 import { getPartsOfSpeech, setPartsOfSpeech } from '../../partsOfSpeech/partsOfSpeech';
 import { getConcordance, setConcordance } from '../../concordance/concordance';
@@ -28,9 +28,6 @@ export async function readDict(file: File) {
   }
   if ('concordance' in parsed) {
     setConcordance(parsed.concordance);
-    if (dictionary !== undefined) {
-      dictionary = cleanUpDictionary(dictionary);
-    }
   }
   if (dictionary !== undefined) {
     setDictionary(dictionary);
