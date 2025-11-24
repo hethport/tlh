@@ -9,6 +9,7 @@ import { loadSetValuedMapFromLocalStorage, locallyStoreSetValuedMap }
 import { hasMultipleOccurences } from '../corpus/corpus';
 import { addMorphologicalAnalysis } from '../dict/dictionaryUpdater';
 import { deleteAnalysisFromHurrianDictionary } from '../dict/dictionary';
+import { reserializeMorphologicalAnalysis } from '../morphologicalAnalysis/reserialization';
 
 const sep = ',';
 
@@ -117,5 +118,11 @@ export function inConcordance(ma: MorphologicalAnalysis): boolean {
 }
 
 export function setConcordance(obj: { [key: string]: string[] }): void {
-  concordance = objectToSetValuedMap(obj);
+  concordance = new Map();
+  for (const [analysis, attestations] of objectToSetValuedMap(obj)) {
+    const reserialized = reserializeMorphologicalAnalysis(analysis);
+    if (reserialized !== undefined) {
+      concordance.set(reserialized, attestations);
+    }
+  }
 }
