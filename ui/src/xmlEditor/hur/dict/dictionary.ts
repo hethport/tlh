@@ -12,6 +12,7 @@ import { readMorphAnalysisValue } from '../morphologicalAnalysis/auxiliary';
 import { inConcordance } from '../concordance/concordance';
 import { objectToSetValuedMap, updateSetValuedMapWithOverride, formIsFragment, remove } from '../common/utils';
 import { locallyStoreSetValuedMap } from '../dictLocalStorage/localStorageUtils';
+import { reserializeMorphologicalAnalysis } from '../morphologicalAnalysis/reserialization';
 
 export type Dictionary = Map<string, Set<string>>;
 
@@ -195,5 +196,18 @@ export function cleanUpDictionary(object: { [key: string]: string[] }): { [key: 
 }
 
 export function setDictionary(obj: { [key: string]: string[] }): void {
-  dictionary = objectToSetValuedMap(obj);
+  const newObj: { [key: string]: string[] } = {};
+  for (const [transcription, analyses] of Object.entries(obj)) {
+    const newAnalyses: string[] = [];
+    for (const analysis of analyses) {
+      const reserialized = reserializeMorphologicalAnalysis(analysis);
+      if (reserialized !== undefined) {
+        newAnalyses.push(reserialized);
+      }
+    }
+    if (newAnalyses.length > 0) {
+      newObj[transcription] = newAnalyses;
+    }
+  }
+  dictionary = objectToSetValuedMap(newObj);
 }
