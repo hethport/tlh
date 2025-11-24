@@ -21,7 +21,7 @@ export function downloadDictionary() {
 export async function readDict(file: File) {
   const source = await file.text();
   const parsed = JSON.parse(source);
-  let {dictionary} = parsed;
+  const {dictionary} = parsed;
   const {glosses} = parsed;
   if ('partsOfSpeech' in parsed) {
     setPartsOfSpeech(parsed.partsOfSpeech);
