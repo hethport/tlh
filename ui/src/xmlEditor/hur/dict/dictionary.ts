@@ -210,4 +210,5 @@ export function setDictionary(obj: { [key: string]: string[] }): void {
     }
   }
   dictionary = objectToSetValuedMap(newObj);
+  updateSegmenter(dictionary);
 }
