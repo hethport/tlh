@@ -7,10 +7,10 @@ import { MorphologicalAnalysis, writeMorphAnalysisValue, readMorphologicalAnalys
   from '../../../model/morphologicalAnalysis';
 import { convertDictionary } from '../common/utility';
 import { isValid, normalize } from './morphologicalAnalysisValidator';
-import segmenter from '../segmentation/segmenter';
+import { Segmenter, createSegmenter } from '../segmentation/segmenter';
 import { readMorphAnalysisValue } from '../morphologicalAnalysis/auxiliary';
 import { inConcordance } from '../concordance/concordance';
-import { objectToSetValuedMap, updateSetValuedMapWithOverride, formIsFragment, remove } from '../common/utils';
+import { objectToSetValuedMap, updateSetValuedMapWithOverride, remove } from '../common/utils';
 import { locallyStoreSetValuedMap } from '../dictLocalStorage/localStorageUtils';
 import { reserializeMorphologicalAnalysis } from '../morphologicalAnalysis/reserialization';
 
@@ -20,6 +20,8 @@ export type ModifyDictionary = (dictionary: Dictionary) => Dictionary;
 
 export type SetDictionary = (modifyDictionary: ModifyDictionary) => void;
 
+let segmenter: Segmenter;
+
 function initializeDictionary(locStorKey: string): Dictionary {
   const locallyStoredDictionary = localStorage.getItem(locStorKey);
   if (locallyStoredDictionary === null) {
@@ -27,7 +29,7 @@ function initializeDictionary(locStorKey: string): Dictionary {
   } else {
     const dictObject: { [key: string]: string[] } = JSON.parse(locallyStoredDictionary);
     const dict = objectToSetValuedMap(cleanUpDictionary(dictObject));
-    updateSegmenter(dict);
+    segmenter = createSegmenter(dict);
     return dict;
   }
 }
@@ -163,22 +165,7 @@ export function getDictionary(): { [key: string]: string[] } {
 
 export function upgradeDictionary(object: { [key: string]: string[] }): void {
   updateSetValuedMapWithOverride(dictionary, object);
-  updateSegmenter(dictionary);
-}
-
-function updateSegmenter(dict: Dictionary): void {
-  for (const [transcription, analyses] of dict.entries()) {
-    if (!formIsFragment(transcription)) {
-      for (const analysis of analyses) {
-        if (isValid(analysis)) {
-          const morphologicalAnalysis = readMorphAnalysisValue(analysis);
-          if (morphologicalAnalysis !== undefined) {
-            segmenter.add(transcription, morphologicalAnalysis);
-          }
-        }
-      }
-    }
-  }
+  segmenter = createSegmenter(dictionary);
 }
 
 export function cleanUpDictionary(object: { [key: string]: string[] }): { [key: string]: string[] } {
@@ -210,5 +197,5 @@ export function setDictionary(obj: { [key: string]: string[] }): void {
     }
   }
   dictionary = objectToSetValuedMap(newObj);
-  updateSegmenter(dictionary);
+  segmenter = createSegmenter(dictionary);
 }

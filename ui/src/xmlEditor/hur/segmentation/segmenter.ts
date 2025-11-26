@@ -3,8 +3,10 @@ import { getPos } from '../partsOfSpeech/partsOfSpeech';
 import { MorphologicalAnalysis, SingleMorphologicalAnalysisWithoutEnclitics,
   MultiMorphologicalAnalysisWithoutEnclitics
 } from '../../../model/morphologicalAnalysis';
-import { makeAnalysisOptions, getMorphTags } from '../common/utils';
+import { makeAnalysisOptions, getMorphTags, formIsFragment } from '../common/utils';
 import { basicGetStem } from '../common/splitter';
+import { isValid } from '../dict/morphologicalAnalysisValidator';
+import { readMorphAnalysisValue } from '../morphologicalAnalysis/auxiliary';
 
 export class Analysis extends PartialAnalysis {
   pos: string;
@@ -44,7 +46,7 @@ export class Analysis extends PartialAnalysis {
   }
 }
 
-class Segmenter {
+export class Segmenter {
   segmenters = new Map<string, BasicSegmenter>();
 
   add(transcription: string, analysis: MorphologicalAnalysis) {
@@ -99,5 +101,19 @@ class Segmenter {
   }
 }
 
-const segmenter = new Segmenter();
-export default segmenter;
+export function createSegmenter(dict: Map<string, Set<string>>): Segmenter {
+  const segmenter = new Segmenter();
+  for (const [transcription, analyses] of dict.entries()) {
+    if (!formIsFragment(transcription)) {
+      for (const analysis of analyses) {
+        if (isValid(analysis)) {
+          const morphologicalAnalysis = readMorphAnalysisValue(analysis);
+          if (morphologicalAnalysis !== undefined) {
+            segmenter.add(transcription, morphologicalAnalysis);
+          }
+        }
+      }
+    }
+  }
+  return segmenter;
+}
