@@ -60,6 +60,7 @@ function cleanUpCorpus(): void {
 function addLine(address: string, nodes: XmlElementNode[]): void {
   const line = makeLine(nodes);
   corpus.set(address, line);
+  addLineNumber(lineNumbers, address);
 }
 
 function updateLine(line: Line, position: number, node: XmlElementNode): void {
