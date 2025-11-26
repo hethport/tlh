@@ -1,6 +1,4 @@
-import { isValid, normalize, isValidForm } from '../dict/morphologicalAnalysisValidator';
-import segmenter from '../segmentation/segmenter';
-import { readMorphologicalAnalysis } from '../../../model/morphologicalAnalysis';
+import { isValidForm } from '../dict/morphologicalAnalysisValidator';
 import { addMultiple } from './utils';
 
 export function convertMapping<TValue>(dictionary: Map<string, TValue>): { [key: string]: TValue } {
@@ -46,56 +44,4 @@ export function updateGlossesLexicon(dictionary: Map<string, Set<string>>, objec
       }
     }
   }
-}
-
-export function updateAndValidateDictionary(dictionary: Map<string, Set<string>>, object: { [key: string]: string[] }): void {
-  for (const [key, values] of Object.entries(object)) {
-    const currSet = dictionary.get(key);
-    if (currSet === undefined) {
-      const newSet: Set<string> = new Set();
-      for (const value of values) {
-        if (isValid(value)) {
-          const normalized = normalize(value, true, true);
-          if (normalized !== null) {
-            newSet.add(normalized);
-            const ma = readMorphologicalAnalysis(1, normalized, []);
-            if (ma !== undefined) {
-              segmenter.add(key, ma);
-            }
-          }
-        }
-      }
-      if (newSet.size > 0) {
-        dictionary.set(key, newSet);
-      }
-    } else {
-      for (const value of values) {
-        if (isValid(value)) {
-          const normalized = normalize(value, true, true);
-          if (normalized !== null) {
-            currSet.add(normalized);
-            const ma = readMorphologicalAnalysis(1, normalized, []);
-            if (ma !== undefined) {
-              segmenter.add(key, ma);
-            }
-          }
-        }
-      }
-    }
-  }
-  /*console.log(Array.from(segmenter.segmenters.keys()));
-  for (const [key, basicSegmenter] of segmenter.segmenters) {
-    console.log(key);
-    for (const [chain, analyses] of basicSegmenter.suffixChains) {
-      console.log(chain);
-      console.log(analyses);
-    }
-  }*/
-  /*for (const [key, basicSegmenter] of segmenter.segmenters) {
-    console.log(key);
-    for (const [chain, analyses] of basicSegmenter.stems) {
-      console.log(chain);
-      console.log(analyses);
-    }
-  }*/
 }
