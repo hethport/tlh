@@ -25,13 +25,17 @@ export function locallyStoreHurrianCorpus(): void {
 
 type LineNumbers = Map<string, Set<string>>;
 
+function addLineNumber(lineNums: LineNumbers, attestation: string): void {
+  if (attestation.includes(',')) {
+    const [text, line] = attestation.split(',', 2);
+    add(lineNums, text, line);
+  }
+}
+
 function defineLineNumbers(): LineNumbers {
   const lineNumbers = new Map<string, Set<string>>();
   for (const key of corpus.keys()) {
-    if (key.includes(',')) {
-      const [text, line] = key.split(',', 2);
-      add(lineNumbers, text, line);
-    }
+    addLineNumber(lineNumbers, key);
   }
   return lineNumbers;
 }
