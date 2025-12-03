@@ -1,3 +1,12 @@
+// A w derived from ú should not be converted to f.
+// Therefore, it needs to be escaped with some other letter.
+// This letter should be lowercase, so that a hyphen after it is removed.
+// (A hyphen is retained after Sumerograms, which are uppercase.)
+// We use the following symbol:
+// \u0265 LATIN SMALL LETTER TURNED H
+// IPA Extensions, voiced labial-palatal approximant
+const wEscape = 'ɥ';
+
 function removeAuxiliarySymbols(word: string): string {
   word = word
     .replaceAll('〈', '')
@@ -16,8 +25,8 @@ function removeDiacritics(word: string): string {
   return word;
 }
 function processVowels(word: string): string {
-  word = word.replaceAll(/(?<=[aei][[\]?!]?)-ú(?=[[\]?!]?$|-)/g, 'V');
-  word = word.replaceAll(/(?<=u[[\]?!]?)-ú(?=[[\]?!]?-[aei])/g, 'V');
+  word = word.replaceAll(/(?<=[aei][[\]?!]?)-ú(?=[[\]?!]?$|-)/g, wEscape);
+  word = word.replaceAll(/(?<=u[[\]?!]?)-ú(?=[[\]?!]?-[aei])/g, wEscape);
   
   // Vokale: kurz
   // NB: Für a gilt diese Regel auch nach i (d. h., in ia-aC -> iaC)
@@ -79,7 +88,7 @@ function processConsonants(word: string): string {
     .replaceAll(/(?<=[rlmn][[\]]?)[ptkfsšḫ]/g, (voicelessConsonant: string) => voicedCorrelate[voicelessConsonant])
     .replaceAll(/[ptkfsšḫ](?=[[\]]?[rlmn])/g, (voicelessConsonant: string) => voicedCorrelate[voicelessConsonant])
     .replaceAll(/[ptkfsšḫ](?=[[\]]?$)/g, (voicelessConsonant: string) => voicedCorrelate[voicelessConsonant])
-    .replaceAll('V', 'w')
+    .replaceAll(wEscape, 'w')
     .replaceAll(/(?<=[uū][[\]]?)v/g, 'w')
     .replace('pf', 'ff');
   return word;
