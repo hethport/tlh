@@ -23,3 +23,6 @@ html/public/*
 /ui/nightwatch
 /ui/logs
 /ui/tests_output
+
+# Test output files from a new branch
+tive_graphql_test/output
