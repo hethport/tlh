@@ -83,13 +83,17 @@ export function DictionaryViewer({entries, setDictionary, initialEnglishTranslat
           };
 
           const updateEnglishTranslationKey = (newEnglishTranslationKey: string) =>
-          setEnglishTranslations(oldEnglishTranslations => update(
-            oldEnglishTranslations,
-            {
-              $add: [[newEnglishTranslationKey, englishTranslation]],
-              $remove: [englishTranslationKey]
+          setEnglishTranslations(oldEnglishTranslations => {
+            if (oldEnglishTranslations.has(newEnglishTranslationKey) &&
+                oldEnglishTranslations.get(newEnglishTranslationKey) !== '') {
+              return update(oldEnglishTranslations, {$remove: [englishTranslationKey]});
+            } else {
+              return update(oldEnglishTranslations, {
+                $add: [[newEnglishTranslationKey, englishTranslation]],
+                $remove: [englishTranslationKey]
+              });
             }
-          ));
+          });
           return (
             <StemViewer
               stem={stemObject}
