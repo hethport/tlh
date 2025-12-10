@@ -7,8 +7,6 @@ import { ChangesDownloader } from '../changes/ChangesDownloader';
 import { writeMorphAnalysisValue } from '../../../model/morphologicalAnalysis';
 import { SetDictionary, getGlobalDictionary } from '../dict/dictionary';
 import { compare } from '../common/comparison';
-import { blueButtonClasses } from '../../../defaultDesign';
-import { useTranslation } from 'react-i18next';
 import { DictionaryUploader } from '../dict/files/DictionaryUploader';
 import { getGrammaticalMorphemes } from './morphemics';
 import { parseGrammaticalMorpheme } from './grammaticalMorpheme';
@@ -28,11 +26,8 @@ function valueFunc(entry: Entry): Entry {
 
 export function SuffixDictionary({entries, setDictionary}: IProps): JSX.Element {
   
-  const {t} = useTranslation('common');
-  
   const [unfolded, setUnfolded] = useState(false);
-  const [allUnfolded, setAllUnfolded] = useState(false);
-  const toggleAllUnfolded = () => setAllUnfolded((value: boolean) => !value);
+  const allUnfolded = false;
   
   useEffect(() => {
     setUnfolded(true);
@@ -81,9 +76,6 @@ export function SuffixDictionary({entries, setDictionary}: IProps): JSX.Element 
         <div className="button-stack">
           <DictionaryDownloader />
           <ChangesDownloader />
-          <button type="button" className={blueButtonClasses} onClick={toggleAllUnfolded}>
-            {allUnfolded ? t('foldAll') : t('unfoldAll')}
-          </button>
           <DictionaryUploader onUpload={() => {
             const globalDictionary = getGlobalDictionary();
             setDictionary(() => globalDictionary);
