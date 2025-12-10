@@ -139,6 +139,18 @@ export function groupBy<TSource, TKey, TValue>(array: TSource[], getKey: (elem: 
   return map;
 }
 
+export function groupByMany<TSource, TKey, TValue>(array: TSource[], getKeys: (elem: TSource) => TKey[], getValue: (elem: TSource) => TValue): Map<TKey, Set<TValue>> {
+  const map = new Map<TKey, Set<TValue>>();
+  for (const element of array) {
+    const keys = getKeys(element);
+    for (const key of keys) {
+      const value = getValue(element);
+      add(map, key, value);
+    }
+  }
+  return map;
+}
+
 export function getMorphTags(analysis: MorphologicalAnalysis): string[] | null {
   switch (analysis._type) {
     case 'SingleMorphAnalysisWithoutEnclitics':

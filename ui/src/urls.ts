@@ -33,6 +33,8 @@ export const dictionaryViewerUrl = '/dictionaryViewer';
 
 export const macroeditorUrl = '/macroeditor';
 
+export const suffixDictionaryUrl = '/suffixDictionary';
+
 export const userManagementUrl = '/userManagement';
 
 export const pipelineManagementUrl = '/pipelineManagement';

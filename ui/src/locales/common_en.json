@@ -266,5 +266,6 @@
   "anonymousTransliterationInfo": "This is an anonymous parser. You can view the parse result and export XML, but cannot save to the database.",
   "guidelines": "Guidelines",
   "exportEnglishTranslations": "Export English translations",
-  "uploadEnglishTranslations": "Upload English translations"
+  "uploadEnglishTranslations": "Upload English translations",
+  "suffixDictionary": "Suffixes"
 }

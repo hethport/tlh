@@ -22,7 +22,8 @@ import {
   xmlComparatorUrl,
   xmlConversionUrl,
   dictionaryViewerUrl,
-  macroeditorUrl, createAnonymousTransliterationUrl
+  macroeditorUrl, createAnonymousTransliterationUrl,
+  suffixDictionaryUrl
 } from './urls';
 import {RegisterForm} from './forms/RegisterForm';
 import {Home} from './Home';
@@ -54,6 +55,7 @@ import {getGlobalDictionary} from './xmlEditor/hur/dict/dictionary';
 import {getGlobalEnglishTranslations} from './xmlEditor/hur/translations/englishTranslations';
 import {getChanges} from './xmlEditor/hur/changes/changesAccumulator';
 import {TextDisplay} from './xmlEditor/hur/concordanceEntryViewer/TextDisplay';
+import {SuffixDictionaryContainer} from './xmlEditor/hur/dictionaryViewer/SuffixDictionaryContainer';
 
 export const router = createBrowserRouter([
     {
@@ -104,6 +106,9 @@ export const router = createBrowserRouter([
                     getInitialEnglishTranslations={getGlobalEnglishTranslations} />},
         
         {path: macroeditorUrl, element: <MacroeditorContainer getChanges={getChanges}/>},
+
+        {path: suffixDictionaryUrl, element: <SuffixDictionaryContainer
+                                              getInitialDictionary={getGlobalDictionary}/>},
 
         {path: preferencesUrl, element: <Preferences/>},
 
