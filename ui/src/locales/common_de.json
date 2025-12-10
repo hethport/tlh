@@ -292,5 +292,6 @@
   "secondXmlReviewDate": "Zweites XML Konvertierungsdatum",
   "guidelines": "Richtlinien",
   "exportEnglishTranslations": "Englische Glossen exportieren",
-  "uploadEnglishTranslations": "Englische Glossen hochladen"
+  "uploadEnglishTranslations": "Englische Glossen hochladen",
+  "suffixDictionary": "Suffixe"
 }

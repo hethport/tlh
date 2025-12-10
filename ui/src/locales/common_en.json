@@ -291,5 +291,6 @@
   "firstXmlReviewDate": "First XML Review Date",
   "secondXmlReviewDate": "Second XML Review Date",
   "exportEnglishTranslations": "Export English translations",
-  "uploadEnglishTranslations": "Upload English translations"
+  "uploadEnglishTranslations": "Upload English translations",
+  "suffixDictionary": "Suffixes"
 }
