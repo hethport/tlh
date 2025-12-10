@@ -51,12 +51,8 @@ function getInflectionalSuffixesAndEnclitics(grammaticalMorphemeString: string,
 
 export function replaceMorphemeLabel(oldLabel: string, newLabel: string, form: string) {
   return (segmentation: string, morphTag: string) => {
-    console.log(segmentation);
-    console.log(morphTag);
     const grammaticalMorphemeString = getGrammaticalMorphemesWithBoundary(segmentation);
-    console.log(grammaticalMorphemeString);
     const grammaticalMorphemes = getInflectionalSuffixesAndEnclitics(grammaticalMorphemeString, morphTag);
-    console.log(grammaticalMorphemes);
     const newGrammaticalMorphemes: GrammaticalMorpheme[] = [];
     for (const grammaticalMorpheme of grammaticalMorphemes) {
       if (grammaticalMorpheme.label === oldLabel && grammaticalMorpheme.form === form) {
@@ -66,7 +62,6 @@ export function replaceMorphemeLabel(oldLabel: string, newLabel: string, form: s
         newGrammaticalMorphemes.push(grammaticalMorpheme);
       }
     }
-    console.log(newGrammaticalMorphemes);
     return removePrefix('-', newGrammaticalMorphemes.map(gram => gram.label).join(''));
   };
 }

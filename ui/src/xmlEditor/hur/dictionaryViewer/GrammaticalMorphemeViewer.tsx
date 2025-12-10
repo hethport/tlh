@@ -64,6 +64,19 @@ function modifyMorphTag(morphTagModification: MorphTagModification) {
         return update(morphologicalAnalysis,
                       { analysis: { $set: morphTagModification(segmentation, morphTag) } });
       }
+      case 'MultiMorphAnalysisWithoutEnclitics': {
+        const segmentation = morphologicalAnalysis.referenceWord;
+        const { analysisOptions } =  morphologicalAnalysis;
+        return update(morphologicalAnalysis, {
+          analysisOptions: {
+            $set: analysisOptions.map(option => update(option, {
+              analysis: {
+                $set: morphTagModification(segmentation, option.analysis)
+              }
+            }))
+          }
+        });
+      }
       default:
         return morphologicalAnalysis;
     }
