@@ -1,5 +1,5 @@
 import { JSX, useState } from 'react';
-import { StemElement } from './Stem';
+import { GrammaticalMorphemeEditor } from './GrammaticalMorphemeEditor';
 import { Entry, WordformElement } from './Wordform';
 import { MorphologicalAnalysis, writeMorphAnalysisValue }
   from '../../../model/morphologicalAnalysis';
@@ -15,6 +15,7 @@ import { areCorrect } from '../dict/morphologicalAnalysisValidator';
 import { getMorphTags } from '../morphologicalAnalysis/auxiliary';
 import { getEnglishTranslationKey } from '../translations/englishTranslations';
 import { GrammaticalMorpheme } from './grammaticalMorpheme';
+import { replaceMorphemeLabel } from './morphemics';
 
 const errorSymbol = <>&#9876;</>;
 
@@ -48,6 +49,24 @@ function modifyStem(newStem: string) {
     const segmentation = morphologicalAnalysis.referenceWord;
     return update(morphologicalAnalysis,
       { referenceWord: { $set: replaceStem(newStem, segmentation)} });
+  };
+  return setStem;
+}
+
+type MorphTagModification = (segmentation: string, morphTag: string) => string;
+
+function modifyMorphTag(morphTagModification: MorphTagModification) {
+  const setStem = (morphologicalAnalysis: MorphologicalAnalysis) => {
+    switch(morphologicalAnalysis._type) {
+      case 'SingleMorphAnalysisWithoutEnclitics': {
+        const segmentation = morphologicalAnalysis.referenceWord;
+        const morphTag = morphologicalAnalysis.analysis;
+        return update(morphologicalAnalysis,
+                      { analysis: { $set: morphTagModification(segmentation, morphTag) } });
+      }
+      default:
+        return morphologicalAnalysis;
+    }
   };
   return setStem;
 }
@@ -194,9 +213,9 @@ function modifyGlobalPartOfSpeech(dictionary: Dictionary, initialEntries: Entry[
   return update(dictionary, spec);
 }
 
-type StemViewerState = {
-  stemForm: string;
-  translation: string;
+type GrammaticalMorphemeViewerState = {
+  label: string;
+  form: string;
   entries: Entry[];
 }
 
@@ -206,13 +225,13 @@ export function GrammaticalMorphemeViewer({index, grammaticalMorpheme, initialEn
                             updateEnglishTranslationKey }: IProps): JSX.Element {
   
   const [unfolded, setUnfolded] = useState(initialUnfolded);
-  const initialState: StemViewerState = {
-    stemForm: grammaticalMorpheme.label,
-    translation: grammaticalMorpheme.form,
+  const initialState: GrammaticalMorphemeViewerState = {
+    label: grammaticalMorpheme.label,
+    form: grammaticalMorpheme.form,
     entries: initialEntries
   };
   const [state, setState] = useState(initialState);
-  const { stemForm, translation, entries } = state;
+  const { label, form, entries } = state;
   const partOfSpeech = '';
   
   const isCorrect = entries.every(entry => 
@@ -224,47 +243,35 @@ export function GrammaticalMorphemeViewer({index, grammaticalMorpheme, initialEn
   return (
     <div className="flex flex-row">
       <div>
-        <StemElement
-          index={index.toString()}
-          form={stemForm} 
-          translation={translation}
-          pos={partOfSpeech}
+        <GrammaticalMorphemeEditor
+          index={index}
+          label={label}
+          form={form}
           handleClick={() => setUnfolded(!unfolded)}
-          onFormChange={(value: string) => {
-            setState(update(state,
-              { stemForm: { $set: value },
-                entries: { $set: modifyLocalEntries(entries, modifyStem(value)) } }
-            ));
+          onLabelChange={(newLabel: string) => {
+            setState(update(state, {
+              label: { $set: newLabel },
+              entries: {
+                $set: modifyLocalEntries(
+                  entries,
+                  modifyMorphTag(replaceMorphemeLabel(label, newLabel, form))
+                )
+              }
+            }));
           }}
-          onFormBlur={(value: string) => {
+          onLabelBlur={(value: string) => {
             if (value !== grammaticalMorpheme.label) {
-              changeStem(grammaticalMorpheme.label, value, partOfSpeech, translation);
               setDictionary((dictionary: Dictionary) => {
                 return modifyGlobalEntries(dictionary, initialEntries, entries);
               });
-              updateEnglishTranslationKey(getEnglishTranslationKey(value, partOfSpeech, translation));
-            }
-          }}        
-          onTranslationChange={(value: string) => {
-            setState(update(state,
-              { translation: { $set: value },
-                entries: { $set: modifyLocalEntries(entries, modifyTranslation(value)) } }
-            ));
-          }}
-          onTranslationBlur={(value: string) => {
-            if (value !== grammaticalMorpheme.form) {
-              changeTranslation(stemForm, partOfSpeech, grammaticalMorpheme.form, value);
-              setDictionary((dictionary: Dictionary) => {
-                return modifyGlobalEntries(dictionary, initialEntries, entries);
-              });
-              updateEnglishTranslationKey(getEnglishTranslationKey(stemForm, partOfSpeech, value));
             }
           }}
-          onPartOfSpeechChange={(value: string) => {
+          onFormChange={(value: string) => {
             // do nothing
           }}
-          englishTranslation={englishTranslation}
-          onEnglishTranslationBlur={onEnglishTranslationBlur} />
+          onFormBlur={(value: string) => {
+            // do nothing
+          }} />
         <br />
         {(unfolded || allUnfolded) && entries.map(
           (entry: Entry, index: number) => {
