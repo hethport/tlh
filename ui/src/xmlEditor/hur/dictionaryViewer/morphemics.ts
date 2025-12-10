@@ -30,9 +30,9 @@ function getInflectionalSuffixesAndEnclitics(grammaticalMorphemeString: string,
     morphTag = '-' + morphTag;
   }
   const labels = morphTag.split(grammaticalMorphemeSplitPattern)
-    .filter(label => label !== '');
+    .slice(1);
   const forms = grammaticalMorphemeString.split(grammaticalMorphemeSplitPattern)
-    .filter(form => form !== '');
+    .slice(1);
   const grammaticalMorphemes: GrammaticalMorpheme[] = [];
   for (let i = 0; i < Math.max(labels.length, forms.length); i++) {
     const label = labels[i] || '';

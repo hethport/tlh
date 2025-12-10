@@ -1,6 +1,6 @@
 import { JSX, useState, useEffect } from 'react';
 import { groupByMany } from '../common/utils';
-import { StemViewer, Stem } from './StemViewer';
+import { GrammaticalMorphemeViewer } from './GrammaticalMorphemeViewer';
 import { Entry } from './Wordform';
 import { DictionaryDownloader } from '../dict/files/DictionaryDownloader';
 import { ChangesDownloader } from '../changes/ChangesDownloader';
@@ -11,6 +11,7 @@ import { blueButtonClasses } from '../../../defaultDesign';
 import { useTranslation } from 'react-i18next';
 import { DictionaryUploader } from '../dict/files/DictionaryUploader';
 import { getGrammaticalMorphemes } from './morphemics';
+import { parseGrammaticalMorpheme } from './grammaticalMorpheme';
 
 interface IProps {
   entries: Entry[];
@@ -39,7 +40,7 @@ export function SuffixDictionary({entries, setDictionary}: IProps): JSX.Element 
   
   const grouped = groupByMany(entries, keyFunc, valueFunc);
   
-  const stems = Array.from(grouped.keys()).sort(compare);
+  const grammaticalMorphemeReprs = Array.from(grouped.keys()).sort(compare);
   
   return (
     <div className="grid grid-cols-2 gap-2 my-2 uneven-columns">
@@ -47,10 +48,10 @@ export function SuffixDictionary({entries, setDictionary}: IProps): JSX.Element 
         Click on the button &quot;&#8744;&quot; or a stem&apos;s number to see its derivatives and inflected forms. <br /> 
         Click on a similar button next to a word to see its attestations. <br />
         <br />
-        {stems.map((stem: string, index: number) => {
-          const group = grouped.get(stem);
+        {grammaticalMorphemeReprs.map((grammaticalMorphemeRepr: string, index: number) => {
+          const group = grouped.get(grammaticalMorphemeRepr);
           const entries: Entry[] = group === undefined ? [] : Array.from(group);
-          const stemObject = new Stem((index + 1).toString() + '.@' + stem);
+          const grammaticalMorpheme = parseGrammaticalMorpheme(grammaticalMorphemeRepr);
           const key = entries
             .map(entry => writeMorphAnalysisValue(entry.morphologicalAnalysis))
             .join('|');
@@ -62,8 +63,9 @@ export function SuffixDictionary({entries, setDictionary}: IProps): JSX.Element 
             // do nothing
           };
           return (
-            <StemViewer
-              stem={stemObject}
+            <GrammaticalMorphemeViewer
+              index={index + 1}
+              grammaticalMorpheme={grammaticalMorpheme}
               initialEntries={entries}
               key={key} 
               setDictionary={setDictionary}
