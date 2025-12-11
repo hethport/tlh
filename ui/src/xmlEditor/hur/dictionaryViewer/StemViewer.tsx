@@ -16,9 +16,9 @@ import { getMorphTags } from '../morphologicalAnalysis/auxiliary';
 import { getEnglishTranslationKey } from '../translations/englishTranslations';
 import { getStemVariants } from '../dict/dictionary';
 
-const errorSymbol = <>&#9876;</>;
+export const errorSymbol = <>&#9876;</>;
 
-function applySideEffects(origin: string, target: string, targetIsExtant: boolean): void {
+export function applySideEffects(origin: string, target: string, targetIsExtant: boolean): void {
   addChange(origin, target, targetIsExtant);
   // The corpus should be updated before the concordance
   // Since the old analysis is used to find the lines to update
@@ -50,11 +50,11 @@ interface IProps {
   updateEnglishTranslationKey: (newEglishTranslationKey: string) => void;
 }
 
-function replaceStem(newStem: string, segmentation: string) {
+export function replaceStem(newStem: string, segmentation: string) {
   return newStem + segmentation.substring(findBoundary(segmentation));
 }
 
-function modifyStem(newStem: string) {
+export function modifyStem(newStem: string) {
   const setStem = (morphologicalAnalysis: MorphologicalAnalysis) => {
     const segmentation = morphologicalAnalysis.referenceWord;
     return update(morphologicalAnalysis,
@@ -63,21 +63,21 @@ function modifyStem(newStem: string) {
   return setStem;
 }
 
-function modifyTranslation(value: string) {
+export function modifyTranslation(value: string) {
   const setTranslation = (morphologicalAnalysis: MorphologicalAnalysis) => {
     return update(morphologicalAnalysis, { translation: { $set: value } });
   };
   return setTranslation;
 }
 
-function handleSegmentationInput(entries: Entry[], index: number, value: string): Entry[] {
+export function handleSegmentationInput(entries: Entry[], index: number, value: string): Entry[] {
   const newEntries = update(entries,
     { [index]: { morphologicalAnalysis: { referenceWord: { $set: value } } } }
   );
   return newEntries;
 }
 
-function handleSegmentationBlur(dictionary: Dictionary,
+export function handleSegmentationBlur(dictionary: Dictionary,
   entries: Entry[], index: number, value: string, 
   initialAnalysis: string): Dictionary {
   const entry = entries[index];
@@ -87,7 +87,7 @@ function handleSegmentationBlur(dictionary: Dictionary,
   return modifyAnalysis(dictionary, transcriptions, initialAnalysis, morphologicalAnalysis);
 }
 
-function handleAnalysisInput(entries: Entry[], index: number, value: string,
+export function handleAnalysisInput(entries: Entry[], index: number, value: string,
   optionIndex: number): Entry[] {
   const entry = entries[index];
   const { morphologicalAnalysis } = entry;
@@ -120,7 +120,7 @@ function handleAnalysisInput(entries: Entry[], index: number, value: string,
   }
 }
 
-function handleAnalysisBlur(dictionary: Dictionary,
+export function handleAnalysisBlur(dictionary: Dictionary,
   entries: Entry[], index: number, value: string,
   optionIndex: number, initialAnalysis: string): Dictionary {
   const entry = entries[index];
@@ -130,7 +130,7 @@ function handleAnalysisBlur(dictionary: Dictionary,
   return modifyAnalysis(dictionary, transcriptions, initialAnalysis, morphologicalAnalysis);
 }
 
-function modifyLocalEntries(entries: Entry[],
+export function modifyLocalEntries(entries: Entry[],
   modification: (ma: MorphologicalAnalysis) => MorphologicalAnalysis): Entry[] {
   const newEntries: Entry[] = [];
   for (const {transcriptions, morphologicalAnalysis} of entries) {
@@ -142,7 +142,7 @@ function modifyLocalEntries(entries: Entry[],
   return newEntries;
 }
 
-function modifyGlobalEntries(dictionary: Dictionary, initialEntries: Entry[],
+export function modifyGlobalEntries(dictionary: Dictionary, initialEntries: Entry[],
   currentEntries: Entry[]): Dictionary {
   const specification = new Map<string, [string[], string[]]>();
   for (let i = 0; i < currentEntries.length; i++) {
@@ -173,7 +173,7 @@ function modifyGlobalEntries(dictionary: Dictionary, initialEntries: Entry[],
   return update(dictionary, spec);
 }
 
-function modifyGlobalPartOfSpeech(dictionary: Dictionary, initialEntries: Entry[],
+export function modifyGlobalPartOfSpeech(dictionary: Dictionary, initialEntries: Entry[],
   value: string): Dictionary {
   const specification = new Map<string, [string[], string[]]>();
   for (let i = 0; i < initialEntries.length; i++) {
