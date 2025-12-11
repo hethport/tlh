@@ -50,13 +50,6 @@ export function SuffixDictionary({entries, setDictionary}: IProps): JSX.Element 
           const key = entries
             .map(entry => writeMorphAnalysisValue(entry.morphologicalAnalysis))
             .join('|');
-          const setEnglishTranslation = () => {
-            // do nothing
-          };
-
-          const updateEnglishTranslationKey = () => {
-            // do nothing
-          };
           return (
             <GrammaticalMorphemeViewer
               index={index + 1}
@@ -65,10 +58,7 @@ export function SuffixDictionary({entries, setDictionary}: IProps): JSX.Element 
               key={key} 
               setDictionary={setDictionary}
               initialUnfolded={unfolded}
-              allUnfolded={allUnfolded}
-              englishTranslation=""
-              onEnglishTranslationBlur={setEnglishTranslation}
-              updateEnglishTranslationKey={updateEnglishTranslationKey}/>
+              allUnfolded={allUnfolded} />
           );
         })}
       </div>
