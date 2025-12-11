@@ -1,4 +1,4 @@
-import { replaceMorphemeLabel } from './morphemics';
+import replaceMorphemeLabel from './replaceMorphemeLabel';
 
 const modification = replaceMorphemeLabel('-EQU', '-EQU2', '-nna');
 
