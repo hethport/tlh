@@ -5,7 +5,7 @@ describe('aligning a string of morphemes and a morphological tag', () => {
 
   test.each<[[string, string], GM[]]>([
     [
-      ['-u-nd-a-šše-na=mma', 'MED-PL.A-3A-NMLZ-RELAT.PL.ABS=CON'],
+      ['MED-PL.A-3A-NMLZ-RELAT.PL.ABS=CON', '-u-nd-a-šše-na=mma'],
       [
         new GM('-MED', '-u'),
         new GM('-PL.A', '-nd'),
@@ -16,7 +16,7 @@ describe('aligning a string of morphemes and a morphological tag', () => {
       ]
     ],
     [
-      ['=an', '.ABS=CON'],
+      ['.ABS=CON', '=an'],
       [
         new GM('.ABS', ''),
         new GM('=CON', '=an')
@@ -24,8 +24,8 @@ describe('aligning a string of morphemes and a morphological tag', () => {
     ],
   ])(
     'for %j, an array of grammatical morphemes %j should be returned',
-     ([gramString, morphTag], grammaticalMorphemes) =>
-     expect(getInflectionalSuffixesAndEnclitics(gramString, morphTag))
+     ([morphTag, gramString], grammaticalMorphemes) =>
+     expect(getInflectionalSuffixesAndEnclitics(morphTag, gramString))
       .toEqual(grammaticalMorphemes)
   );
 
