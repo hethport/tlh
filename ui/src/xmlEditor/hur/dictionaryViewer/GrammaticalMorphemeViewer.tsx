@@ -7,7 +7,7 @@ import { Dictionary, SetDictionary } from '../dict/dictionary';
 import { areCorrect } from '../dict/morphologicalAnalysisValidator';
 import { getMorphTags } from '../morphologicalAnalysis/auxiliary';
 import { GrammaticalMorpheme } from './grammaticalMorpheme';
-import { replaceMorphemeLabel } from './morphemics';
+import replaceMorphemeLabel from './replaceMorphemeLabel';
 import { errorSymbol, handleSegmentationInput, handleSegmentationBlur,
   handleAnalysisInput, handleAnalysisBlur, modifyLocalEntries, modifyGlobalEntries
 } from './StemViewer';

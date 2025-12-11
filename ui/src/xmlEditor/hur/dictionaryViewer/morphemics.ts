@@ -1,9 +1,7 @@
 import { GrammaticalMorpheme } from './grammaticalMorpheme';
 import { MorphologicalAnalysis } from '../../../model/morphologicalAnalysis';
-import { getStemAndGrammaticalMorphemesWithBoundary,
-  getGrammaticalMorphemesWithBoundary } from '../common/splitter';
+import { getStemAndGrammaticalMorphemesWithBoundary } from '../common/splitter';
 import { getMorphTags } from '../morphologicalAnalysis/auxiliary';
-import { removePrefix } from '../common/auxiliary';
 
 const derivationalSuffixBoundary = '+';
 const grammaticalMorphemeStringSplitPattern = /(?=[-=])/;
@@ -57,21 +55,4 @@ export function getInflectionalSuffixesAndEnclitics(morphTag: string, grammatica
     grammaticalMorphemes.push(gram);
   }
   return grammaticalMorphemes;
-}
-
-export function replaceMorphemeLabel(oldLabel: string, newLabel: string, form: string) {
-  return (segmentation: string, morphTag: string) => {
-    const grammaticalMorphemeString = getGrammaticalMorphemesWithBoundary(segmentation);
-    const grammaticalMorphemes = getInflectionalSuffixesAndEnclitics(morphTag, grammaticalMorphemeString);
-    const newGrammaticalMorphemes: GrammaticalMorpheme[] = [];
-    for (const grammaticalMorpheme of grammaticalMorphemes) {
-      if (grammaticalMorpheme.label === oldLabel && grammaticalMorpheme.form === form) {
-        const newGrammaticalMorpheme = new GrammaticalMorpheme(newLabel, form);
-        newGrammaticalMorphemes.push(newGrammaticalMorpheme);
-      } else {
-        newGrammaticalMorphemes.push(grammaticalMorpheme);
-      }
-    }
-    return removePrefix('-', newGrammaticalMorphemes.map(gram => gram.label).join(''));
-  };
 }
