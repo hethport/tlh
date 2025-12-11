@@ -11,7 +11,8 @@ describe('aligning a string of morphemes and a morphological tag', () => {
         ['-PL.A', '-nd'],
         ['-3A', '-a'],
         ['-NMLZ', '-šše'],
-        ['-RELAT.PL.ABS', '-na'],
+        ['-RELAT.PL', '-na'],
+        ['.ABS', ''],
         ['=CON', '=mma']
       ]
     ],
