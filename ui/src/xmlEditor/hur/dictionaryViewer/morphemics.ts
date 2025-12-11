@@ -34,7 +34,7 @@ function preprocessMorphTag(morphTag: string): string {
   }
 }
 
-function getInflectionalSuffixesAndEnclitics(grammaticalMorphemeString: string,
+export function getInflectionalSuffixesAndEnclitics(grammaticalMorphemeString: string,
                                              morphTag: string): GrammaticalMorpheme[] {
   morphTag = preprocessMorphTag(morphTag);
   const labels = morphTag.split(grammaticalMorphemeSplitPattern);
