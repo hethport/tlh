@@ -7,11 +7,13 @@ import { Dictionary, SetDictionary } from '../dict/dictionary';
 import { areCorrect } from '../dict/morphologicalAnalysisValidator';
 import { getMorphTags } from '../morphologicalAnalysis/auxiliary';
 import { GrammaticalMorpheme } from './grammaticalMorpheme';
-import replaceMorphemeLabel from './replaceMorphemeLabel';
 import { errorSymbol, handleSegmentationInput, handleSegmentationBlur,
   handleAnalysisInput, handleAnalysisBlur, modifyLocalEntries, modifyGlobalEntries
 } from './StemViewer';
 import modifyMorphTag from './modifyMorphTag';
+import replaceMorphemeLabel from './replaceMorphemeLabel';
+import modifySegmentation from './modifySegmentation';
+import replaceMorphemeForm from './replaceMorphemeForm';
 
 interface IProps {
   index: number;
@@ -78,11 +80,23 @@ export function GrammaticalMorphemeViewer({index, grammaticalMorpheme, initialEn
               });
             }
           }}
-          onFormChange={(value: string) => {
-            // do nothing
+          onFormChange={(newForm: string) => {
+            setState(update(state, {
+              form: { $set: newForm },
+              entries: {
+                $set: modifyLocalEntries(
+                  entries,
+                  modifySegmentation(replaceMorphemeForm(label, form, newForm))
+                )
+              }
+            }));
           }}
-          onFormBlur={(value: string) => {
-            // do nothing
+          onFormBlur={(newForm: string) => {
+            if (newForm !== grammaticalMorpheme.form) {
+              setDictionary((dictionary: Dictionary) => {
+                return modifyGlobalEntries(dictionary, initialEntries, entries);
+              });
+            }
           }} />
         <br />
         {(unfolded || allUnfolded) && entries.map(
