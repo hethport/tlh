@@ -1,8 +1,7 @@
 import { JSX, useState } from 'react';
 import { GrammaticalMorphemeEditor } from './GrammaticalMorphemeEditor';
 import { Entry, WordformElement } from './Wordform';
-import { MorphologicalAnalysis, writeMorphAnalysisValue }
-  from '../../../model/morphologicalAnalysis';
+import { writeMorphAnalysisValue } from '../../../model/morphologicalAnalysis';
 import update from 'immutability-helper';
 import { Dictionary, SetDictionary } from '../dict/dictionary';
 import { areCorrect } from '../dict/morphologicalAnalysisValidator';
@@ -12,6 +11,7 @@ import { replaceMorphemeLabel } from './morphemics';
 import { errorSymbol, handleSegmentationInput, handleSegmentationBlur,
   handleAnalysisInput, handleAnalysisBlur, modifyLocalEntries, modifyGlobalEntries
 } from './StemViewer';
+import modifyMorphTag from './modifyMorphTag';
 
 interface IProps {
   index: number;
@@ -23,37 +23,6 @@ interface IProps {
   englishTranslation: string;
   onEnglishTranslationBlur: (eglishTranslation: string) => void;
   updateEnglishTranslationKey: (newEglishTranslationKey: string) => void;
-}
-
-type MorphTagModification = (segmentation: string, morphTag: string) => string;
-
-function modifyMorphTag(morphTagModification: MorphTagModification) {
-  const setStem = (morphologicalAnalysis: MorphologicalAnalysis) => {
-    switch(morphologicalAnalysis._type) {
-      case 'SingleMorphAnalysisWithoutEnclitics': {
-        const segmentation = morphologicalAnalysis.referenceWord;
-        const morphTag = morphologicalAnalysis.analysis;
-        return update(morphologicalAnalysis,
-                      { analysis: { $set: morphTagModification(segmentation, morphTag) } });
-      }
-      case 'MultiMorphAnalysisWithoutEnclitics': {
-        const segmentation = morphologicalAnalysis.referenceWord;
-        const { analysisOptions } =  morphologicalAnalysis;
-        return update(morphologicalAnalysis, {
-          analysisOptions: {
-            $set: analysisOptions.map(option => update(option, {
-              analysis: {
-                $set: morphTagModification(segmentation, option.analysis)
-              }
-            }))
-          }
-        });
-      }
-      default:
-        return morphologicalAnalysis;
-    }
-  };
-  return setStem;
 }
 
 type GrammaticalMorphemeViewerState = {
