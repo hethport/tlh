@@ -22,9 +22,6 @@ interface IProps {
   setDictionary: SetDictionary;
   initialUnfolded: boolean;
   allUnfolded: boolean;
-  englishTranslation: string;
-  onEnglishTranslationBlur: (eglishTranslation: string) => void;
-  updateEnglishTranslationKey: (newEglishTranslationKey: string) => void;
 }
 
 type GrammaticalMorphemeViewerState = {
@@ -33,10 +30,7 @@ type GrammaticalMorphemeViewerState = {
   entries: Entry[];
 }
 
-export function GrammaticalMorphemeViewer({index, grammaticalMorpheme, initialEntries, setDictionary, initialUnfolded,
-                            allUnfolded, englishTranslation,
-                            onEnglishTranslationBlur,
-                            updateEnglishTranslationKey }: IProps): JSX.Element {
+export function GrammaticalMorphemeViewer({index, grammaticalMorpheme, initialEntries, setDictionary, initialUnfolded, allUnfolded }: IProps): JSX.Element {
   
   const [unfolded, setUnfolded] = useState(initialUnfolded);
   const initialState: GrammaticalMorphemeViewerState = {
@@ -46,7 +40,6 @@ export function GrammaticalMorphemeViewer({index, grammaticalMorpheme, initialEn
   };
   const [state, setState] = useState(initialState);
   const { label, form, entries } = state;
-  const partOfSpeech = '';
   
   const isCorrect = entries.every(entry => 
     getMorphTags(entry.morphologicalAnalysis).every(morphTag =>
