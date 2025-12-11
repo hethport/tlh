@@ -2,7 +2,7 @@ import { getInflectionalSuffixesAndEnclitics } from './morphemics';
 import { GrammaticalMorpheme } from './grammaticalMorpheme';
 import { getStemAndGrammaticalMorphemesWithBoundary } from '../common/splitter';
 
-export function replaceMorphemeForm(label: string, oldForm: string, newForm: string) {
+export default function replaceMorphemeForm(label: string, oldForm: string, newForm: string) {
   return (segmentation: string, morphTag: string) => {
     const [stem, grammaticalMorphemeString] = getStemAndGrammaticalMorphemesWithBoundary(
       segmentation
