@@ -1,4 +1,4 @@
-import { replaceMorphemeForm } from './replaceMorphemeForm';
+import replaceMorphemeForm from './replaceMorphemeForm';
 
 describe('replacing a morpheme form if the label is as specified', () => {
 
