@@ -14,7 +14,7 @@ export function getGrammaticalMorphemes(morphologicalAnalysis: MorphologicalAnal
   );
   const grammaticalMorphemes = getDerivationalSuffixes(stem);
   for (const morphTag of getMorphTags(morphologicalAnalysis)) {
-    for (const gram of getInflectionalSuffixesAndEnclitics(grammaticalMorphemeString, morphTag))
+    for (const gram of getInflectionalSuffixesAndEnclitics(morphTag, grammaticalMorphemeString))
       grammaticalMorphemes.push(gram);
   }
   return grammaticalMorphemes;
@@ -34,8 +34,7 @@ function preprocessMorphTag(morphTag: string): string {
   }
 }
 
-export function getInflectionalSuffixesAndEnclitics(grammaticalMorphemeString: string,
-                                             morphTag: string): GrammaticalMorpheme[] {
+export function getInflectionalSuffixesAndEnclitics(morphTag: string, grammaticalMorphemeString: string): GrammaticalMorpheme[] {
   morphTag = preprocessMorphTag(morphTag);
   const labels = morphTag.split(grammaticalMorphemeSplitPattern);
   const forms = grammaticalMorphemeString.split(grammaticalMorphemeSplitPattern);
@@ -52,7 +51,7 @@ export function getInflectionalSuffixesAndEnclitics(grammaticalMorphemeString: s
 export function replaceMorphemeLabel(oldLabel: string, newLabel: string, form: string) {
   return (segmentation: string, morphTag: string) => {
     const grammaticalMorphemeString = getGrammaticalMorphemesWithBoundary(segmentation);
-    const grammaticalMorphemes = getInflectionalSuffixesAndEnclitics(grammaticalMorphemeString, morphTag);
+    const grammaticalMorphemes = getInflectionalSuffixesAndEnclitics(morphTag, grammaticalMorphemeString);
     const newGrammaticalMorphemes: GrammaticalMorpheme[] = [];
     for (const grammaticalMorpheme of grammaticalMorphemes) {
       if (grammaticalMorpheme.label === oldLabel && grammaticalMorpheme.form === form) {
