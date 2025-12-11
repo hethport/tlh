@@ -6,7 +6,10 @@ import { getMorphTags } from '../morphologicalAnalysis/auxiliary';
 import { removePrefix } from '../common/auxiliary';
 
 const derivationalSuffixBoundary = '+';
-const grammaticalMorphemeSplitPattern = /(?=[-=])/;
+const grammaticalMorphemeStringSplitPattern = /(?=[-=])/;
+const morphTagSplitPattern = /(?=[-=])|(?<![123](?:SG|PL))(?=.ABS)/;
+const errorForm = '';
+const errorLabel = '';
 
 export function getGrammaticalMorphemes(morphologicalAnalysis: MorphologicalAnalysis): GrammaticalMorpheme[] {
   const [stem, grammaticalMorphemeString] = getStemAndGrammaticalMorphemesWithBoundary(
@@ -36,12 +39,20 @@ function preprocessMorphTag(morphTag: string): string {
 
 export function getInflectionalSuffixesAndEnclitics(morphTag: string, grammaticalMorphemeString: string): GrammaticalMorpheme[] {
   morphTag = preprocessMorphTag(morphTag);
-  const labels = morphTag.split(grammaticalMorphemeSplitPattern);
-  const forms = grammaticalMorphemeString.split(grammaticalMorphemeSplitPattern);
+  const labels = morphTag.split(morphTagSplitPattern);
+  const forms = grammaticalMorphemeString.split(grammaticalMorphemeStringSplitPattern);
   const grammaticalMorphemes: GrammaticalMorpheme[] = [];
-  for (let i = 0; i < Math.max(labels.length, forms.length); i++) {
-    const label = labels[i] || '';
-    const form = forms[i] || '';
+  let labelIndex = 0, formIndex = 0;
+  while (labelIndex < labels.length || formIndex < forms.length) {
+    const label = labelIndex < labels.length ? labels[labelIndex] : errorLabel;
+    labelIndex += 1;
+    let form: string;
+    if (label === '.ABS') {
+      form = '';
+    } else {
+      form = formIndex < forms.length ? forms[formIndex] : errorForm;
+      formIndex += 1;
+    }
     const gram = new GrammaticalMorpheme(label, form);
     grammaticalMorphemes.push(gram);
   }
