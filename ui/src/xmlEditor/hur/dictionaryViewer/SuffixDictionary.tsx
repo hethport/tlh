@@ -47,7 +47,7 @@ export function SuffixDictionary({entries, setDictionary}: IProps): JSX.Element 
           const group = grouped.get(grammaticalMorphemeRepr);
           const entries: Entry[] = group === undefined ? [] : Array.from(group);
           const grammaticalMorpheme = parseGrammaticalMorpheme(grammaticalMorphemeRepr);
-          const key = entries
+          const key = grammaticalMorphemeRepr + '@' + entries
             .map(entry => writeMorphAnalysisValue(entry.morphologicalAnalysis))
             .join('|');
           return (
