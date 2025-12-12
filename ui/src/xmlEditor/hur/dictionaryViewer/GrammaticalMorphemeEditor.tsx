@@ -22,14 +22,14 @@ export function GrammaticalMorphemeEditor({index, label, form, handleClick,
               className="p-2 border-y border-l border-r border-slate-500">
         {index.toString()}
       </button>
-      <input type="text" value={label}
-             className="p-2 border-y border-r border-slate-500"
-             onChange={event => onLabelChange(event.target.value)}
-             onBlur={event => onLabelBlur(event.target.value)} />
       <input type="text" value={form}
              className="p-2 border-y border-r border-slate-500"
              onChange={event => onFormChange(event.target.value)}
              onBlur={event => onFormBlur(event.target.value)} />
+      <input type="text" value={label}
+             className="p-2 border-y border-r border-slate-500"
+             onChange={event => onLabelChange(event.target.value)}
+             onBlur={event => onLabelBlur(event.target.value)} />
       <button onClick={handleClick}
               className="p-2 border-y border-r border-slate-500 unfold-button">&#8744;</button>
     </div>
