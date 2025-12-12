@@ -1,5 +1,4 @@
 import { JSX } from 'react';
-import { GrammaticalMorpheme } from './grammaticalMorpheme';
 
 interface IProps {
   index: number;
