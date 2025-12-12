@@ -8,11 +8,11 @@ export class GrammaticalMorpheme {
     this.form = form;
   }
   toString(): string {
-    return this.label + fieldSeparator + this.form;
+    return this.form + fieldSeparator + this.label;
   }
 }
 
 export function parseGrammaticalMorpheme(repr: string): GrammaticalMorpheme {
-  const [label, form] = repr.split(fieldSeparator);
+  const [form, label] = repr.split(fieldSeparator);
   return new GrammaticalMorpheme(label, form);
 }
