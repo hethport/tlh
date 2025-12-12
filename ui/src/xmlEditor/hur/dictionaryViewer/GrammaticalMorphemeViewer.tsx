@@ -97,9 +97,10 @@ export function GrammaticalMorphemeViewer({index, grammaticalMorpheme, initialEn
             const morphAnalysisValue = writeMorphAnalysisValue(
               initialEntries[index].morphologicalAnalysis
             );
+            const key = grammaticalMorpheme.toString() + '@' + morphAnalysisValue;
 
             return (
-                <WordformElement entry={entry} key={morphAnalysisValue}
+                <WordformElement entry={entry} key={key}
                 initialShowAttestations={allUnfolded}
                 initialMorphologicalAnalysis={initialEntries[index].morphologicalAnalysis}
                 handleSegmentationInput={(value: string) =>
