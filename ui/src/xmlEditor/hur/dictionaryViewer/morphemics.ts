@@ -1,30 +1,23 @@
 import { GrammaticalMorpheme } from './grammaticalMorpheme';
 import { MorphologicalAnalysis } from '../../../model/morphologicalAnalysis';
-import { getStemAndGrammaticalMorphemesWithBoundary } from '../common/splitter';
+import { getGrammaticalMorphemesWithBoundary } from '../common/splitter';
 import { getMorphTags } from '../morphologicalAnalysis/auxiliary';
 
-const derivationalSuffixBoundary = '+';
 const grammaticalMorphemeStringSplitPattern = /(?=[-=])/;
 const morphTagSplitPattern = /(?=[-=])|(?<![123](?:SG|PL))(?=.ABS)/;
 const errorForm = '';
 const errorLabel = '';
 
 export function getGrammaticalMorphemes(morphologicalAnalysis: MorphologicalAnalysis): GrammaticalMorpheme[] {
-  const [stem, grammaticalMorphemeString] = getStemAndGrammaticalMorphemesWithBoundary(
+  const grammaticalMorphemeString = getGrammaticalMorphemesWithBoundary(
     morphologicalAnalysis.referenceWord
   );
-  const grammaticalMorphemes = getDerivationalSuffixes(stem);
+  const grammaticalMorphemes: GrammaticalMorpheme[] = [];
   for (const morphTag of getMorphTags(morphologicalAnalysis)) {
     for (const gram of getInflectionalSuffixesAndEnclitics(morphTag, grammaticalMorphemeString))
       grammaticalMorphemes.push(gram);
   }
   return grammaticalMorphemes;
-}
-
-function getDerivationalSuffixes(stem: string): GrammaticalMorpheme[] {
-  return stem.split(derivationalSuffixBoundary).slice(1).map(suffix =>
-    new GrammaticalMorpheme('', derivationalSuffixBoundary + suffix)
-  );
 }
 
 function preprocessMorphTag(morphTag: string): string {
