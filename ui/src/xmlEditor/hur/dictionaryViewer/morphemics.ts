@@ -30,8 +30,9 @@ function preprocessMorphTag(morphTag: string): string {
 
 export function getInflectionalSuffixesAndEnclitics(morphTag: string, grammaticalMorphemeString: string): GrammaticalMorpheme[] {
   morphTag = preprocessMorphTag(morphTag);
-  const labels = morphTag.split(morphTagSplitPattern);
-  const forms = grammaticalMorphemeString.split(grammaticalMorphemeStringSplitPattern);
+  const labels = morphTag === '' ? [] : morphTag.split(morphTagSplitPattern);
+  const forms = grammaticalMorphemeString === '' ? [] :
+    grammaticalMorphemeString.split(grammaticalMorphemeStringSplitPattern);
   const grammaticalMorphemes: GrammaticalMorpheme[] = [];
   let labelIndex = 0, formIndex = 0;
   while (labelIndex < labels.length || formIndex < forms.length) {
