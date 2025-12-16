@@ -98,11 +98,11 @@ export function GrammaticalMorphemeViewer({index, grammaticalMorpheme, initialEn
             }));
           }}
           onFormBlur={(newForm: string) => {
-            /*if (newForm !== grammaticalMorpheme.form) {
+            if (newForm !== grammaticalMorpheme.form) {
               setDictionary((dictionary: Dictionary) => {
-                return modifyGlobalEntries(dictionary, initialEntries, entries);
+                return modifyGlobalEntries(dictionary, entries);
               });
-            }*/
+            }
           }} />
         <br />
         {(unfolded || allUnfolded) && entries.map(
