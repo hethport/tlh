@@ -14,6 +14,7 @@ import modifyMorphTag from './modifyMorphTag';
 import replaceMorphemeLabel from './replaceMorphemeLabel';
 import modifySegmentation from './modifySegmentation';
 import replaceMorphemeForm from './replaceMorphemeForm';
+import { MorphologicalAnalysis } from '../../../model/morphologicalAnalysis';
 
 interface IProps {
   index: number;
@@ -28,6 +29,18 @@ type GrammaticalMorphemeViewerState = {
   label: string;
   form: string;
   entries: Entry[];
+}
+
+export function modifyLocalEntriesWithArray(
+  entries: Entry[], modification: (ma: MorphologicalAnalysis) => MorphologicalAnalysis[]): Entry[] {
+  const newEntries: Entry[] = [];
+  for (const {transcriptions, morphologicalAnalysis} of entries) {
+    const newAnalyses = modification(morphologicalAnalysis);
+    for (const newAnalysis of newAnalyses) {
+      newEntries.push({transcriptions, morphologicalAnalysis: newAnalysis});
+    }
+  }
+  return newEntries;
 }
 
 export function GrammaticalMorphemeViewer({index, grammaticalMorpheme, initialEntries, setDictionary, initialUnfolded, allUnfolded }: IProps): JSX.Element {
@@ -77,7 +90,7 @@ export function GrammaticalMorphemeViewer({index, grammaticalMorpheme, initialEn
             setState(update(state, {
               form: { $set: newForm },
               entries: {
-                $set: modifyLocalEntries(
+                $set: modifyLocalEntriesWithArray(
                   entries,
                   modifySegmentation(replaceMorphemeForm(label, form, newForm))
                 )
@@ -85,24 +98,25 @@ export function GrammaticalMorphemeViewer({index, grammaticalMorpheme, initialEn
             }));
           }}
           onFormBlur={(newForm: string) => {
-            if (newForm !== grammaticalMorpheme.form) {
+            /*if (newForm !== grammaticalMorpheme.form) {
               setDictionary((dictionary: Dictionary) => {
                 return modifyGlobalEntries(dictionary, initialEntries, entries);
               });
-            }
+            }*/
           }} />
         <br />
         {(unfolded || allUnfolded) && entries.map(
           (entry: Entry, index: number) => {
+            const initialEntry = initialEntries[index] || entry;
             const morphAnalysisValue = writeMorphAnalysisValue(
-              initialEntries[index].morphologicalAnalysis
+              initialEntry.morphologicalAnalysis
             );
             const key = grammaticalMorpheme.toString() + '@' + morphAnalysisValue;
 
             return (
                 <WordformElement entry={entry} key={key}
                 initialShowAttestations={allUnfolded}
-                initialMorphologicalAnalysis={initialEntries[index].morphologicalAnalysis}
+                initialMorphologicalAnalysis={initialEntry.morphologicalAnalysis}
                 handleSegmentationInput={(value: string) =>
                   setState(update(state, { entries:
                     { $set: handleSegmentationInput(entries, index, value) }
