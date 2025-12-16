@@ -48,7 +48,8 @@ export function DictionaryViewerContainer({getInitialDictionary,
     const morphologicalAnalysis = readMorphAnalysisValue(analysis);
     if (morphologicalAnalysis !== undefined) {
       const transcriptions = Array.from(transcriptionSet).sort();
-      entries.push({transcriptions, morphologicalAnalysis});
+      const initialMorphologicalAnalysis = morphologicalAnalysis;
+      entries.push({transcriptions, morphologicalAnalysis, initialMorphologicalAnalysis});
     }
   }
     
