@@ -34,10 +34,10 @@ type GrammaticalMorphemeViewerState = {
 export function modifyLocalEntriesWithArray(
   entries: Entry[], modification: (ma: MorphologicalAnalysis) => MorphologicalAnalysis[]): Entry[] {
   const newEntries: Entry[] = [];
-  for (const {transcriptions, morphologicalAnalysis} of entries) {
+  for (const {transcriptions, morphologicalAnalysis, initialMorphologicalAnalysis} of entries) {
     const newAnalyses = modification(morphologicalAnalysis);
     for (const newAnalysis of newAnalyses) {
-      newEntries.push({transcriptions, morphologicalAnalysis: newAnalysis});
+      newEntries.push({transcriptions, morphologicalAnalysis: newAnalysis, initialMorphologicalAnalysis});
     }
   }
   return newEntries;
@@ -116,7 +116,6 @@ export function GrammaticalMorphemeViewer({index, grammaticalMorpheme, initialEn
             return (
                 <WordformElement entry={entry} key={key}
                 initialShowAttestations={allUnfolded}
-                initialMorphologicalAnalysis={initialEntry.morphologicalAnalysis}
                 handleSegmentationInput={(value: string) =>
                   setState(update(state, { entries:
                     { $set: handleSegmentationInput(entries, index, value) }

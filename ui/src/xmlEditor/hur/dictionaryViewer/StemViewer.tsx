@@ -133,10 +133,10 @@ export function handleAnalysisBlur(dictionary: Dictionary,
 export function modifyLocalEntries(entries: Entry[],
   modification: (ma: MorphologicalAnalysis) => MorphologicalAnalysis): Entry[] {
   const newEntries: Entry[] = [];
-  for (const {transcriptions, morphologicalAnalysis} of entries) {
+  for (const {transcriptions, morphologicalAnalysis, initialMorphologicalAnalysis} of entries) {
     const newAnalysis = modification(morphologicalAnalysis);
     if (newAnalysis !== undefined) {
-      newEntries.push({transcriptions, morphologicalAnalysis: newAnalysis});
+      newEntries.push({transcriptions, morphologicalAnalysis: newAnalysis, initialMorphologicalAnalysis});
     }
   }
   return newEntries;
@@ -298,7 +298,6 @@ export function StemViewer({stem, initialEntries, setDictionary, initialUnfolded
             return (
                 <WordformElement entry={entry} key={morphAnalysisValue}
                 initialShowAttestations={allUnfolded}
-                initialMorphologicalAnalysis={initialEntries[index].morphologicalAnalysis}
                 handleSegmentationInput={(value: string) =>
                   setState(update(state, { entries:
                     { $set: handleSegmentationInput(entries, index, value) }
