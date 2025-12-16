@@ -142,14 +142,12 @@ export function modifyLocalEntries(entries: Entry[],
   return newEntries;
 }
 
-export function modifyGlobalEntries(dictionary: Dictionary, initialEntries: Entry[],
-  currentEntries: Entry[]): Dictionary {
+export function modifyGlobalEntries(dictionary: Dictionary, currentEntries: Entry[]): Dictionary {
   const specification = new Map<string, [string[], string[]]>();
   for (let i = 0; i < currentEntries.length; i++) {
-    const initialEntry = initialEntries[i];
     const currentEntry = currentEntries[i];
-    const transcriptions = initialEntry.transcriptions;
-    const initialMorphologicalAnalysis = initialEntry.morphologicalAnalysis;
+    const transcriptions = currentEntry.transcriptions;
+    const { initialMorphologicalAnalysis } =  currentEntry;
     const currentMorphologicalAnalysis = currentEntry.morphologicalAnalysis;
     const initialAnalysis = writeMorphAnalysisValue(initialMorphologicalAnalysis);
     const currentAnalysis = writeMorphAnalysisValue(currentMorphologicalAnalysis);
@@ -251,7 +249,7 @@ export function StemViewer({stem, initialEntries, setDictionary, initialUnfolded
             if (value !== stem.form) {
               changeStem(stem.form, value, partOfSpeech, translation);
               setDictionary((dictionary: Dictionary) => {
-                return modifyGlobalEntries(dictionary, initialEntries, entries);
+                return modifyGlobalEntries(dictionary, entries);
               });
               updateEnglishTranslationKey(getEnglishTranslationKey(value, partOfSpeech, translation));
             }
@@ -266,7 +264,7 @@ export function StemViewer({stem, initialEntries, setDictionary, initialUnfolded
             if (value !== stem.translation) {
               changeTranslation(stemForm, partOfSpeech, stem.translation, value);
               setDictionary((dictionary: Dictionary) => {
-                return modifyGlobalEntries(dictionary, initialEntries, entries);
+                return modifyGlobalEntries(dictionary, entries);
               });
               updateEnglishTranslationKey(getEnglishTranslationKey(stemForm, partOfSpeech, value));
             }
