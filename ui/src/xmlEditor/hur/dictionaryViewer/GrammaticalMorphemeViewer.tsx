@@ -82,7 +82,7 @@ export function GrammaticalMorphemeViewer({index, grammaticalMorpheme, initialEn
           onLabelBlur={(value: string) => {
             if (value !== grammaticalMorpheme.label) {
               setDictionary((dictionary: Dictionary) => {
-                return modifyGlobalEntries(dictionary, initialEntries, entries);
+                return modifyGlobalEntries(dictionary, entries);
               });
             }
           }}
