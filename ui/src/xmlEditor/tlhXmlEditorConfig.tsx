@@ -104,6 +104,7 @@ export const tlhXmlEditorConfig: XmlEditorConfig = {
     ras_fin: {replace: () => <span className="font-non-italic">*</span>},
     laes_in: {replace: () => <span className="font-non-italic">⸢</span>},
     laes_fin: {replace: () => <span className="font-non-italic">⸣</span>},
+    tabsep: {replace: () => <span className="font-non-italic">‖</span>},
 
     materlect: {replace: ({node}) => <span className="materLectionis">{node.attributes.c}</span>},
 
