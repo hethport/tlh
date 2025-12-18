@@ -9,12 +9,13 @@ import { changeStem, changePos, changeTranslation } from '../translations/modify
 import { Dictionary, SetDictionary, containsAnalysis } from '../dict/dictionary';
 import { modifyAnalysis } from '../dict/analysisModifier';
 import { addChange } from '../changes/changesAccumulator';
-import { updateConcordanceKey } from '../concordance/concordance';
+import { updateConcordanceKey, replaceConcordanceKeyWithMultiple } from '../concordance/concordance';
 import { replaceMorphologicalAnalysis } from '../corpus/corpus';
 import { areCorrect } from '../dict/morphologicalAnalysisValidator';
 import { getMorphTags } from '../morphologicalAnalysis/auxiliary';
 import { getEnglishTranslationKey } from '../translations/englishTranslations';
 import { getStemVariants } from '../dict/dictionary';
+import { groupBy } from '../common/utils';
 
 export const errorSymbol = <>&#9876;</>;
 
@@ -24,6 +25,20 @@ export function applySideEffects(origin: string, target: string, targetIsExtant:
   // Since the old analysis is used to find the lines to update
   replaceMorphologicalAnalysis(origin, target);
   updateConcordanceKey(origin, target);
+}
+
+
+type Target = {
+  analysis: string;
+  isExtant: boolean;
+}
+
+export function applySideEffectsMulti(origin: string, targets: Target[]): void {
+  //addChange(origin, target, targetIsExtant);
+  // The corpus should be updated before the concordance
+  // Since the old analysis is used to find the lines to update
+  //replaceMorphologicalAnalysis(origin, target);
+  replaceConcordanceKeyWithMultiple(origin, targets.map(({ analysis }) => analysis));
 }
 
 export class Stem {
@@ -144,6 +159,18 @@ export function modifyLocalEntries(entries: Entry[],
 
 export function modifyGlobalEntries(dictionary: Dictionary, currentEntries: Entry[]): Dictionary {
   const specification = new Map<string, [string[], string[]]>();
+  const grouped = groupBy(currentEntries,
+                          entry => writeMorphAnalysisValue(entry.initialMorphologicalAnalysis),
+                          entry => {
+                            const analysis = writeMorphAnalysisValue(entry.morphologicalAnalysis);
+                            return {
+                              analysis,
+                              isExtant: containsAnalysis(dictionary, analysis)
+                            };
+                          });
+  for (const [origin, targets] of grouped.entries()) {
+    applySideEffectsMulti(origin, Array.from(targets));
+  }
   for (let i = 0; i < currentEntries.length; i++) {
     const currentEntry = currentEntries[i];
     const transcriptions = currentEntry.transcriptions;
@@ -151,7 +178,6 @@ export function modifyGlobalEntries(dictionary: Dictionary, currentEntries: Entr
     const currentMorphologicalAnalysis = currentEntry.morphologicalAnalysis;
     const initialAnalysis = writeMorphAnalysisValue(initialMorphologicalAnalysis);
     const currentAnalysis = writeMorphAnalysisValue(currentMorphologicalAnalysis);
-    applySideEffects(initialAnalysis, currentAnalysis, containsAnalysis(dictionary, currentAnalysis));
     for (const transcription of transcriptions) {
       const entrySpec = specification.get(transcription);
       if (entrySpec === undefined) {

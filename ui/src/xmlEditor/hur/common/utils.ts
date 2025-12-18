@@ -95,6 +95,24 @@ export function replaceKey<TKey, TValue>(map: Map<TKey, Set<TValue>>, oldKey: TK
   }
 }
 
+export function replaceKeyWithMultiple<TKey, TValue>(map: Map<TKey, Set<TValue>>, oldKey: TKey, newKeys: TKey[]): void {
+  const values = map.get(oldKey);
+  if (values !== undefined) {
+    map.delete(oldKey);
+    for (const newKey of newKeys) {
+      const oldValues = map.get(newKey);
+      if (oldValues === undefined) {
+        // If no value is assigned to the new key
+        map.set(newKey, values);
+      } else {
+        for (const value of values) {
+          oldValues.add(value);
+        }
+      }
+    }
+  }
+}
+
 export function removeMacron(s: string): string {
   return s
     .replaceAll('ā', 'a')
