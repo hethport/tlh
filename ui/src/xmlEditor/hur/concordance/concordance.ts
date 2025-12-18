@@ -1,5 +1,5 @@
 import { convertDictionary } from '../common/utility';
-import { add, remove, replaceKey, updateSetValuedMapWithOverride,
+import { add, remove, replaceKey, replaceKeyWithMultiple, updateSetValuedMapWithOverride,
   objectToSetValuedMap } from '../common/utils';
 import { isValid, normalize } from '../dict/morphologicalAnalysisValidator';
 import { writeMorphAnalysisValue, MorphologicalAnalysis } from '../../../model/morphologicalAnalysis';
@@ -110,6 +110,10 @@ export function updateConcordance(object: { [key: string]: string[] }) {
 
 export function updateConcordanceKey(oldAnalysis: string, newAnalysis: string): void {
   replaceKey(concordance, oldAnalysis, newAnalysis);
+}
+
+export function replaceConcordanceKeyWithMultiple(oldAnalysis: string, newAnalyses: string[]): void {
+  replaceKeyWithMultiple(concordance, oldAnalysis, newAnalyses);
 }
 
 export function inConcordance(ma: MorphologicalAnalysis): boolean {
