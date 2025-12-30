@@ -8,7 +8,7 @@ import { findBoundary, getTranslationAndMorphTag } from '../common/splitter';
 import { changeStem, changePos, changeTranslation } from '../translations/modifyTranslations';
 import { Dictionary, SetDictionary, containsAnalysis } from '../dict/dictionary';
 import { modifyAnalysis } from '../dict/analysisModifier';
-import { addChange } from '../changes/changesAccumulator';
+import { Target, addChange } from '../changes/changesAccumulator';
 import { updateConcordanceKey, replaceConcordanceKeyWithMultiple } from '../concordance/concordance';
 import { replaceMorphologicalAnalysis } from '../corpus/corpus';
 import { areCorrect } from '../dict/morphologicalAnalysisValidator';
@@ -27,18 +27,12 @@ export function applySideEffects(origin: string, target: string, targetIsExtant:
   updateConcordanceKey(origin, target);
 }
 
-
-type Target = {
-  analysis: string;
-  isExtant: boolean;
-}
-
 export function applySideEffectsMulti(origin: string, targets: Target[]): void {
   //addChange(origin, target, targetIsExtant);
   // The corpus should be updated before the concordance
   // Since the old analysis is used to find the lines to update
   //replaceMorphologicalAnalysis(origin, target);
-  replaceConcordanceKeyWithMultiple(origin, targets.map(({ analysis }) => analysis));
+  replaceConcordanceKeyWithMultiple(origin, targets.map(({ target }) => target));
 }
 
 export class Stem {
@@ -162,10 +156,10 @@ export function modifyGlobalEntries(dictionary: Dictionary, currentEntries: Entr
   const grouped = groupBy(currentEntries,
                           entry => writeMorphAnalysisValue(entry.initialMorphologicalAnalysis),
                           entry => {
-                            const analysis = writeMorphAnalysisValue(entry.morphologicalAnalysis);
+                            const target = writeMorphAnalysisValue(entry.morphologicalAnalysis);
                             return {
-                              analysis,
-                              isExtant: containsAnalysis(dictionary, analysis)
+                              target,
+                              targetIsExtant: containsAnalysis(dictionary, target)
                             };
                           });
   for (const [origin, targets] of grouped.entries()) {
