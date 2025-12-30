@@ -24,6 +24,11 @@ export function restartChangesAccumulation(): void {
   localStorage.removeItem(sourcesLocalStorageKey);
 }
 
+export type Target = {
+  target: string;
+  targetIsExtant: boolean;
+}
+
 function isIdentityReplacement(origin: string, targets: Target[]): boolean {
   return targets.length === 1 && targets[0].target === origin;
 }
@@ -59,11 +64,6 @@ function addChangeWithIdentityCheckForExistingSource(source: string, origin: str
       }
     }
   }
-}
-
-export type Target = {
-  target: string;
-  targetIsExtant: boolean;
 }
 
 export function addChange(origin: string, targets: Target[]): void {
