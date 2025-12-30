@@ -4,13 +4,13 @@ import { ChangesViewerContainer } from '../changes/ChangesViewerContainer';
 import { ChangesListClearer } from '../textEditor/ChangesListClearer';
 
 interface IProps {
-  initialChanges: Map<string, string>;
+  initialChanges: Map<string, string[]>;
 }
 
 export function Macroeditor({ initialChanges }: IProps): JSX.Element {
   const {t} = useTranslation('common');
   const [changes, setChanges] = useState(initialChanges);
-  const clearChanges = () => setChanges(new Map<string, string>());
+  const clearChanges = () => setChanges(new Map<string, string[]>());
   return (
     <div className="grid grid-cols-2 gap-2 my-2">
       <ChangesViewerContainer changes={changes} />
