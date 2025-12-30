@@ -1,6 +1,3 @@
-import { normalize } from '../dict/morphologicalAnalysisValidator';
-import { readMorphAnalysisValue } from '../morphologicalAnalysis/auxiliary';
-import { writeMorphAnalysisValue } from '../../../model/morphologicalAnalysis';
 import { loadSetValuedMapFromLocalStorage, locallyStoreSetValuedMap,
          loadMapFromLocalStorage, locallyStoreMap } from '../dictLocalStorage/localStorageUtils';
 import { add } from '../common/utils';
@@ -131,32 +128,4 @@ export function updateSources(newSources: { [key: string]: string[] }): void {
     }
     sources.set(target, sourcesSet);
   }
-}
-
-const pattern = /(?<=mrp\d+=")[^"]+(?=")|(lnr)="([^"]+)"/g;
-
-export function applyChanges(text: string,
-  onChange: (line: string, initialAnalysis: string, result: string) => void): string {
-  let line = 'unk';
-  const changeAnalysis = (analysis: string, attr: string, lnr: string) => {
-    if (attr === 'lnr') {
-      line = lnr;
-      return analysis;
-    }
-    const normalized = normalize(analysis, true, false);
-    if (normalized !== null) {
-      const morphologicalAnalysis = readMorphAnalysisValue(normalized);
-      if (morphologicalAnalysis !== undefined) {
-        const morphAnalysisValue = writeMorphAnalysisValue(morphologicalAnalysis);
-        const result = changes.get(morphAnalysisValue);
-        if (result !== undefined) {
-          onChange(line, analysis, result);
-          return result;
-        }
-      }
-    }
-    return analysis;
-  };
-  text = text.replaceAll(pattern, changeAnalysis);
-  return text;
 }
