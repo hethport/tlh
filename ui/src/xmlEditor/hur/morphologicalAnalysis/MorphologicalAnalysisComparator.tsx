@@ -4,6 +4,7 @@ import { SelectableLetteredAnalysisOption } from '../../../model/analysisOptions
 import { MorphologicalAnalysisViewer } from './MorphologicalAnalysisViewer';
 
 const rightArrow = <>&#10159;</>;
+const movedMorphTagSymbol = '';
 
 interface IProps {
   source: MorphologicalAnalysis;
@@ -38,7 +39,7 @@ export function MorphologicalAnalysisComparator({ source, targets }: IProps): JS
                source.analysisOptions.map(
                 (option: SelectableLetteredAnalysisOption, index: number) =>
                   (<>
-                  {(option.analysis !== target.analysisOptions[index].analysis ||
+                  {(option.analysis !== (target.analysisOptions[index] || movedMorphTagSymbol).analysis ||
                     source.translation !== target.translation) &&
                     rightArrow} <br/>
                   </>)
