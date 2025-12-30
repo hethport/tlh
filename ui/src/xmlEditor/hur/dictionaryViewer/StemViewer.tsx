@@ -20,7 +20,7 @@ import { groupBy } from '../common/utils';
 export const errorSymbol = <>&#9876;</>;
 
 export function applySideEffects(origin: string, target: string, targetIsExtant: boolean): void {
-  addChange(origin, target, targetIsExtant);
+  addChange(origin, [{ target, targetIsExtant }]);
   // The corpus should be updated before the concordance
   // Since the old analysis is used to find the lines to update
   replaceMorphologicalAnalysis(origin, target);

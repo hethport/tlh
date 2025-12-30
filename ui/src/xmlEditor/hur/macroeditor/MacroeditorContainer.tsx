@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Macroeditor } from './Macroeditor';
 
 interface IProps {
-  getChanges: () => Map<string, string>;
+  getChanges: () => Map<string, string[]>;
 }
 
 export function MacroeditorContainer({ getChanges }: IProps): JSX.Element {
