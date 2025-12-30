@@ -17,9 +17,10 @@ export function ChangesViewer({ changes }: IProps): JSX.Element {
         const source = readMorphAnalysisValue(sourceString);
         const targets: Array<MorphologicalAnalysis | string> = targetStrings.map(ma => readMorphAnalysisValue(ma) || ma);
         if (source !== undefined) {
-          return (
+          return (<>
             <MorphologicalAnalysisComparator source={source} targets={targets} key={index} />
-          );
+            <br/>
+          </>);
         } else {
           return (
             <div key={index}>
