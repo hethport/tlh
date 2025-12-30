@@ -32,6 +32,11 @@ function addChangeWithIdentityCheck(origin: string, target: string): void {
   }
 }
 
+export type Target = {
+  target: string;
+  targetIsExtant: boolean;
+}
+
 export function addChange(origin: string, target: string, targetIsExtant: boolean): void {
   // Stop if no actual change
   if (target === origin) {
