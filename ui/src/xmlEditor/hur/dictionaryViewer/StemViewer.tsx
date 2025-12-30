@@ -28,7 +28,7 @@ export function applySideEffects(origin: string, target: string, targetIsExtant:
 }
 
 export function applySideEffectsMulti(origin: string, targets: Target[]): void {
-  //addChange(origin, target, targetIsExtant);
+  addChange(origin, targets);
   // The corpus should be updated before the concordance
   // Since the old analysis is used to find the lines to update
   //replaceMorphologicalAnalysis(origin, target);
