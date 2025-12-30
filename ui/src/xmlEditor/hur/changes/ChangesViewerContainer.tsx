@@ -4,7 +4,7 @@ import { ChangesUploader } from '../changes/ChangesUploader';
 import { ChangesViewer } from './ChangesViewer';
 
 interface IProps {
-  changes: Map<string, string>;
+  changes: Map<string, string[]>;
 }
 
 export function ChangesViewerContainer({ changes }: IProps): JSX.Element {
