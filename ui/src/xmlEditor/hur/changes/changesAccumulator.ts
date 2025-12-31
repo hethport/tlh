@@ -100,7 +100,7 @@ export function addChange(origin: string, targets: Target[]): void {
       addChangeWithIdentityCheckForExistingSource(source, origin, targets);
       // The target acquires its sources
       for (const { target } of targets) {
-        add(sources, target, origin);
+        add(sources, target, source);
       }
     }
   }
