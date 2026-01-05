@@ -22,7 +22,6 @@ interface IProps {
   initialEntries: Entry[];
   setDictionary: SetDictionary;
   initialUnfolded: boolean;
-  allUnfolded: boolean;
 }
 
 type GrammaticalMorphemeViewerState = {
@@ -43,7 +42,7 @@ export function modifyLocalEntriesWithArray(
   return newEntries;
 }
 
-export function GrammaticalMorphemeViewer({index, grammaticalMorpheme, initialEntries, setDictionary, initialUnfolded, allUnfolded }: IProps): JSX.Element {
+export function GrammaticalMorphemeViewer({index, grammaticalMorpheme, initialEntries, setDictionary, initialUnfolded }: IProps): JSX.Element {
   
   const [unfolded, setUnfolded] = useState(initialUnfolded);
   const initialState: GrammaticalMorphemeViewerState = {
@@ -105,7 +104,7 @@ export function GrammaticalMorphemeViewer({index, grammaticalMorpheme, initialEn
             }
           }} />
         <br />
-        {(unfolded || allUnfolded) && entries.map(
+        {unfolded && entries.map(
           (entry: Entry, index: number) => {
             const initialEntry = initialEntries[index] || entry;
             const morphAnalysisValue = writeMorphAnalysisValue(
@@ -115,7 +114,7 @@ export function GrammaticalMorphemeViewer({index, grammaticalMorpheme, initialEn
 
             return (
                 <WordformElement entry={entry} key={key}
-                initialShowAttestations={allUnfolded}
+                initialShowAttestations={false}
                 handleSegmentationInput={(value: string) =>
                   setState(update(state, { entries:
                     { $set: handleSegmentationInput(entries, index, value) }
