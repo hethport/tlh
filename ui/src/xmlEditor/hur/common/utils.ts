@@ -12,6 +12,18 @@ export function objectToMap<TValue>(object: {[key: string]: TValue}): Map<string
   return map;
 }
 
+export function objectToArrayMap<TValue>(object: {[key: string]: TValue | TValue[]}): Map<string, TValue[]> {
+  const map = new Map<string, TValue[]>();
+  for (const [key, value] of Object.entries(object)) {
+    if (value instanceof Array) {
+      map.set(key, value);
+    } else {
+      map.set(key, [value]);
+    }
+  }
+  return map;
+}
+
 export function objectToSetValuedMap<TValue>(object: {[key: string]: TValue[]}): Map<string, Set<TValue>> {
   const map = new Map<string, Set<TValue>>();
   for (const [key, values] of Object.entries(object)) {

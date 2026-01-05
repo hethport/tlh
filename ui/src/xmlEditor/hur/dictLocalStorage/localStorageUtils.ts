@@ -1,4 +1,4 @@
-import { objectToSetValuedMap, objectToMap } from '../common/utils';
+import { objectToSetValuedMap, objectToMap, objectToArrayMap } from '../common/utils';
 import { convertDictionary, convertMapping } from '../common/utility';
 
 export function loadSetValuedMapFromLocalStorage(localStorageKey: string): Map<string, Set<string>> {
@@ -18,6 +18,16 @@ export function loadMapFromLocalStorage<TValue>(localStorageKey: string): Map<st
   } else {
     const object = JSON.parse(locallyStoredMap);
     return objectToMap(object);
+  }
+}
+
+export function loadItemOrArrayMapFromLocalStorage<TValue>(localStorageKey: string): Map<string, TValue[]> {
+  const locallyStoredMap = localStorage.getItem(localStorageKey);
+  if (locallyStoredMap === null) {
+    return new Map();
+  } else {
+    const object: { [key: string]: TValue[] | TValue } = JSON.parse(locallyStoredMap);
+    return objectToArrayMap(object);
   }
 }
 

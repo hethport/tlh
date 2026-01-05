@@ -1,9 +1,9 @@
 import { loadSetValuedMapFromLocalStorage, locallyStoreSetValuedMap,
-         loadMapFromLocalStorage, locallyStoreMap } from '../dictLocalStorage/localStorageUtils';
+         loadItemOrArrayMapFromLocalStorage, locallyStoreMap } from '../dictLocalStorage/localStorageUtils';
 import { add } from '../common/utils';
 
 const changesLocalStorageKey = 'HurrianDictionaryChanges';
-let changes: Map<string, string[]> = loadMapFromLocalStorage(changesLocalStorageKey);
+let changes: Map<string, string[]> = loadItemOrArrayMapFromLocalStorage(changesLocalStorageKey);
 export function locallyStoreHurrianDictionaryChanges(): void {
   locallyStoreMap(changes, changesLocalStorageKey);
 }
