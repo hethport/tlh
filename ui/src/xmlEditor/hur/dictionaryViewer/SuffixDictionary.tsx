@@ -1,4 +1,4 @@
-import { JSX, useState, useEffect } from 'react';
+import { JSX } from 'react';
 import { groupByMany } from '../common/utils';
 import { GrammaticalMorphemeViewer } from './GrammaticalMorphemeViewer';
 import { Entry } from './Wordform';
@@ -26,13 +26,6 @@ function valueFunc(entry: Entry): Entry {
 
 export function SuffixDictionary({entries, setDictionary}: IProps): JSX.Element {
   
-  const [unfolded, setUnfolded] = useState(false);
-  const allUnfolded = false;
-  
-  useEffect(() => {
-    setUnfolded(true);
-  });
-  
   const grouped = groupByMany(entries, keyFunc, valueFunc);
   
   const grammaticalMorphemeReprs = Array.from(grouped.keys()).sort(compare);
@@ -57,8 +50,7 @@ export function SuffixDictionary({entries, setDictionary}: IProps): JSX.Element 
               initialEntries={entries}
               key={key} 
               setDictionary={setDictionary}
-              initialUnfolded={unfolded}
-              allUnfolded={allUnfolded} />
+              initialUnfolded={false} />
           );
         })}
       </div>
