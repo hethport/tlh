@@ -1,7 +1,10 @@
 import { XmlElementNode } from 'simple_xml';
 import { readSelectedMorphology, SelectedMorphAnalysis }
   from '../../../model/selectedMorphologicalAnalysis';
-import { readMorphologiesFromNode, MorphologicalAnalysis } from '../../../model/morphologicalAnalysis';
+import { readMorphologiesFromNode, MorphologicalAnalysis,
+  SingleMorphologicalAnalysisWithoutEnclitics,
+  MultiMorphologicalAnalysisWithoutEnclitics } from '../../../model/morphologicalAnalysis';
+import { LetteredAnalysisOption } from '../../../model/analysisOptions';
 import { isSelected, getFirstSelectedMorphTag } from '../morphologicalAnalysis/auxiliary';
 import { makeGloss } from '../common/auxiliary';
 import { getTranslationAndMorphTag } from '../common/splitter';
@@ -13,6 +16,125 @@ export type Word = {
   segmentation: string;
   gloss: string;
 }
+
+/*
+ * MORPHOLOGICAL ANALYSIS REPLACEMENT
+ */
+
+class CorpusMorphologicalAnalysis {
+  segmentation: string;
+  translation: string;
+  morphTag: string;
+
+  constructor(segmentation: string, translation: string, morphTag: string) {
+    this.segmentation = segmentation;
+    this.translation = translation;
+    this.morphTag = morphTag;
+  }
+
+  toWord(transliteration: string): Word {
+    const segmentation = this.segmentation;
+    const gloss = makeGloss(this.translation, this.morphTag);
+    return { transliteration, segmentation, gloss };
+  }
+}
+
+/*
+ * Assuming the user has requested the replacement of a morphological analysis oldMa
+ * with an array of morphological analyses newMas,
+ * check if the given word has the specified morphological analysis oldMa
+ * and, if it is true, replace oldMa with an appropriate element of newMas.
+ */
+export function updateMorphologicalAnalysis(word: Word,
+                                            oldMa: MorphologicalAnalysis | undefined,
+                                            newMas: MorphologicalAnalysis[]): Word {
+  if (oldMa !== undefined) {
+    const { transliteration } = word;
+    const corpusSegmentation = word.segmentation;
+    const [corpusTranslation, corpusMorphTag] = getTranslationAndMorphTag(word.gloss);
+    if (corpusSegmentation == oldMa.referenceWord && corpusTranslation == oldMa.translation) {
+      const corpusMa = replaceIfMorphTagMatches(corpusMorphTag, oldMa, newMas);
+      if (corpusMa !== null) {
+        return corpusMa.toWord(transliteration);
+      }
+    }
+  }
+  return word;
+}
+
+/*
+ * Assuming the user has requested the replacement of a morphological analysis oldMa
+ * with an array of morphological analyses newMas,
+ * check if the given word has a morphological tag
+ * from the specified morphological analysis oldMa and, if it is true,
+ * replace oldMa with an appropriate element of newMas.
+ */
+function replaceIfMorphTagMatches(corpusMorphTag: string, oldMa: MorphologicalAnalysis,
+  newMas: MorphologicalAnalysis[]): CorpusMorphologicalAnalysis | null {
+  switch (oldMa._type) {
+    case 'SingleMorphAnalysisWithoutEnclitics': {
+      if (corpusMorphTag == oldMa.analysis) {
+        return replaceSingleMorph(oldMa, newMas);
+      }
+      break;
+    }
+    case 'MultiMorphAnalysisWithoutEnclitics': {
+      const selectedOption = oldMa.analysisOptions.find(
+        ({analysis}: LetteredAnalysisOption) => analysis == corpusMorphTag
+      );
+      if (selectedOption !== undefined) {
+        return replaceMultiMorph(oldMa, selectedOption.letter, newMas);
+      }
+      break;
+    }
+  }
+  return null;
+}
+
+/*
+ * Replace oldMa with newMas
+ * if newMas contains only one analysis
+ * and it is a SingleMorphologicalAnalysis.
+ */
+function replaceSingleMorph(oldMa: SingleMorphologicalAnalysisWithoutEnclitics,
+                            newMas: MorphologicalAnalysis[]): CorpusMorphologicalAnalysis | null {
+  if (newMas.length === 1) {
+    const newMa = newMas[0];
+    if (newMa._type === 'SingleMorphAnalysisWithoutEnclitics') {
+      return new CorpusMorphologicalAnalysis(
+        newMa.referenceWord, newMa.translation, newMa.analysis
+      );
+    }
+  }
+  return null;
+}
+
+/*
+ * Find an element of newMas which has an a option
+ * with the same letter-index that is selected in oldMa
+ * and use as a replacement for oldMa.
+ */
+function replaceMultiMorph(oldMa: MultiMorphologicalAnalysisWithoutEnclitics,
+                           selectedLetter: string,
+                           newMas: MorphologicalAnalysis[]): CorpusMorphologicalAnalysis | null {
+  for (const newMa of newMas) {
+    if (newMa._type === 'MultiMorphAnalysisWithoutEnclitics') {
+      const matchingOption = newMa.analysisOptions.find(
+        (option: LetteredAnalysisOption) => option.letter === selectedLetter
+      );
+      if (matchingOption !== undefined) {
+        return new CorpusMorphologicalAnalysis(
+          newMa.referenceWord, newMa.translation, matchingOption.analysis
+        );
+      }
+    }
+  }
+  return null;
+}
+
+/*
+ * NEW WORD CONSTRUCTION
+ */
 
 function getSegmentationAndGloss(morphologicalAnalysis: MorphologicalAnalysis | undefined): [string, string] {
   let segmentation: string;
@@ -31,63 +153,6 @@ function getSegmentationAndGloss(morphologicalAnalysis: MorphologicalAnalysis | 
     gloss = '';
   }
   return [segmentation, gloss];
-}
-
-/*
- * Assuming the user has requested the replacement of a morpholofical analysis oldMa
- * with newMa, check if the given word has a morphological tag
- * from the specified morphological analysis oldMa and, if it is true,
- * return a morphological tag from newMa occupying the same position.
- * Otherwise, return null.
- */
-function getNewMorphTag(corpusMorphTag: string, oldMa: MorphologicalAnalysis,
-                        newMa: MorphologicalAnalysis): string | null {
-  switch (oldMa._type) {
-    case 'SingleMorphAnalysisWithoutEnclitics': {
-      if (newMa._type === 'SingleMorphAnalysisWithoutEnclitics') {
-        if (corpusMorphTag == oldMa.analysis) {
-          return newMa.analysis;
-        }
-      }
-      break;
-    }
-    case 'MultiMorphAnalysisWithoutEnclitics': {
-      if (newMa._type === 'MultiMorphAnalysisWithoutEnclitics') {
-        const matchingTagIndex = oldMa.analysisOptions.findIndex(
-          analysisOption => analysisOption.analysis == corpusMorphTag
-        );
-        if (matchingTagIndex !== -1) {
-          return newMa.analysisOptions[matchingTagIndex].analysis;
-        }
-      }
-      break;
-    }
-  }
-  return null;
-}
-
-/*
- * Assuming the user has requested the replacement of a morpholofical analysis oldMa
- * with newMa, check if the given word has the specified morphological analysis oldMa
- * and, if it is true, replace it with newMa.
- */
-export function updateMorphologicalAnalysis(word: Word,
-                                            oldMa: MorphologicalAnalysis | undefined,
-                                            newMa: MorphologicalAnalysis | undefined): Word {
-  if (oldMa !== undefined && newMa !== undefined) {
-    const { transliteration } = word;
-    const corpusSegmentation = word.segmentation;
-    const [corpusTranslation, corpusMorphTag] = getTranslationAndMorphTag(word.gloss);
-    const segmentation = newMa.referenceWord;
-    if (corpusSegmentation == oldMa.referenceWord && corpusTranslation == oldMa.translation) {
-      const newMorphTag = getNewMorphTag(corpusMorphTag, oldMa, newMa);
-      if (newMorphTag !== null) {
-        const gloss = makeGloss(newMa.translation, newMorphTag);
-        return { transliteration, segmentation, gloss };
-      }
-    }
-  }
-  return word;
 }
 
 export function makeWordFromMorphologies(transliteration: string,
@@ -119,6 +184,10 @@ export function makeWord(node: XmlElementNode): Word {
     }
   }
 }
+
+/*
+ * INFORMATIONAL REQUESTS
+ */
 
 export function hasGivenAnalysis(word: Word, gloss: string, morphologicalAnalysis: MorphologicalAnalysis): boolean {
   const hasGivenSegmentation = word.segmentation === morphologicalAnalysis.referenceWord;
