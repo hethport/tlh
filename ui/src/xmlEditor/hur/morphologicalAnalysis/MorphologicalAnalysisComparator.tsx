@@ -13,18 +13,18 @@ interface IProps {
 export function MorphologicalAnalysisComparator({ source, targets }: IProps): JSX.Element {
   
   return (
-    <div className="display: table-row">
-      <div className="display: table-cell">
+    <div className="flex">
+      <div className="first">
         <MorphologicalAnalysisViewer morphologicalAnalysis={source} />
       </div>
       {targets.map((target: MorphologicalAnalysis | string) =>
         typeof target === 'string' ?
         (<>
-          <div className="display: table-cell"></div>
-          <div className="display: table-cell">{target}</div>
+          <div></div>
+          <div>{target}</div>
         </>) :
         (<>
-          <div className="display: table-cell">
+          <div>
             {source.referenceWord !== target.referenceWord && rightArrow} <br/>
             { source._type === 'SingleMorphAnalysisWithoutEnclitics' ?
               (<>
@@ -50,7 +50,7 @@ export function MorphologicalAnalysisComparator({ source, targets }: IProps): JS
             }
             {source.paradigmClass !== target.paradigmClass && rightArrow} <br/>
           </div>
-          <div className="display: table-cell">
+          <div>
             <MorphologicalAnalysisViewer morphologicalAnalysis={target} />
           </div>
         </>)

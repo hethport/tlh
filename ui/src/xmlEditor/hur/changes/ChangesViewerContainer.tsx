@@ -14,7 +14,6 @@ export function ChangesViewerContainer({ changes }: IProps): JSX.Element {
   
   return (
     <div className="container mx-auto">
-      <h2 className="font-bold text-2xl text-center">{t('changes')}</h2>
       <br/>
       {!loaded ? <ChangesUploader onUpload={() => setLoaded(true)} /> :
       <ChangesViewer changes={changes} />}

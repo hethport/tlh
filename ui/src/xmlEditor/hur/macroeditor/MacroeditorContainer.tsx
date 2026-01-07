@@ -12,7 +12,7 @@ export function MacroeditorContainer({ getChanges }: IProps): JSX.Element {
   
   return (
     <div className="container mx-auto">
-      <h1 className="font-bold text-2xl text-center">{t('macroeditor')}</h1>
+      <h2 className="font-bold text-2xl text-center">{t('changes')}</h2>
       <Macroeditor initialChanges={getChanges()} />
     </div>
   );

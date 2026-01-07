@@ -11,16 +11,15 @@ interface IProps {
 export function ChangesViewer({ changes }: IProps): JSX.Element {
   
   return (
-    <div className="display: table">
+    <div className="changes-viewer">
       {Array.from(changes.entries()).map((entry: [string, string[]], index: number) => {
         const [sourceString, targetStrings] = entry;
         const source = readMorphAnalysisValue(sourceString);
         const targets: Array<MorphologicalAnalysis | string> = targetStrings.map(ma => readMorphAnalysisValue(ma) || ma);
         if (source !== undefined) {
-          return (<>
+          return (
             <MorphologicalAnalysisComparator source={source} targets={targets} key={index} />
-            <br/>
-          </>);
+          );
         } else {
           return (
             <div key={index}>
