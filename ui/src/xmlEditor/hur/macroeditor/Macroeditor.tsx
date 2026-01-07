@@ -12,13 +12,11 @@ export function Macroeditor({ initialChanges }: IProps): JSX.Element {
   const [changes, setChanges] = useState(initialChanges);
   const clearChanges = () => setChanges(new Map<string, string[]>());
   return (
-    <div className="grid grid-cols-2 gap-2 my-2">
-      <ChangesViewerContainer changes={changes} />
-      <div className="container mx-auto">
-        <h2 className="font-bold text-2xl text-center">{t('textEditor')}</h2>
-        <br/>
+    <div className="container mx-auto">
+      <div className="clear-changes-button">
         <ChangesListClearer clearChanges={clearChanges} />
       </div>
+      <ChangesViewerContainer changes={changes} />
     </div>
   );
 }
