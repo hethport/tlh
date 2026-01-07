@@ -23,7 +23,7 @@ export function applySideEffects(origin: string, target: string, targetIsExtant:
   addChange(origin, [{ target, targetIsExtant }]);
   // The corpus should be updated before the concordance
   // Since the old analysis is used to find the lines to update
-  replaceMorphologicalAnalysis(origin, target);
+  replaceMorphologicalAnalysis(origin, [target]);
   updateConcordanceKey(origin, target);
 }
 
@@ -31,8 +31,9 @@ export function applySideEffectsMulti(origin: string, targets: Target[]): void {
   addChange(origin, targets);
   // The corpus should be updated before the concordance
   // Since the old analysis is used to find the lines to update
-  //replaceMorphologicalAnalysis(origin, target);
-  replaceConcordanceKeyWithMultiple(origin, targets.map(({ target }) => target));
+  const stringTargets = targets.map(({ target }) => target);
+  replaceMorphologicalAnalysis(origin, stringTargets);
+  replaceConcordanceKeyWithMultiple(origin, stringTargets);
 }
 
 export class Stem {

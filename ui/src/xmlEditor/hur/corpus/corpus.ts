@@ -8,6 +8,7 @@ import { readMorphAnalysisValue } from '../morphologicalAnalysis/auxiliary';
 import { loadMapFromLocalStorage, locallyStoreMap } from '../dictLocalStorage/localStorageUtils';
 import { makeGlossFromMorphologicalAnalysis, objectToMap, add } from '../common/utils';
 import { compareLineNumbers } from './lineNumberComparer';
+import { MorphologicalAnalysis } from '../../../model/morphologicalAnalysis';
 
 const localStorageKey = 'HurrianCorpus';
 type Corpus = Map<string, Line>;
@@ -101,16 +102,22 @@ export function getLine(attestation: Attestation): Line {
   return corpus.get(attestation.toString()) || [];
 }
 
-export function replaceMorphologicalAnalysis(oldAnalysis: string, newAnalysis: string): void {
+export function replaceMorphologicalAnalysis(oldAnalysis: string, newAnalyses: string[]): void {
   const oldMa = readMorphAnalysisValue(oldAnalysis);
   if (oldMa !== undefined) {
-    const newMa = readMorphAnalysisValue(newAnalysis);
+    const newMas: MorphologicalAnalysis[] = [];
+    for (const newAnalysis of newAnalyses) {
+      const newMa = readMorphAnalysisValue(newAnalysis);
+      if (newMa !== undefined) {
+        newMas.push(newMa);
+      }
+    }
     for (const attestation of quickGetAttestations(oldMa)) {
       const line = corpus.get(attestation);
       if (line !== undefined) {
         for (let i = 0; i < line.length; i++) {
           const word = line[i];
-          line[i] = updateMorphologicalAnalysis(word, oldMa, newMa);
+          line[i] = updateMorphologicalAnalysis(word, oldMa, newMas);
         }
       }
     }
