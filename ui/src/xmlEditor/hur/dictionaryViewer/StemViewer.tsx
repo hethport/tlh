@@ -16,6 +16,9 @@ import { getMorphTags } from '../morphologicalAnalysis/auxiliary';
 import { getEnglishTranslationKey } from '../translations/englishTranslations';
 import { getStemVariants } from '../dict/dictionary';
 import { groupBy } from '../common/utils';
+import { areLexicallyEquivalent, areEquivalent } from '../morphologicalAnalysis/lexicalEquivalence';
+import { mergeMultiMorphologicalAnalyses } from '../morphologicalAnalysis/merging';
+import { readMorphAnalysisValue } from '../morphologicalAnalysis/auxiliary';
 
 export const errorSymbol = <>&#9876;</>;
 
@@ -173,14 +176,47 @@ export function modifyGlobalEntries(dictionary: Dictionary, currentEntries: Entr
     const currentMorphologicalAnalysis = currentEntry.morphologicalAnalysis;
     const initialAnalysis = writeMorphAnalysisValue(initialMorphologicalAnalysis);
     const currentAnalysis = writeMorphAnalysisValue(currentMorphologicalAnalysis);
-    for (const transcription of transcriptions) {
-      const entrySpec = specification.get(transcription);
-      if (entrySpec === undefined) {
-        specification.set(transcription, [[initialAnalysis], [currentAnalysis]]);
-      } else {
-        const [toRemove, toAdd] = entrySpec;
-        toRemove.push(initialAnalysis);
-        toAdd.push(currentAnalysis);
+    const initialMa = readMorphAnalysisValue(initialAnalysis);
+    const currentMa = readMorphAnalysisValue(currentAnalysis);
+    if (initialMa !== undefined && currentMa !== undefined) {
+      for (const transcription of transcriptions) {
+        const analyses = dictionary.get(transcription);
+        if (analyses !== undefined) {
+          const equivalent = Array.from(analyses).find((analysis: string) => {
+            const ma = readMorphAnalysisValue(analysis);
+            if (ma !== undefined) {
+              if (areEquivalent(ma, initialMa)) {
+                return false;
+              }
+              return areLexicallyEquivalent(ma, currentMa);
+            }
+            return false;
+          });
+          const oldAnalyses: string[] = [initialAnalysis];
+          let newAnalysis: string;
+          if (equivalent !== undefined) {
+            const equivalentMa = readMorphAnalysisValue(equivalent);
+            if (equivalentMa !== undefined &&
+              equivalentMa._type === 'MultiMorphAnalysisWithoutEnclitics' &&
+              currentMa._type === 'MultiMorphAnalysisWithoutEnclitics') {
+              const mergeResult = mergeMultiMorphologicalAnalyses(equivalentMa, currentMa);
+              newAnalysis = writeMorphAnalysisValue(mergeResult);
+              oldAnalyses.push(equivalent);
+            } else {
+              newAnalysis = currentAnalysis;
+            }
+          } else {
+            newAnalysis = currentAnalysis;
+          }
+          const entrySpec = specification.get(transcription);
+          if (entrySpec === undefined) {
+            specification.set(transcription, [[initialAnalysis], [currentAnalysis]]);
+          } else {
+            const [toRemove, toAdd] = entrySpec;
+            toRemove.push(...oldAnalyses);
+            toAdd.push(newAnalysis);
+          }
+        }
       }
     }
   }
