@@ -1,6 +1,8 @@
 import { loadSetValuedMapFromLocalStorage, locallyStoreSetValuedMap,
          loadItemOrArrayMapFromLocalStorage, locallyStoreMap } from '../dictLocalStorage/localStorageUtils';
 import { add } from '../common/utils';
+import { MorphologicalAnalysis, writeMorphAnalysisValue } from
+  '../../../model/morphologicalAnalysis';
 
 const changesLocalStorageKey = 'HurrianDictionaryChanges';
 let changes: Map<string, string[]> = loadItemOrArrayMapFromLocalStorage(changesLocalStorageKey);
@@ -128,4 +130,21 @@ export function updateSources(newSources: { [key: string]: string[] }): void {
     }
     sources.set(target, sourcesSet);
   }
+}
+
+export function haveSameSource(firstMa: MorphologicalAnalysis,
+                                  secondMa: MorphologicalAnalysis): boolean {
+  const first = writeMorphAnalysisValue(firstMa);
+  const second = writeMorphAnalysisValue(secondMa);
+  const firstSources = sources.get(first);
+  const secondSources = sources.get(second);
+  if (firstSources !== undefined &&
+    secondSources !== undefined &&
+    firstSources.size === 1 &&
+    secondSources.size === 1) {
+    const firstSource = Array.from(firstSources)[0];
+    const secondSource = Array.from(secondSources)[0];
+    return firstSource === secondSource;
+  }
+  return false;
 }

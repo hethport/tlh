@@ -19,6 +19,7 @@ import { groupBy } from '../common/utils';
 import { areLexicallyEquivalent, areEquivalent } from '../morphologicalAnalysis/lexicalEquivalence';
 import { mergeMultiMorphologicalAnalyses } from '../morphologicalAnalysis/merging';
 import { readMorphAnalysisValue } from '../morphologicalAnalysis/auxiliary';
+import { haveSameSource } from '../changes/changesAccumulator';
 
 export const errorSymbol = <>&#9876;</>;
 
@@ -198,7 +199,8 @@ export function modifyGlobalEntries(dictionary: Dictionary, currentEntries: Entr
             const equivalentMa = readMorphAnalysisValue(equivalent);
             if (equivalentMa !== undefined &&
               equivalentMa._type === 'MultiMorphAnalysisWithoutEnclitics' &&
-              currentMa._type === 'MultiMorphAnalysisWithoutEnclitics') {
+              currentMa._type === 'MultiMorphAnalysisWithoutEnclitics' &&
+              haveSameSource(equivalentMa, currentMa)) {
               const mergeResult = mergeMultiMorphologicalAnalyses(equivalentMa, currentMa);
               newAnalysis = writeMorphAnalysisValue(mergeResult);
               oldAnalyses.push(equivalent);
