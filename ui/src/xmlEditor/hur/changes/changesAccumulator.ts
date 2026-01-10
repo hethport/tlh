@@ -1,6 +1,6 @@
 import { loadSetValuedMapFromLocalStorage, locallyStoreSetValuedMap,
          loadItemOrArrayMapFromLocalStorage, locallyStoreMap } from '../dictLocalStorage/localStorageUtils';
-import { add } from '../common/utils';
+import { add, remove } from '../common/utils';
 import { MorphologicalAnalysis, writeMorphAnalysisValue } from
   '../../../model/morphologicalAnalysis';
 import { readMorphAnalysisValue } from '../morphologicalAnalysis/auxiliary';
@@ -174,4 +174,22 @@ export function haveSameSource(firstMa: MorphologicalAnalysis,
     return firstSource === secondSource;
   }
   return false;
+}
+
+export function updateSourcesAfterMerge(firstMa: MorphologicalAnalysis,
+                                        secondMa: MorphologicalAnalysis,
+                                        mergeResultMa: MorphologicalAnalysis): void {
+  const first = writeMorphAnalysisValue(firstMa);
+  const second = writeMorphAnalysisValue(secondMa);
+  const mergeResult = writeMorphAnalysisValue(mergeResultMa);
+  const firstSources = sources.get(first);
+  const secondSources = sources.get(second);
+  if (firstSources !== undefined && secondSources !== undefined) {
+    const commonSources = Array.from(firstSources).filter(source => secondSources.has(source));
+    for (const commonSource of commonSources) {
+      remove(sources, first, commonSource);
+      remove(sources, second, commonSource);
+      add(sources, mergeResult, commonSource);
+    }
+  }
 }
