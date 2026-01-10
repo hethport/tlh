@@ -3,6 +3,9 @@ import { loadSetValuedMapFromLocalStorage, locallyStoreSetValuedMap,
 import { add } from '../common/utils';
 import { MorphologicalAnalysis, writeMorphAnalysisValue } from
   '../../../model/morphologicalAnalysis';
+import { readMorphAnalysisValue } from '../morphologicalAnalysis/auxiliary';
+import { areLexicallyEquivalent } from '../morphologicalAnalysis/lexicalEquivalence';
+import { mergeMultiMorphologicalAnalyses } from '../morphologicalAnalysis/merging';
 
 const changesLocalStorageKey = 'HurrianDictionaryChanges';
 let changes: Map<string, string[]> = loadItemOrArrayMapFromLocalStorage(changesLocalStorageKey);
@@ -57,9 +60,33 @@ function addChangeWithIdentityCheckForExistingSource(source: string, origin: str
     } else {
       const index = oldTargets.indexOf(origin);
       if (index !== -1) {
-        oldTargets.splice(index, 1, ...getTargetStrings(targets));
-      } else {
-        oldTargets.push(...getTargetStrings(targets));
+        oldTargets.splice(index, 1);
+      }
+      for (const target of targets) {
+        const targetMa = readMorphAnalysisValue(target.target);
+        if (targetMa !== undefined) {
+          const equivalentIndex = oldTargets.findIndex((oldTarget: string) => {
+            const oldTargetMa = readMorphAnalysisValue(oldTarget);
+            if (oldTargetMa !== undefined) {
+              if (areLexicallyEquivalent(oldTargetMa, targetMa)) {
+                return true;
+              }
+            }
+            return false;
+          });
+          if (equivalentIndex !== -1) {
+            const equivalent = oldTargets[equivalentIndex];
+            const equivalentMa = readMorphAnalysisValue(equivalent);
+            if (equivalentMa !== undefined  &&
+              equivalentMa._type === 'MultiMorphAnalysisWithoutEnclitics' &&
+              targetMa._type === 'MultiMorphAnalysisWithoutEnclitics') {
+              const mergeResult = mergeMultiMorphologicalAnalyses(equivalentMa, targetMa);
+              oldTargets[equivalentIndex] = writeMorphAnalysisValue(mergeResult);
+            }
+          } else {
+            oldTargets.push(target.target);
+          }
+        }
       }
     }
   }
