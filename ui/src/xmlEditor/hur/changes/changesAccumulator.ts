@@ -123,11 +123,10 @@ export function addChange(origin: string, targets: Target[]): void {
     // The original analysis should no longer be mapped to its sources
     // because it has been replaced by target
     sources.delete(origin);
-    // Its origins are now the origins of the target
     for (const source of originSources) {
-      // The sources of the original analysis are mapped to the target
+      // The sources of the original analysis are mapped to the targets
       addChangeWithIdentityCheckForExistingSource(source, origin, targets);
-      // The target acquires its sources
+      // The sources of the original analysis are now the sources of the targets
       for (const { target } of targets) {
         add(sources, target, source);
       }
