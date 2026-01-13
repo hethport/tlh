@@ -20,8 +20,8 @@ export function getGrammaticalMorphemes(morphologicalAnalysis: MorphologicalAnal
   return grammaticalMorphemes;
 }
 
-function preprocessMorphTag(morphTag: string): string {
-  if (morphTag.startsWith('=') || morphTag.startsWith('.')) {
+function preprocessMorphTag(morphTag: string, grammaticalMorphemeString: string): string {
+  if (morphTag.startsWith('=') && grammaticalMorphemeString.startsWith('=') || morphTag.startsWith('.')) {
     return morphTag;
   } else {
     return '-' + morphTag;
@@ -29,7 +29,7 @@ function preprocessMorphTag(morphTag: string): string {
 }
 
 export function getInflectionalSuffixesAndEnclitics(morphTag: string, grammaticalMorphemeString: string): GrammaticalMorpheme[] {
-  morphTag = preprocessMorphTag(morphTag);
+  morphTag = preprocessMorphTag(morphTag, grammaticalMorphemeString);
   const labels = morphTag === '' ? [] : morphTag.split(morphTagSplitPattern);
   const forms = grammaticalMorphemeString === '' ? [] :
     grammaticalMorphemeString.split(grammaticalMorphemeStringSplitPattern);
