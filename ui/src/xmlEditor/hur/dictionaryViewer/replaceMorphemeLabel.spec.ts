@@ -20,3 +20,35 @@ describe('modifying morphological analyses', () => {
   );
 
 });
+
+const typeModification = replaceMorphemeLabel('-3SG.ABS', '=3SG.ABS', '=n');
+
+describe('replacing a suffix gloss with an enclitic gloss', () => {
+
+  test.each<[[string, string], string]>([
+    [['ašḫo=n', '3SG.ABS'], '=3SG.ABS'],
+    [['ašḫo=n', 'CON'], 'CON']
+  ])(
+    'for %j, the morphological tag should be %s',
+     ([segmentation, morphTag], newMorphTag) =>
+     expect(typeModification(segmentation, morphTag))
+     .toEqual(newMorphTag)
+  );
+
+});
+
+const boundaryAddition = replaceMorphemeLabel('3SG.ABS', '=3SG.ABS', '=n');
+
+describe('adding a boundary to a morpheme which does not have one', () => {
+
+  test.each<[[string, string], string]>([
+    [['ašḫo=n', '3SG.ABS'], '=3SG.ABS'],
+    [['ašḫo=n', 'CON'], 'CON']
+  ])(
+    'for %j, the morphological tag should be %s',
+     ([segmentation, morphTag], newMorphTag) =>
+     expect(boundaryAddition(segmentation, morphTag))
+     .toEqual(newMorphTag)
+  );
+
+});
