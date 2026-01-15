@@ -118,6 +118,12 @@ describe('aligning a string of morphemes and a morphological tag', () => {
         ['-', '-a'],
         ['=2PL.ABS', '=v']
       ]
+    ],
+    [
+      ['3SG.ABS', '=n'],
+      [
+        ['-3SG.ABS', '=n']
+      ]
     ]
   ])(
     'for %j, an array of grammatical morphemes %j should be returned',
