@@ -3,8 +3,12 @@ import { GrammaticalMorpheme } from './grammaticalMorpheme';
 import { getGrammaticalMorphemesWithBoundary } from '../common/splitter';
 import { removePrefix } from '../common/auxiliary';
 
+function startsWithBoundary(label: string): boolean {
+  return label.startsWith('-') || label.startsWith('=') || label.startsWith('.');
+}
+
 function preprocessLabel(label: string) {
-  if (!(label.startsWith('-') || label.startsWith('=') || label.startsWith('.'))) {
+  if (!startsWithBoundary(label)) {
     return '-' + label;
   } else {
     return label;
