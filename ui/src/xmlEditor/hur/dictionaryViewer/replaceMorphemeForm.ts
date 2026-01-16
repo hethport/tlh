@@ -6,6 +6,14 @@ function startsWithBoundary(form: string): boolean {
   return form.startsWith('-') || form.startsWith('=');
 }
 
+function preprocessForm(form: string): string {
+  if (!startsWithBoundary(form)) {
+    return '-' + form;
+  } else {
+    return form;
+  }
+}
+
 export default function replaceMorphemeForm(label: string, oldForm: string, newForm: string) {
   return (segmentation: string, morphTag: string) => {
     const [stem, grammaticalMorphemeString] = getStemAndGrammaticalMorphemesWithBoundary(
@@ -16,7 +24,7 @@ export default function replaceMorphemeForm(label: string, oldForm: string, newF
     );
     const newGrammaticalMorphemes: GrammaticalMorpheme[] = [];
     for (const grammaticalMorpheme of grammaticalMorphemes) {
-      if (grammaticalMorpheme.label === label && grammaticalMorpheme.form === oldForm
+      if (grammaticalMorpheme.label === label && grammaticalMorpheme.form === preprocessForm(oldForm)
         && startsWithBoundary(newForm)) {
         const newGrammaticalMorpheme = new GrammaticalMorpheme(label, newForm);
         newGrammaticalMorphemes.push(newGrammaticalMorpheme);
