@@ -213,7 +213,7 @@ export function modifyGlobalEntries(dictionary: Dictionary, currentEntries: Entr
           }
           const entrySpec = specification.get(transcription);
           if (entrySpec === undefined) {
-            specification.set(transcription, [[initialAnalysis], [currentAnalysis]]);
+            specification.set(transcription, [oldAnalyses, [newAnalysis]]);
           } else {
             const [toRemove, toAdd] = entrySpec;
             toRemove.push(...oldAnalyses);
