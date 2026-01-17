@@ -13,7 +13,7 @@ import { inConcordance } from '../concordance/concordance';
 import { objectToSetValuedMap, updateSetValuedMapWithOverride, remove } from '../common/utils';
 import { locallyStoreSetValuedMap } from '../dictLocalStorage/localStorageUtils';
 import { reserializeMorphologicalAnalysis } from '../morphologicalAnalysis/reserialization';
-import { removeBrackets } from '../common/brackets';
+import { containsBrackets, removeBrackets } from '../common/brackets';
 
 export type Dictionary = Map<string, Set<string>>;
 
@@ -63,7 +63,7 @@ export function containsAnalysis(dictionary: Dictionary, analysis: string): bool
 
 function lookup(transcription: string): Set<string> | undefined {
   const analyses = dictionary.get(transcription);
-  if (analyses === undefined) {
+  if (analyses === undefined && containsBrackets(transcription)) {
     return dictionary.get(removeBrackets(transcription));
   } else {
     return analyses;
