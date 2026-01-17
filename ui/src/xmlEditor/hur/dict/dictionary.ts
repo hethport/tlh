@@ -60,6 +60,21 @@ export function containsAnalysis(dictionary: Dictionary, analysis: string): bool
   return Array.from(dictionary.values()).some(analyses => analyses.has(analysis));
 }
 
+
+const brackets = /[[\]]/g;
+function removeBrackets(transcription: string): string {
+  return transcription.replaceAll(brackets, '');
+}
+
+function lookup(transcription: string): Set<string> | undefined {
+  const analyses = dictionary.get(transcription);
+  if (analyses === undefined) {
+    return dictionary.get(removeBrackets(transcription));
+  } else {
+    return analyses;
+  }
+}
+
 export function annotateHurrianWord(node: XmlElementNode): void {
   const transliteration: string = getText(node);
   const transcription: string = makeBoundTranscription(transliteration);
@@ -69,12 +84,9 @@ export function annotateHurrianWord(node: XmlElementNode): void {
     node.attributes.mrp0sel = '';
   }
 
-  if (dictionary.has(transcription)) {
+  const possibilities: Set<string> | undefined = lookup(transcription);
+  if (possibilities !== undefined) {
     setGlosses(node);
-    const possibilities: Set<string> | undefined = dictionary.get(transcription);
-    if (possibilities === undefined) {
-      throw new Error();
-    }
     if (node.attributes.firstAnalysisIsPlaceholder === 'true') {
       delete node.attributes.mrp1;
       delete node.attributes.firstAnalysisIsPlaceholder;
