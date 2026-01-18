@@ -9,6 +9,8 @@ import { isValid } from '../dict/morphologicalAnalysisValidator';
 import { readMorphAnalysisValue } from '../morphologicalAnalysis/auxiliary';
 import { removeBrackets } from '../common/brackets';
 
+const openClassPartsOfSpeech = ['noun', 'verb', 'NF', 'ADJ'];
+
 export class Analysis extends PartialAnalysis {
   pos: string;
 
@@ -82,7 +84,11 @@ export class Segmenter {
       }
     }
     if (result.length === 0) {
-      for (const [pos, segmenter] of this.segmenters) {
+      for (const pos of openClassPartsOfSpeech) {
+        const segmenter = this.segmenters.get(pos);
+        if (segmenter === undefined) {
+          continue;
+        }
         const partialAnalyses = segmenter.segmentOov(wordform);
         for (const partialAnalysis of partialAnalyses) {
           const segmentation = partialAnalysis.segmentation;
