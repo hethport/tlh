@@ -8,8 +8,14 @@ import { basicGetStem } from '../common/splitter';
 import { isValid } from '../dict/morphologicalAnalysisValidator';
 import { readMorphAnalysisValue } from '../morphologicalAnalysis/auxiliary';
 import { removeBrackets } from '../common/brackets';
+import { quickGetAttestations } from '../concordance/concordance';
 
 const openClassPartsOfSpeech = ['noun', 'verb', 'NF', 'ADJ'];
+const minimalFrequency = 3;
+
+function isFrequentEnougn(ma: MorphologicalAnalysis): boolean {
+  return quickGetAttestations(ma).length > minimalFrequency;
+}
 
 export class Analysis extends PartialAnalysis {
   pos: string;
@@ -53,6 +59,9 @@ export class Segmenter {
   segmenters = new Map<string, BasicSegmenter>();
 
   add(transcription: string, analysis: MorphologicalAnalysis) {
+    if (!isFrequentEnougn(analysis)) {
+      return;
+    }
     const morphTags = getMorphTags(analysis);
     if (morphTags !== null) {
       const segmentation = analysis.referenceWord;
