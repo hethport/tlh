@@ -2,6 +2,8 @@ import { getStemAndGrammaticalMorphemesWithBoundary } from '../common/splitter';
 import { add, removeMacron, groupBy } from '../common/utils';
 import SuffixTrie from './suffixTrie';
 
+const maximalDeletionCount = 1;
+
 class Stem {
   form: string;
   translation: string;
@@ -79,6 +81,9 @@ export default class BasicSegmenter {
         preprocessedSuffixChain;
       const stem = new Stem(underlyingStem, translation);
       add(this.stems, surfaceStem, stem.toString());
+      if (preprocessedSuffixChain.length - surfaceSuffixChain.length > maximalDeletionCount) {
+        return;
+      }
       for (const morphTag of morphTags) {
         const suffixChain = new SuffixChain(underlyingSuffixChain, morphTag);
         add(this.suffixChains, surfaceSuffixChain, suffixChain.toString());
