@@ -3,6 +3,7 @@ import { add, removeMacron, groupBy } from '../common/utils';
 import SuffixTrie from './suffixTrie';
 
 const maximalDeletionCount = 1;
+const minimalFrequency = 3;
 
 class Stem {
   form: string;
@@ -55,6 +56,7 @@ export class PartialAnalysis {
   translation: string;
   morphTags: string[];
 
+
   constructor(segmentation: string, translation: string, morphTags: string[]) {
     this.segmentation = segmentation;
     this.translation = translation;
@@ -66,8 +68,15 @@ export default class BasicSegmenter {
   stems = new Map<string, Set<string>>();
   suffixChains = new Map<string, Set<string>>();
   suffixTrie = new SuffixTrie();
+  frequencies = new Map<string, number>();
 
-  add(transcription: string, segmentation: string, translation: string, morphTags: string[]) {
+  isFrequentEnough(suffixChain: SuffixChain): boolean {
+    const frequency = this.frequencies.get(suffixChain.toString());
+    return frequency !== undefined && frequency >= minimalFrequency;
+  }
+
+  add(transcription: string, segmentation: string, translation: string, morphTags: string[],
+      frequency: number) {
     const [underlyingStem, underlyingSuffixChain] =
       getStemAndGrammaticalMorphemesWithBoundary(segmentation);
     if (underlyingStem !== '') {
@@ -86,7 +95,14 @@ export default class BasicSegmenter {
       }
       for (const morphTag of morphTags) {
         const suffixChain = new SuffixChain(underlyingSuffixChain, morphTag);
-        add(this.suffixChains, surfaceSuffixChain, suffixChain.toString());
+        const suffixChainRepr = suffixChain.toString();
+        add(this.suffixChains, surfaceSuffixChain, suffixChainRepr);
+        let suffixChainFrequency = this.frequencies.get(suffixChainRepr);
+        if (suffixChainFrequency === undefined) {
+          suffixChainFrequency = 0;
+        }
+        suffixChainFrequency += frequency;
+        this.frequencies.set(suffixChainRepr, suffixChainFrequency);
       }
       this.suffixTrie.add(surfaceSuffixChain);
     }
@@ -114,7 +130,7 @@ export default class BasicSegmenter {
           const suffixChains: SuffixChain[] = Array.from(options).map(option => {
             const [segmentation, morphTag] = option.split('@');
             return new SuffixChain(segmentation, morphTag);
-          });
+          }).filter(this.isFrequentEnough.bind(this));
           const grouped: Map<string, Set<string>> = groupBy(
             suffixChains,
             (suffixChain: SuffixChain) => suffixChain.segmentation,
@@ -146,7 +162,7 @@ export default class BasicSegmenter {
         const suffixChains: SuffixChain[] = Array.from(options).map(option => {
           const [segmentation, morphTag] = option.split('@');
           return new SuffixChain(segmentation, morphTag);
-        });
+        }).filter(this.isFrequentEnough.bind(this));
         const grouped: Map<string, Set<string>> = groupBy(
           suffixChains,
           (suffixChain: SuffixChain) => suffixChain.segmentation,

@@ -11,10 +11,9 @@ import { removeBrackets } from '../common/brackets';
 import { quickGetAttestations } from '../concordance/concordance';
 
 const openClassPartsOfSpeech = ['noun', 'verb', 'NF', 'ADJ'];
-const minimalFrequency = 3;
 
-function isFrequentEnougn(ma: MorphologicalAnalysis): boolean {
-  return quickGetAttestations(ma).length >= minimalFrequency;
+function getFrequency(ma: MorphologicalAnalysis): number {
+  return quickGetAttestations(ma).length;
 }
 
 export class Analysis extends PartialAnalysis {
@@ -59,9 +58,6 @@ export class Segmenter {
   segmenters = new Map<string, BasicSegmenter>();
 
   add(transcription: string, analysis: MorphologicalAnalysis) {
-    if (!isFrequentEnougn(analysis)) {
-      return;
-    }
     const morphTags = getMorphTags(analysis);
     if (morphTags !== null) {
       const segmentation = analysis.referenceWord;
@@ -73,7 +69,8 @@ export class Segmenter {
         segmenter = new BasicSegmenter();
         this.segmenters.set(pos, segmenter);
       }
-      segmenter.add(transcription, segmentation, translation, morphTags);
+      const frequency = getFrequency(analysis);
+      segmenter.add(transcription, segmentation, translation, morphTags, frequency);
     }
   }
 
