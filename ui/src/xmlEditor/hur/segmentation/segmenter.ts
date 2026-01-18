@@ -14,7 +14,7 @@ const openClassPartsOfSpeech = ['noun', 'verb', 'NF', 'ADJ'];
 const minimalFrequency = 3;
 
 function isFrequentEnougn(ma: MorphologicalAnalysis): boolean {
-  return quickGetAttestations(ma).length > minimalFrequency;
+  return quickGetAttestations(ma).length >= minimalFrequency;
 }
 
 export class Analysis extends PartialAnalysis {
