@@ -55,12 +55,14 @@ export class PartialAnalysis {
   segmentation: string;
   translation: string;
   morphTags: string[];
+  surfaceSuffixChain: string;
 
 
-  constructor(segmentation: string, translation: string, morphTags: string[]) {
+  constructor(segmentation: string, translation: string, morphTags: string[], surfaceSuffixChain: string) {
     this.segmentation = segmentation;
     this.translation = translation;
     this.morphTags = morphTags;
+    this.surfaceSuffixChain = surfaceSuffixChain;
   }
 }
 
@@ -142,7 +144,7 @@ export default class BasicSegmenter {
               const [underlyingStem, translation] = stem.split('@');
               const segmentation = joinStemAndSuffixChain(underlyingStem, segmentedSuffixChain);
               const result =
-                new PartialAnalysis(segmentation, translation, morphTags);
+                new PartialAnalysis(segmentation, translation, morphTags, suffixChain);
               segmentations.push(result);
             }
           }
@@ -174,7 +176,7 @@ export default class BasicSegmenter {
           const translation = '';
           const segmentation = joinStemAndSuffixChain(underlyingStem, segmentedSuffixChain);
           const result =
-            new PartialAnalysis(segmentation, translation, morphTags);
+            new PartialAnalysis(segmentation, translation, morphTags, suffixChain);
           segmentations.push(result);
         }
       }

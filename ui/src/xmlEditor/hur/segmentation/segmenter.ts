@@ -19,8 +19,9 @@ function getFrequency(ma: MorphologicalAnalysis): number {
 export class Analysis extends PartialAnalysis {
   pos: string;
 
-  constructor(segmentation: string, translation: string, morphTags: string[], pos: string) {
-    super(segmentation, translation, morphTags);
+  constructor(segmentation: string, translation: string, morphTags: string[], pos: string,
+              surfaceSuffixChain: string) {
+    super(segmentation, translation, morphTags, surfaceSuffixChain);
     this.pos = pos;
   }
 
@@ -76,7 +77,7 @@ export class Segmenter {
 
   segment(wordform: string): MorphologicalAnalysis[] {
     wordform = removeBrackets(wordform);
-    const result: MorphologicalAnalysis[] = [];
+    let result: MorphologicalAnalysis[] = [];
     for (const [pos, segmenter] of this.segmenters) {
       const partialAnalyses = segmenter.segment(wordform);
       for (const partialAnalysis of partialAnalyses) {
@@ -84,12 +85,14 @@ export class Segmenter {
           partialAnalysis.segmentation,
           partialAnalysis.translation,
           partialAnalysis.morphTags,
-          pos
+          pos,
+          partialAnalysis.surfaceSuffixChain
         );
         result.push(analysis.toMorphologicalAnalysis());
       }
     }
     if (result.length === 0) {
+      let maxLength = 0;
       for (const pos of openClassPartsOfSpeech) {
         const segmenter = this.segmenters.get(pos);
         if (segmenter === undefined) {
@@ -97,14 +100,21 @@ export class Segmenter {
         }
         const partialAnalyses = segmenter.segmentOov(wordform);
         for (const partialAnalysis of partialAnalyses) {
-          const segmentation = partialAnalysis.segmentation;
+          const { segmentation, surfaceSuffixChain } = partialAnalysis;
           const stem = basicGetStem(segmentation);
           if (stem.length >= 2) {
+            if (surfaceSuffixChain.length > maxLength) {
+              maxLength = surfaceSuffixChain.length;
+              result = [];
+            } else if (surfaceSuffixChain.length < maxLength) {
+              continue;
+            }
             const analysis = new Analysis(
               partialAnalysis.segmentation,
               partialAnalysis.translation,
               partialAnalysis.morphTags,
-              pos
+              pos,
+              surfaceSuffixChain
             );
             result.push(analysis.toMorphologicalAnalysis());
           }
