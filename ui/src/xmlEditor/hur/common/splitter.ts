@@ -36,7 +36,7 @@ function findTagBoundary(segmentation: string): number {
 export function getStem(segmentation: string): string {
   const i: number = findBoundary(segmentation);
   const stem: string = segmentation.substring(0, i);
-  return stem.replaceAll('(', '').replaceAll(')', '');
+  return stem;
 }
 
 function basicGetGrammaticalMorphemes(segmentation: string, i: number): string {
