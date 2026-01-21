@@ -73,6 +73,10 @@ export function getText(node: XmlElementNode): string {
         case 'del_fin':
           parts.push(']');
           break;
+        case 'c':
+          if (elementChild.attributes.type === 'sign') {
+            parts.push(getText(elementChild));
+          }
       }
     }
   }
