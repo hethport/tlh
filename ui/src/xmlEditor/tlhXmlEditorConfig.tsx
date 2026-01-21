@@ -7,6 +7,7 @@ import {clbNodeConfig} from './elementEditors/ClbEditor';
 import {wordNodeConfig} from './elementEditors/wordNodeData';
 import {gapConfig} from './elementEditors/GapEditor';
 import {paragraphSeparatorConfig} from './elementEditors/ParagraphSeparatorEditor';
+import {tabSeparatorConfig} from './elementEditors/TabSeperatorEditor';
 import {clEditorConfig} from './elementEditors/ClEditor';
 import {textElementConfig} from './textElementConfig';
 import {deviConfig} from './deviConfig';
@@ -104,7 +105,7 @@ export const tlhXmlEditorConfig: XmlEditorConfig = {
     ras_fin: {replace: () => <span className="font-non-italic">*</span>},
     laes_in: {replace: () => <span className="font-non-italic">⸢</span>},
     laes_fin: {replace: () => <span className="font-non-italic">⸣</span>},
-    tabsep: {replace: () => <span className="font-non-italic">‖</span>},
+    //tabsep: {replace: () => <span className="font-non-italic">‖</span>},
 
     materlect: {replace: ({node}) => <span className="materLectionis">{node.attributes.c}</span>},
 
@@ -129,6 +130,8 @@ export const tlhXmlEditorConfig: XmlEditorConfig = {
 
     parsep: paragraphSeparatorConfig,
     parsep_dbl: paragraphSeparatorConfig,
+
+    tabsep: tabSeparatorConfig,
 
     corr: {
       replace: ({node}) => <span className="corr">{node.attributes.c}</span>
