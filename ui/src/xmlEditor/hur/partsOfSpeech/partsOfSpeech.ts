@@ -9,6 +9,7 @@ const defaultPartsOfSpeech: string[] = [
   'NUM',
   'PRON',
   'NF',
+  'ADJ',
   'noun',
   'verb',
   'unclear'
