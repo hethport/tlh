@@ -1,7 +1,8 @@
 import { removeMacron } from './utils';
 
-function preprocessLetter(letter: string): string {
-  return removeMacron(letter).toLowerCase()
+function preprocessString(s: string): string {
+  return removeMacron(s)
+    .toLowerCase()
     .replaceAll('+', '');
 }
 
@@ -18,8 +19,8 @@ function compareLetter(a: string, b: string): number {
 }
 
 export function compare(a: string, b: string): number {
-  a = preprocessLetter(a);
-  b = preprocessLetter(b);
+  a = preprocessString(a);
+  b = preprocessString(b);
   for (let i = 0; i < Math.min(a.length, b.length); i++) {
     const comparisonResult = compareLetter(a[i], b[i]);
     if (comparisonResult === 0) {
