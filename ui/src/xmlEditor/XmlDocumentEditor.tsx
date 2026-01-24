@@ -18,6 +18,7 @@ import {fetchCuneiform} from './elementEditors/LineBreakEditor';
 import {getPriorSiblingPath} from '../nodeIterators';
 import {coloredButtonClasses} from '../defaultDesign';
 import {condenseXmlEvents} from './HeaderEditor';
+import {postprocessNode} from './nodePostprocessing';
 
 export function buildActionSpec(innerAction: Spec<XmlNode>, path: number[]): Spec<XmlNode> {
   return path.reduceRight(
@@ -203,8 +204,11 @@ export function XmlDocumentEditor({
         ? editNodeEditorState(findElement(state.rootNode as XmlElementNode, nextEditablePath), editorConfig, nextEditablePath)
         : undefined;
 
+      const editedNode = state.editorState.node;
+      const resultingNode = postprocessNode(editedNode);
+
       return update(state, {
-        rootNode: buildSpec(state.editorState.path, {$set: state.editorState.node}),
+        rootNode: buildSpec(state.editorState.path, {$set: resultingNode}),
         editorState: newEditorState !== undefined ? {$set: newEditorState} : {changed: {$set: false}},
         changed: {$set: true}
       });
