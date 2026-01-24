@@ -155,7 +155,9 @@ export function XmlDocumentEditor({
 
       return update(state, {
         rootNode: buildSpec(state.editorState.path, {$set: resultingNode}),
-        editorState: newEditorState !== undefined ? {$set: newEditorState} : {changed: {$set: false}},
+        editorState: newEditorState !== undefined
+          ? {$set: newEditorState}
+          : {changed: {$set: false}, node: {$set: resultingNode}},
         changed: {$set: true}
       });
     }
