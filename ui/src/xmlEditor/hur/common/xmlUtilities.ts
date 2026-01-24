@@ -86,6 +86,9 @@ export function getText(node: XmlElementNode): string {
             nextRemoveInitialHyphen = true;
             newPart = getText(elementChild);
           }
+        case 'num':
+          newPart = getText(elementChild);
+          break;
       }
     }
     if (newPart !== null) {
