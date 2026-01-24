@@ -66,10 +66,10 @@ export function getText(node: XmlElementNode): string {
           }
           break;
         case 'aGr':
-          newPart = getText(elementChild) + '-';
+          newPart = getText(elementChild);
           break;
         case 'sGr':
-          newPart = getText(elementChild) + '-';
+          newPart = getText(elementChild);
           break;
         case 'del_in':
           newPart = '[';
