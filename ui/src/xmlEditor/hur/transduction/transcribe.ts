@@ -99,5 +99,6 @@ export function makeBoundTranscription(word: string): string {
   word = processVowels(word);
   word = word.replaceAll(/(?<![x(\p{Lu}\d])-(?![)\p{Lu}])/gu, '');
   word = processConsonants(word);
+  word = word.replace(/-$/, '');
   return word;
 }
