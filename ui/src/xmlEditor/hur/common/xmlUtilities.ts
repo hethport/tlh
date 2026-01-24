@@ -102,6 +102,6 @@ export function getText(node: XmlElementNode): string {
       removeInitialHyphen = nextRemoveInitialHyphen;
     }
   }
-  const result: string = parts.join('').replace(/-$/, '');
+  const result: string = parts.join('');
   return result;
 }
