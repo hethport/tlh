@@ -1,7 +1,8 @@
 import { removeMacron } from './utils';
 
 function preprocessLetter(letter: string): string {
-  return removeMacron(letter).toLowerCase();
+  return removeMacron(letter).toLowerCase()
+    .replaceAll('+', '');
 }
 
 const lang = 'lv';
