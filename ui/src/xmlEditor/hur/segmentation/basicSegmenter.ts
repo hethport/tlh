@@ -4,6 +4,7 @@ import SuffixTrie from './suffixTrie';
 
 const maximalDeletionCount = 1;
 const minimalFrequency = 3;
+const sep = '@';
 
 class Stem {
   form: string;
@@ -15,8 +16,13 @@ class Stem {
   }
 
   toString(): string {
-    return this.form + '@' + this.translation;
+    return this.form + sep + this.translation;
   }
+}
+
+export function parseStem(repr: string): Stem {
+  const [form, translation] = repr.split(sep);
+  return new Stem(form, translation);
 }
 
 class SuffixChain {
