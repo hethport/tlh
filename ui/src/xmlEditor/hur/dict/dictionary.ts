@@ -14,6 +14,7 @@ import { objectToSetValuedMap, updateSetValuedMapWithOverride, remove } from '..
 import { locallyStoreSetValuedMap } from '../dictLocalStorage/localStorageUtils';
 import { reserializeMorphologicalAnalysis } from '../morphologicalAnalysis/reserialization';
 import { containsBrackets, removeBrackets } from '../common/brackets';
+import { SegmenterInfo, IStem } from '../segmentation/segmenterInfo';
 
 export type Dictionary = Map<string, Set<string>>;
 
@@ -22,6 +23,7 @@ export type ModifyDictionary = (dictionary: Dictionary) => Dictionary;
 export type SetDictionary = (modifyDictionary: ModifyDictionary) => void;
 
 let segmenter: Segmenter = new Segmenter();
+let segmenterInfo: SegmenterInfo = new SegmenterInfo(segmenter);
 
 function initializeDictionary(locStorKey: string): Dictionary {
   const locallyStoredDictionary = localStorage.getItem(locStorKey);
@@ -31,6 +33,7 @@ function initializeDictionary(locStorKey: string): Dictionary {
     const dictObject: { [key: string]: string[] } = JSON.parse(locallyStoredDictionary);
     const dict = objectToSetValuedMap(cleanUpDictionary(dictObject));
     segmenter = createSegmenter(dict);
+    segmenterInfo = new SegmenterInfo(segmenter);
     return dict;
   }
 }
@@ -205,4 +208,8 @@ export function setDictionary(obj: { [key: string]: string[] }): void {
   }
   dictionary = objectToSetValuedMap(newObj);
   segmenter = createSegmenter(dictionary);
+}
+
+export function getStemVariants(stem: IStem): Set<string> {
+  return segmenterInfo.getStemVariants(stem);
 }

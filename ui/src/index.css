@@ -227,6 +227,13 @@ code {
   width: 25rem;
 }
 
+.stem-variants {
+  display: grid;
+  margin-left: 1rem;
+  margin-bottom: 1rem;
+  width: 25rem;
+}
+
 .button-stack {
   position: fixed;
   display: grid;
