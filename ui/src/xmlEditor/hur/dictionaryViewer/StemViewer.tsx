@@ -14,6 +14,7 @@ import { replaceMorphologicalAnalysis } from '../corpus/corpus';
 import { areCorrect } from '../dict/morphologicalAnalysisValidator';
 import { getMorphTags } from '../morphologicalAnalysis/auxiliary';
 import { getEnglishTranslationKey } from '../translations/englishTranslations';
+import { getStemVariants } from '../dict/dictionary';
 
 const errorSymbol = <>&#9876;</>;
 
@@ -280,6 +281,14 @@ export function StemViewer({stem, initialEntries, setDictionary, initialUnfolded
           englishTranslation={englishTranslation}
           onEnglishTranslationBlur={onEnglishTranslationBlur} />
         <br />
+        {(unfolded || allUnfolded) &&
+          <pre className="stem-variants">
+            <label>
+              {Array.from(getStemVariants({ form: stemForm, translation, pos: partOfSpeech }))
+                .sort().join(', ')}
+            </label>
+          </pre>
+        }
         {(unfolded || allUnfolded) && entries.map(
           (entry: Entry, index: number) => {
             const morphAnalysisValue = writeMorphAnalysisValue(
