@@ -1,5 +1,5 @@
 import { JSX, useState, useEffect } from 'react';
-import { getStemWithoutFinalOpeningBracket, getStem } from '../common/splitter';
+import { getStemWithoutFinalOpeningBracket, getStem, openingBracket } from '../common/splitter';
 import { groupBy } from '../common/utils';
 import { StemViewer, Stem } from './StemViewer';
 import { Entry } from './Wordform';
@@ -101,9 +101,18 @@ export function DictionaryViewer({entries, setDictionary, initialEnglishTranslat
               });
             }
           });
+          const isFragmentary = entries.every(entry => {
+            return getStem(entry.morphologicalAnalysis.referenceWord).endsWith(openingBracket);
+          });
+          const form = isFragmentary ? stemObject.form + '[' : stemObject.form;
           return (
             <StemViewer
-              stem={stemObject}
+              stem={{
+                index: stemObject.index,
+                form,
+                translation: stemObject.translation,
+                pos: stemObject.pos
+              }}
               initialEntries={entries}
               key={key} 
               setDictionary={setDictionary}
