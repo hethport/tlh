@@ -20,8 +20,8 @@ import { areLexicallyEquivalent, areEquivalent } from '../morphologicalAnalysis/
 import { mergeMultiMorphologicalAnalyses } from '../morphologicalAnalysis/merging';
 import { readMorphAnalysisValue } from '../morphologicalAnalysis/auxiliary';
 import { haveSameSource, updateSourcesAfterMerge } from '../changes/changesAccumulator';
-import { openingBracket } from '../common/splitter';
 import { getStem, openingBracket } from '../common/splitter';
+import { containsBrackets, getBracketBalance } from '../common/brackets';
 
 export const errorSymbol = <>&#9876;</>;
 const fragmentSymbol = '[';
@@ -43,6 +43,13 @@ export function applySideEffectsMulti(origin: string, targets: Target[]): void {
   replaceConcordanceKeyWithMultiple(origin, stringTargets);
 }
 
+export interface IStem {
+  index: string;
+  form: string;
+  translation: string;
+  pos: string;
+}
+
 export class Stem {
   index: string;
   form: string;
@@ -57,7 +64,7 @@ export class Stem {
 }
     
 interface IProps {
-  stem: Stem;
+  stem: IStem;
   initialEntries: Entry[];
   setDictionary: SetDictionary;
   initialUnfolded: boolean;
@@ -70,7 +77,9 @@ interface IProps {
 function replaceStem(newStem: string, segmentation: string) {
   const boundaryIndex = findBoundary(segmentation);
   const suffixesAndEnclitics = segmentation.substring(boundaryIndex);
-  if (boundaryIndex > 0 && segmentation[boundaryIndex - 1] === openingBracket) {
+  const bracketBalance = getBracketBalance(newStem);
+  const newStemHasUnclosedBracket = bracketBalance > 0;
+  if (boundaryIndex > 0 && segmentation[boundaryIndex - 1] === openingBracket && !newStemHasUnclosedBracket) {
     return newStem + openingBracket + suffixesAndEnclitics;
   }
   return newStem + suffixesAndEnclitics;
@@ -299,7 +308,7 @@ export function StemViewer({stem, initialEntries, setDictionary, initialUnfolded
   );
 
   const isFragmentary = entries.every(entry => {
-    return getStem(entry.morphologicalAnalysis.referenceWord).endsWith(openingBracket);
+    return entry.transcriptions.every(containsBrackets);
   });
   
   return (
