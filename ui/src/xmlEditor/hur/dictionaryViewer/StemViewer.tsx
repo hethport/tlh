@@ -20,6 +20,7 @@ import { areLexicallyEquivalent, areEquivalent } from '../morphologicalAnalysis/
 import { mergeMultiMorphologicalAnalyses } from '../morphologicalAnalysis/merging';
 import { readMorphAnalysisValue } from '../morphologicalAnalysis/auxiliary';
 import { haveSameSource, updateSourcesAfterMerge } from '../changes/changesAccumulator';
+import { openingBracket } from '../common/splitter';
 
 export const errorSymbol = <>&#9876;</>;
 
@@ -64,8 +65,13 @@ interface IProps {
   updateEnglishTranslationKey: (newEglishTranslationKey: string) => void;
 }
 
-export function replaceStem(newStem: string, segmentation: string) {
-  return newStem + segmentation.substring(findBoundary(segmentation));
+function replaceStem(newStem: string, segmentation: string) {
+  const boundaryIndex = findBoundary(segmentation);
+  const suffixesAndEnclitics = segmentation.substring(boundaryIndex);
+  if (boundaryIndex > 0 && segmentation[boundaryIndex - 1] === openingBracket) {
+    return newStem + openingBracket + suffixesAndEnclitics;
+  }
+  return newStem + suffixesAndEnclitics;
 }
 
 export function modifyStem(newStem: string) {

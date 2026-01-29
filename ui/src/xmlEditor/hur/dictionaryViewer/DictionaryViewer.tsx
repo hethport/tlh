@@ -1,5 +1,5 @@
 import { JSX, useState, useEffect } from 'react';
-import { getStem } from '../common/splitter';
+import { getStemWithoutFinalOpeningBracket } from '../common/splitter';
 import { groupBy } from '../common/utils';
 import { StemViewer, Stem } from './StemViewer';
 import { Entry } from './Wordform';
@@ -17,6 +17,7 @@ import update from 'immutability-helper';
 import { EnglishTranslationsDownloader } from '../translations/files/EnglishTranslationsDownloader';
 import { DictionaryUploader } from '../dict/files/DictionaryUploader';
 import { EnglishTranslationsUploader } from '../translations/files/EnglishTranslationsUploader';
+import { stemIsFragmentary } from './dictionaryFilter';
 
 interface IProps {
   entries: Entry[];
@@ -25,7 +26,7 @@ interface IProps {
 }
 
 function keyFunc({morphologicalAnalysis}: Entry): string {
-  return [getStem(morphologicalAnalysis.referenceWord),
+  return [getStemWithoutFinalOpeningBracket(morphologicalAnalysis.referenceWord),
           morphologicalAnalysis.translation,
           morphologicalAnalysis.paradigmClass].join('@');
 }
@@ -54,7 +55,12 @@ export function DictionaryViewer({entries, setDictionary, initialEnglishTranslat
   
   const grouped = groupBy(entries, keyFunc, valueFunc);
   
-  const stems = Array.from(grouped.keys()).sort(compare);
+  const stems = Array.from(grouped.keys())
+    .filter(repr => {
+      const [stem] = repr.split('@');
+      return !stemIsFragmentary(stem);
+    })
+    .sort(compare);
   
   return (
     <div className="grid grid-cols-2 gap-2 my-2 uneven-columns">

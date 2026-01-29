@@ -1,3 +1,7 @@
+import { removePotentiallyImproperSuffix } from './auxiliary';
+
+export const openingBracket = '[';
+
 /**
  * Determine whether the letter at the specified position
  * in the given word is enclosed in parentheses.
@@ -37,6 +41,11 @@ export function getStem(segmentation: string): string {
   const i: number = findBoundary(segmentation);
   const stem: string = segmentation.substring(0, i);
   return stem;
+}
+
+export function getStemWithoutFinalOpeningBracket(segmentation: string): string {
+  const stem = getStem(segmentation);
+  return removePotentiallyImproperSuffix(stem, openingBracket);
 }
 
 function basicGetGrammaticalMorphemes(segmentation: string, i: number): string {
