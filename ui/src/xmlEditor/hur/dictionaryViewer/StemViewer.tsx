@@ -21,8 +21,10 @@ import { mergeMultiMorphologicalAnalyses } from '../morphologicalAnalysis/mergin
 import { readMorphAnalysisValue } from '../morphologicalAnalysis/auxiliary';
 import { haveSameSource, updateSourcesAfterMerge } from '../changes/changesAccumulator';
 import { openingBracket } from '../common/splitter';
+import { getStem, openingBracket } from '../common/splitter';
 
 export const errorSymbol = <>&#9876;</>;
+const fragmentSymbol = '[';
 
 export function applySideEffects(origin: string, target: string, targetIsExtant: boolean): void {
   addChange(origin, [{ target, targetIsExtant }]);
@@ -295,6 +297,10 @@ export function StemViewer({stem, initialEntries, setDictionary, initialUnfolded
       areCorrect(entry.morphologicalAnalysis.referenceWord, morphTag)
     )
   );
+
+  const isFragmentary = entries.every(entry => {
+    return getStem(entry.morphologicalAnalysis.referenceWord).endsWith(openingBracket);
+  });
   
   return (
     <div className="flex flex-row">
@@ -388,6 +394,9 @@ export function StemViewer({stem, initialEntries, setDictionary, initialUnfolded
       </div>
       {!isCorrect &&
         <div className="p-2 error-mark">{errorSymbol}</div>
+      }
+      {isFragmentary &&
+        <div className="p-2 fragment-mark">{fragmentSymbol}</div>
       }
     </div>
   );
