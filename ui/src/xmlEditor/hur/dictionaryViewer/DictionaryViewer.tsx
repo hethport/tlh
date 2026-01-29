@@ -1,5 +1,5 @@
 import { JSX, useState, useEffect } from 'react';
-import { getStemWithoutFinalOpeningBracket } from '../common/splitter';
+import { getStemWithoutFinalOpeningBracket, getStem } from '../common/splitter';
 import { groupBy } from '../common/utils';
 import { StemViewer, Stem } from './StemViewer';
 import { Entry } from './Wordform';
@@ -52,15 +52,16 @@ export function DictionaryViewer({entries, setDictionary, initialEnglishTranslat
   useEffect(() => {
     setGlobalEnglishTranslations(englishTranslations);
   }, [englishTranslations]);
+
+  const filteredEntries = entries.filter(entry => {
+    const segmentation = entry.morphologicalAnalysis.referenceWord;
+    const stem = getStem(segmentation);
+    return !stemIsFragmentary(stem);
+  });
   
-  const grouped = groupBy(entries, keyFunc, valueFunc);
+  const grouped = groupBy(filteredEntries, keyFunc, valueFunc);
   
-  const stems = Array.from(grouped.keys())
-    .filter(repr => {
-      const [stem] = repr.split('@');
-      return !stemIsFragmentary(stem);
-    })
-    .sort(compare);
+  const stems = Array.from(grouped.keys()).sort(compare);
   
   return (
     <div className="grid grid-cols-2 gap-2 my-2 uneven-columns">
