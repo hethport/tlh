@@ -1,7 +1,8 @@
 import { removeMacron } from './utils';
+import { removeBrackets } from './brackets';
 
 function preprocessString(s: string): string {
-  return removeMacron(s)
+  return removeBrackets(removeMacron(s))
     .toLowerCase()
     .replaceAll('+', '');
 }
