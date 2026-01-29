@@ -1,3 +1,3 @@
 export function stemIsFragmentary(stem: string) {
-  return stem.startsWith(']');
+  return stem === '' || stem === '[' || stem.startsWith(']');
 }
