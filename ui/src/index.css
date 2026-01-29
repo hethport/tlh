@@ -291,6 +291,10 @@ code {
   font-size: 30px;
 }
 
+.fragment-mark {
+  font-size: 20px;
+}
+
 .no-line-break {
   white-space: nowrap;
 }
