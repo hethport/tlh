@@ -308,7 +308,7 @@ export function StemViewer({stem, initialEntries, setDictionary, initialUnfolded
   );
 
   const isFragmentary = entries.every(entry => {
-    return entry.transcriptions.every(containsBrackets);
+    return containsBrackets(entry.morphologicalAnalysis.referenceWord);
   });
   
   return (
