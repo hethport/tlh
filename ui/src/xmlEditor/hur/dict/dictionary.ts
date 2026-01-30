@@ -6,7 +6,7 @@ import { setGlosses, saveGloss } from '../translations/glossUpdater';
 import { MorphologicalAnalysis, writeMorphAnalysisValue, readMorphologicalAnalysis }
   from '../../../model/morphologicalAnalysis';
 import { convertDictionary } from '../common/utility';
-import { isValid, normalize } from './morphologicalAnalysisValidator';
+import { isValid, normalize, isValidFor } from './morphologicalAnalysisValidator';
 import { Segmenter, createSegmenter } from '../segmentation/segmenter';
 import { readMorphAnalysisValue } from '../morphologicalAnalysis/auxiliary';
 import { inConcordance } from '../concordance/concordance';
@@ -126,7 +126,7 @@ export function annotateHurrianWord(node: XmlElementNode): void {
     if (mrps.size === 0) {
       let i = 1;
       for (const analysis of possibilities) {
-        if (isValid(analysis)) {
+        if (isValidFor(analysis, transcription)) {
           node.attributes['mrp' + i.toString()] = analysis;
           i++;
         }
