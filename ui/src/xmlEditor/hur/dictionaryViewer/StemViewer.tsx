@@ -74,22 +74,22 @@ interface IProps {
   updateEnglishTranslationKey: (newEglishTranslationKey: string) => void;
 }
 
-function replaceStem(newStem: string, segmentation: string) {
+function replaceStem(newStem: string, segmentation: string, newStemHasUnclosedBracket: boolean) {
   const boundaryIndex = findBoundary(segmentation);
   const suffixesAndEnclitics = segmentation.substring(boundaryIndex);
-  const bracketBalance = getBracketBalance(newStem);
-  const newStemHasUnclosedBracket = bracketBalance > 0;
   if (boundaryIndex > 0 && segmentation[boundaryIndex - 1] === openingBracket && !newStemHasUnclosedBracket) {
     return newStem + openingBracket + suffixesAndEnclitics;
   }
   return newStem + suffixesAndEnclitics;
 }
 
-export function modifyStem(newStem: string) {
+function modifyStem(newStem: string) {
+  const bracketBalance = getBracketBalance(newStem);
+  const newStemHasUnclosedBracket = bracketBalance > 0;
   const setStem = (morphologicalAnalysis: MorphologicalAnalysis) => {
     const segmentation = morphologicalAnalysis.referenceWord;
     return update(morphologicalAnalysis,
-      { referenceWord: { $set: replaceStem(newStem, segmentation)} });
+      { referenceWord: { $set: replaceStem(newStem, segmentation, newStemHasUnclosedBracket)} });
   };
   return setStem;
 }
