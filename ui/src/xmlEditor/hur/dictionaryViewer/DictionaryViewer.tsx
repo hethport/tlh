@@ -17,7 +17,7 @@ import update from 'immutability-helper';
 import { EnglishTranslationsDownloader } from '../translations/files/EnglishTranslationsDownloader';
 import { DictionaryUploader } from '../dict/files/DictionaryUploader';
 import { EnglishTranslationsUploader } from '../translations/files/EnglishTranslationsUploader';
-import { stemIsFragmentary } from './dictionaryFilter';
+import { stemIsFragmentary, rootMayBeOnlyPartiallyPreserved } from './dictionaryFilter';
 
 interface IProps {
   entries: Entry[];
@@ -61,7 +61,16 @@ export function DictionaryViewer({entries, setDictionary, initialEnglishTranslat
   
   const grouped = groupBy(filteredEntries, keyFunc, valueFunc);
   
-  const stems = Array.from(grouped.keys()).sort(compare);
+  const stems = Array.from(grouped.keys())
+    .filter(repr => {
+      const [stem, translation] = repr.split('@');
+      const entries = grouped.get(repr);
+      if (entries === undefined) {
+        return false;
+      }
+      return !rootMayBeOnlyPartiallyPreserved(stem, translation, Array.from(entries));
+    })
+    .sort(compare);
   
   return (
     <div className="grid grid-cols-2 gap-2 my-2 uneven-columns">
