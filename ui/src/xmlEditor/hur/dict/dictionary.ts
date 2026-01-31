@@ -26,7 +26,7 @@ let segmenter: Segmenter = new Segmenter();
 let segmenterInfo: SegmenterInfo = new SegmenterInfo(segmenter);
 
 function initializeDictionary(locStorKey: string): Dictionary {
-  const locallyStoredDictionary = localStorage.getItem(locStorKey);
+  const locallyStoredDictionary = null; //localStorage.getItem(locStorKey);
   if (locallyStoredDictionary === null) {
     return new Map();
   } else {

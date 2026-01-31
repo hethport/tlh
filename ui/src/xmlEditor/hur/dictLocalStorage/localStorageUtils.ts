@@ -2,7 +2,7 @@ import { objectToSetValuedMap, objectToMap } from '../common/utils';
 import { convertDictionary, convertMapping } from '../common/utility';
 
 export function loadSetValuedMapFromLocalStorage(localStorageKey: string): Map<string, Set<string>> {
-  const locallyStoredMap = localStorage.getItem(localStorageKey);
+  const locallyStoredMap = null; //localStorage.getItem(localStorageKey);
   if (locallyStoredMap === null) {
     return new Map();
   } else {
@@ -12,7 +12,7 @@ export function loadSetValuedMapFromLocalStorage(localStorageKey: string): Map<s
 }
 
 export function loadMapFromLocalStorage<TValue>(localStorageKey: string): Map<string, TValue> {
-  const locallyStoredMap = localStorage.getItem(localStorageKey);
+  const locallyStoredMap = null; //localStorage.getItem(localStorageKey);
   if (locallyStoredMap === null) {
     return new Map();
   } else {
@@ -22,7 +22,7 @@ export function loadMapFromLocalStorage<TValue>(localStorageKey: string): Map<st
 }
 
 export function loadArrayFromLocalStorage<T>(localStorageKey: string, defaultArray: T[]): T[] {
-  const locallyStoredArray = localStorage.getItem(localStorageKey);
+  const locallyStoredArray = null; //localStorage.getItem(localStorageKey);
   if (locallyStoredArray === null) {
     return defaultArray;
   } else {

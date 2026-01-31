@@ -1,6 +1,17 @@
 import { formIsFragment } from '../common/utils';
 import { getPos } from '../partsOfSpeech/partsOfSpeech';
-import { splitSegmentation } from '../../morphAnalysisOption/MorphemesEditor';
+const formSep = /((?<!\()-|-(?!\))|=| )/u;
+const prestemBoundary = ' ';
+
+export function splitSegmentation(segmentation: string): [string, string][] {
+  const morphemes: [string, string][] = [];
+  const spl = segmentation.split(formSep);
+  morphemes.push([spl[0], prestemBoundary]);
+  for (let i = 1; i < spl.length; i += 2) {
+    morphemes.push([spl[i + 1], spl[i]]);
+  }
+  return morphemes;
+}
 
 const sep = /(?<!\()-(?!\))|=/;
 

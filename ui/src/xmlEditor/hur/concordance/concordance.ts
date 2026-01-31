@@ -6,7 +6,6 @@ import { writeMorphAnalysisValue, MorphologicalAnalysis } from '../../../model/m
 import { readMorphAnalysisValue } from '../morphologicalAnalysis/auxiliary';
 import { loadSetValuedMapFromLocalStorage, locallyStoreSetValuedMap }
   from '../dictLocalStorage/localStorageUtils';
-import { hasMultipleOccurences } from '../corpus/corpus';
 import { addMorphologicalAnalysis } from '../dict/dictionaryUpdater';
 import { deleteAnalysisFromHurrianDictionary } from '../dict/dictionary';
 import { reserializeMorphologicalAnalysis } from '../morphologicalAnalysis/reserialization';
@@ -50,12 +49,10 @@ export function addAttestation(transcription: string, analysis: string, attestat
 
 export function removeAttestation(transcription: string, analysis: string, attestation: Attestation) {
   const address = attestation.toString();
-  if (!hasMultipleOccurences(analysis, address)) {
-    const preprocessedAnalysis = preprocess(analysis);
-    remove(concordance, preprocessedAnalysis, address);
-    if (!concordance.has(preprocessedAnalysis)) {
-      deleteAnalysisFromHurrianDictionary(transcription, preprocessedAnalysis);
-    }
+  const preprocessedAnalysis = preprocess(analysis);
+  remove(concordance, preprocessedAnalysis, address);
+  if (!concordance.has(preprocessedAnalysis)) {
+    deleteAnalysisFromHurrianDictionary(transcription, preprocessedAnalysis);
   }
 }
 
