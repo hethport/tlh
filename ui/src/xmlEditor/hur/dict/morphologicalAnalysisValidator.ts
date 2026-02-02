@@ -1,6 +1,6 @@
 import { formIsFragment } from '../common/utils';
 import { getPos } from '../partsOfSpeech/partsOfSpeech';
-import { splitSegmentation } from '../../morphAnalysisOption/MorphemesEditor';
+import { splitSegmentation } from '../common/morphemeSplitting';
 
 const sep = /(?<!\()-(?!\))|=/;
 
