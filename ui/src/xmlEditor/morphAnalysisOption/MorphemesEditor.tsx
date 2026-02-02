@@ -2,6 +2,7 @@ import { Spec } from 'immutability-helper';
 import { MorphologicalAnalysis } from '../../model/morphologicalAnalysis';
 import { updateHurrianAnalysis } from '../hur/translations/analysisUpdater';
 import { formIsFragment } from '../hur/common/utils';
+import { prestemBoundary, splitSegmentation, splitAnalysis } from '../hur/common/morphemeSplitting';
 
 interface IProps {
   segmentation: string,
@@ -11,31 +12,7 @@ interface IProps {
   paradigmClass: string;
 }
 
-const formSep = /((?<!\()-|-(?!\))|=| )/u;
-const glossSep = /((?<!\()-|-(?!\))|=| |(?<!=[123](?:SG|PL))\.(?=ABS)|^\.)/;
 const stemFragmentGloss = '?';
-
-const prestemBoundary = ' ';
-
-export function splitSegmentation(segmentation: string): [string, string][] {
-  const morphemes: [string, string][] = [];
-  const spl = segmentation.split(formSep);
-  morphemes.push([spl[0], prestemBoundary]);
-  for (let i = 1; i < spl.length; i += 2) {
-    morphemes.push([spl[i + 1], spl[i]]);
-  }
-  return morphemes;
-}
-
-function splitAnalysis(analysis: string): [string, string][] {
-  const morphemes: [string, string][] = [];
-  const spl = analysis.split(glossSep);
-  morphemes.push([spl[0], prestemBoundary]);
-  for (let i = 1; i < spl.length; i += 2) {
-    morphemes.push([spl[i + 1], spl[i]]);
-  }
-  return morphemes;
-}
 
 const kindToBoundary: { [key: string]: string } = {
   'stem': prestemBoundary,
