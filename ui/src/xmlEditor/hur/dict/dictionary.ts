@@ -208,6 +208,7 @@ export function setDictionary(obj: { [key: string]: string[] }): void {
   }
   dictionary = objectToSetValuedMap(newObj);
   segmenter = createSegmenter(dictionary);
+  segmenterInfo = new SegmenterInfo(segmenter);
 }
 
 export function getStemVariants(stem: IStem): Set<string> {
