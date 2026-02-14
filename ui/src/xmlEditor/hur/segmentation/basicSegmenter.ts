@@ -3,7 +3,7 @@ import { add, removeMacron, groupBy } from '../common/utils';
 import SuffixTrie from './suffixTrie';
 
 const maximalDeletionCount = 1;
-const minimalFrequency = 3;
+const minimalFrequency = 1;
 const sep = '@';
 
 class Stem {
