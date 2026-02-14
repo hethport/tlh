@@ -15,6 +15,10 @@ import { locallyStoreSetValuedMap } from '../dictLocalStorage/localStorageUtils'
 import { reserializeMorphologicalAnalysis } from '../morphologicalAnalysis/reserialization';
 import { containsBrackets, removeBrackets } from '../common/brackets';
 import { SegmenterInfo, IStem } from '../segmentation/segmenterInfo';
+import { removeMacron, addMultiple } from '../common/utils';
+import { DictionaryConfig } from '../../dictionaryConfig';
+import { dictionaryConfigSelector } from '../../../newStore';
+import { useSelector } from 'react-redux';
 
 export type Dictionary = Map<string, Set<string>>;
 
@@ -24,6 +28,16 @@ export type SetDictionary = (modifyDictionary: ModifyDictionary) => void;
 
 let segmenter: Segmenter = new Segmenter();
 let segmenterInfo: SegmenterInfo = new SegmenterInfo(segmenter);
+let noPleneDictionary = new Map<string, Set<string>>();
+
+function initializeNoPleneDictionary(dictionary: Dictionary): Dictionary {
+  noPleneDictionary = new Map<string, Set<string>>();
+  for (const [transcription, analyses] of dictionary) {
+    const noPleneTranscription = removeMacron(transcription);
+    addMultiple(noPleneDictionary, noPleneTranscription, analyses);
+  }
+  return noPleneDictionary;
+}
 
 function initializeDictionary(locStorKey: string): Dictionary {
   const locallyStoredDictionary = localStorage.getItem(locStorKey);
@@ -34,6 +48,7 @@ function initializeDictionary(locStorKey: string): Dictionary {
     const dict = objectToSetValuedMap(cleanUpDictionary(dictObject));
     segmenter = createSegmenter(dict);
     segmenterInfo = new SegmenterInfo(segmenter);
+    noPleneDictionary = initializeNoPleneDictionary(dict);
     return dict;
   }
 }
@@ -64,7 +79,9 @@ export function containsAnalysis(dictionary: Dictionary, analysis: string): bool
   return Array.from(dictionary.values()).some(analyses => analyses.has(analysis));
 }
 
-function lookup(transcription: string): Set<string> | undefined {
+type LookupResult = Set<string> | undefined;
+
+function lookup(transcription: string): LookupResult {
   const analyses = dictionary.get(transcription);
   if (analyses === undefined && containsBrackets(transcription)) {
     return dictionary.get(removeBrackets(transcription));
@@ -73,7 +90,23 @@ function lookup(transcription: string): Set<string> | undefined {
   }
 }
 
+function noPleneLookup(transcription: string): LookupResult {
+  const noPleneTranscription = removeMacron(transcription);
+  return noPleneDictionary.get(noPleneTranscription);
+}
+
+function parameterizedLookup(ignorePlene: boolean, transcription: string): LookupResult {
+  if (ignorePlene) {
+    return noPleneLookup(transcription);
+  } else {
+    return lookup(transcription);
+  }
+}
+
 export function annotateHurrianWord(node: XmlElementNode): void {
+  const currentDictionaryConfig: DictionaryConfig = useSelector(dictionaryConfigSelector);
+  const { ignorePlene } = currentDictionaryConfig;
+
   const transliteration: string = getText(node);
   const transcription: string = makeBoundTranscription(transliteration);
 
@@ -82,7 +115,7 @@ export function annotateHurrianWord(node: XmlElementNode): void {
     node.attributes.mrp0sel = '';
   }
 
-  const possibilities: Set<string> | undefined = lookup(transcription);
+  const possibilities: Set<string> | undefined = parameterizedLookup(ignorePlene, transcription);
   if (possibilities !== undefined) {
     setGlosses(node);
     if (node.attributes.firstAnalysisIsPlaceholder === 'true') {
@@ -209,6 +242,7 @@ export function setDictionary(obj: { [key: string]: string[] }): void {
   dictionary = objectToSetValuedMap(newObj);
   segmenter = createSegmenter(dictionary);
   segmenterInfo = new SegmenterInfo(segmenter);
+  noPleneDictionary = initializeNoPleneDictionary(dictionary);
 }
 
 export function getStemVariants(stem: IStem): Set<string> {

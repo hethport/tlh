@@ -84,7 +84,7 @@ export function remove<TKey, TValue>(map: Map<TKey, Set<TValue>>, key: TKey, val
   }
 }
 
-export function addMultiple<TKey, TValue>(map: Map<TKey, Set<TValue>>, key: TKey, values: TValue[]) {
+export function addMultiple<TKey, TValue>(map: Map<TKey, Set<TValue>>, key: TKey, values: Iterable<TValue>) {
   const current = getValueSet(map, key);
   for (const value of values) {
     current.add(value);
