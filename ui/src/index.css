@@ -295,6 +295,10 @@ code {
   white-space: nowrap;
 }
 
+.checkbox-label {
+  margin-right: 1rem;
+}
+
 /*
 .leftList, rightList {
   display: inline;
