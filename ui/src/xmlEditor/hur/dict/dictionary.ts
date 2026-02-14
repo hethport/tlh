@@ -180,6 +180,8 @@ export function basicUpdateHurrianDictionary(
   const normalized = normalize(value, true, false);
   if (normalized !== null) {
     add(dictionary, transcription, normalized);
+    const noPleneTranscription = removeMacron(transcription);
+    add(noPleneDictionary, noPleneTranscription, normalized);
     const ma = readMorphologicalAnalysis(1, normalized, []);
     if (ma !== undefined) {
       segmenter.add(transcription, ma);
