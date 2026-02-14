@@ -15,7 +15,7 @@ import { locallyStoreSetValuedMap } from '../dictLocalStorage/localStorageUtils'
 import { reserializeMorphologicalAnalysis } from '../morphologicalAnalysis/reserialization';
 import { containsBrackets, removeBrackets } from '../common/brackets';
 import { SegmenterInfo, IStem } from '../segmentation/segmenterInfo';
-import { removeMacron, addMultiple } from '../common/utils';
+import { removeMacron, addMultiple, add } from '../common/utils';
 import { DictionaryConfig } from '../../dictionaryConfig';
 import { dictionaryConfigSelector } from '../../../newStore';
 import { useSelector } from 'react-redux';
@@ -179,18 +179,7 @@ export function basicUpdateHurrianDictionary(
   }
   const normalized = normalize(value, true, false);
   if (normalized !== null) {
-    let possibilities: Set<string> | undefined;
-    if (dictionary.has(transcription)) {
-      possibilities = dictionary.get(transcription);
-    }
-    else {
-      possibilities = new Set<string>();
-      dictionary.set(transcription, possibilities);
-    }
-    if (possibilities === undefined) {
-      throw new Error();
-    }
-    possibilities.add(normalized);
+    add(dictionary, transcription, normalized);
     const ma = readMorphologicalAnalysis(1, normalized, []);
     if (ma !== undefined) {
       segmenter.add(transcription, ma);
