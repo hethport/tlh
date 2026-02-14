@@ -1,6 +1,7 @@
 import { configureStore, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { Rights } from './graphql';
 import { defaultEditorKeyConfig, EditorKeyConfig } from './xmlEditor/editorKeyConfig';
+import { defaultDictionaryConfig, DictionaryConfig } from './xmlEditor/dictionaryConfig';
 
 function loadFromLocalStorage<T>(key: string, defaultValue: T): T {
   const foundString = localStorage.getItem(key);
@@ -72,17 +73,38 @@ export const { updatePreferences } = editorKeyConfigSlice.actions;
 
 export const editorKeyConfigSelector: (store: StoreState) => EditorKeyConfig = ({ editorKeyConfig }) => editorKeyConfig.editorKeyConfig;
 
+// Dictionary lookup configuration
+
+const dictionaryConfigKey = 'dictionaryPreferences';
+
+const dictionaryConfigSlice = createSlice({
+  name: 'dictionaryConfig',
+  initialState: () => ({ dictionaryConfig: loadFromLocalStorage<DictionaryConfig>(dictionaryConfigKey, defaultDictionaryConfig) }),
+  reducers: {
+    updateDictionaryPreferences(state, { payload }: PayloadAction<DictionaryConfig>) {
+      localStorage.setItem(dictionaryConfigKey, JSON.stringify(payload));
+      state.dictionaryConfig = payload;
+    }
+  }
+});
+
+export const { updateDictionaryPreferences } = dictionaryConfigSlice.actions;
+
+export const dictionaryConfigSelector: (store: StoreState) => DictionaryConfig = ({ dictionaryConfig }) => dictionaryConfig.dictionaryConfig;
+
 // Store
 
 interface StoreState {
   user: { user: User | null };
   editorKeyConfig: { editorKeyConfig: EditorKeyConfig };
+  dictionaryConfig: { dictionaryConfig: DictionaryConfig };
 }
 
 export const newStore = configureStore({
   reducer: {
     user: userSlice.reducer,
     editorKeyConfig: editorKeyConfigSlice.reducer,
+    dictionaryConfig: dictionaryConfigSlice.reducer,
   }
 });
 

@@ -1,9 +1,12 @@
 import {Field, Form, Formik} from 'formik';
 import {useTranslation} from 'react-i18next';
 import {useDispatch, useSelector} from 'react-redux';
-import {editorKeyConfigSelector, updatePreferences} from './newStore';
+import {editorKeyConfigSelector, updatePreferences,
+  dictionaryConfigSelector, updateDictionaryPreferences}
+  from './newStore';
 import {JSX, useState} from 'react';
 import {EditorKeyConfig} from './xmlEditor/editorKeyConfig';
+import {DictionaryConfig} from './xmlEditor/dictionaryConfig';
 
 const splitKey = ',';
 
@@ -13,6 +16,7 @@ interface FormValues {
   updateAndPrevNodeKeys: string;
   prevNodeKeys: string;
   submitKeys: string;
+  ignorePlene: boolean;
 }
 
 function dismantleFormEntry(entry: string): string[] {
@@ -30,6 +34,7 @@ export function Preferences(): JSX.Element {
   const {t} = useTranslation('common');
   const dispatch = useDispatch();
   const currentEditorConfig: EditorKeyConfig = useSelector(editorKeyConfigSelector);
+  const currentDictionaryConfig: DictionaryConfig = useSelector(dictionaryConfigSelector);
   const [updated, setUpdated] = useState(false);
 
   const initialValues: FormValues = {
@@ -37,11 +42,12 @@ export function Preferences(): JSX.Element {
     nextNodeKeys: currentEditorConfig.nextEditableNodeKeys.join(splitKey),
     updateAndPrevNodeKeys: currentEditorConfig.updateAndPreviousEditableNodeKeys.join(splitKey),
     prevNodeKeys: currentEditorConfig.previousEditableNodeKeys.join(splitKey),
-    submitKeys: currentEditorConfig.submitChangeKeys.join(splitKey)
+    submitKeys: currentEditorConfig.submitChangeKeys.join(splitKey),
+    ignorePlene: currentDictionaryConfig.ignorePlene,
   };
 
   function onSubmit(newConfig: FormValues): void {
-    const {updateAndNextNodeKeys, nextNodeKeys, updateAndPrevNodeKeys, prevNodeKeys, submitKeys} = newConfig;
+    const {updateAndNextNodeKeys, nextNodeKeys, updateAndPrevNodeKeys, prevNodeKeys, submitKeys, ignorePlene} = newConfig;
 
     const updateAndNextEditableNodeKeys = dismantleFormEntry(updateAndNextNodeKeys);
     const nextEditableNodeKeys = dismantleFormEntry(nextNodeKeys);
@@ -80,6 +86,12 @@ export function Preferences(): JSX.Element {
       })
     );
 
+    dispatch(
+      updateDictionaryPreferences({
+        ignorePlene
+      })
+    );
+
     setUpdated(true);
   }
 
@@ -115,6 +127,11 @@ export function Preferences(): JSX.Element {
           <div className="mt-4">
             <label htmlFor="submitChangesKeys" className="font-bold">{t('submitChangesKeys')}</label>
             <Field type="text" id="submitChangesKeys" name="submitKeys" className="mt-2 p-2 rounded border border-slate-500 w-full"/>
+          </div>
+
+          <div className="mt-4">
+            <label htmlFor="ignorePlene" className="font-bold checkbox-label">{t('ignorePlene')}</label>
+            <Field type="checkbox" id="ignorePlene" name="ignorePlene" className="rounded border border-slate-500"/>
           </div>
 
           {updated && <div className="mt-4 p-2 rounded bg-green-500 text-white text-center">{t('preferencesUpdated')}</div>}
