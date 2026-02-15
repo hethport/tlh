@@ -2,8 +2,8 @@ import { Entry } from './Wordform';
 import { getStem, openingBracket } from '../common/splitter';
 
 const unknownMeaningSymbol = 'u.B.';
-const embracketedFragmentarySigns = /\[x+\]/;
-const stemInUnopenedBracket = /^[^[]*\]$/;
+const embracketedFragmentarySigns = /\[x+\]/u;
+const stemInUnopenedBracket = /^[^[]*\]$/u;
 
 function containsEmbracketedFragmentarySigns(stem: string): boolean {
   return stem.search(embracketedFragmentarySigns) !== -1;
