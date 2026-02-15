@@ -81,7 +81,7 @@ export function containsAnalysis(dictionary: Dictionary, analysis: string): bool
 
 type LookupResult = Set<string> | undefined;
 
-function lookup(transcription: string): LookupResult {
+function lookup(dictionary: Dictionary, transcription: string): LookupResult {
   const analyses = dictionary.get(transcription);
   if (analyses === undefined && containsBrackets(transcription)) {
     return dictionary.get(removeBrackets(transcription));
@@ -92,14 +92,14 @@ function lookup(transcription: string): LookupResult {
 
 function noPleneLookup(transcription: string): LookupResult {
   const noPleneTranscription = removeMacron(transcription);
-  return noPleneDictionary.get(noPleneTranscription);
+  return lookup(noPleneDictionary, noPleneTranscription);
 }
 
 function parameterizedLookup(ignorePlene: boolean, transcription: string): LookupResult {
   if (ignorePlene) {
     return noPleneLookup(transcription);
   } else {
-    return lookup(transcription);
+    return lookup(dictionary, transcription);
   }
 }
 
