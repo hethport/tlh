@@ -17,6 +17,7 @@ interface FormValues {
   prevNodeKeys: string;
   submitKeys: string;
   ignorePlene: boolean;
+  fragmInSuffixDict: boolean;
 }
 
 function dismantleFormEntry(entry: string): string[] {
@@ -44,10 +45,12 @@ export function Preferences(): JSX.Element {
     prevNodeKeys: currentEditorConfig.previousEditableNodeKeys.join(splitKey),
     submitKeys: currentEditorConfig.submitChangeKeys.join(splitKey),
     ignorePlene: currentDictionaryConfig.ignorePlene,
+    fragmInSuffixDict: currentDictionaryConfig.fragmInSuffixDict
   };
 
   function onSubmit(newConfig: FormValues): void {
-    const {updateAndNextNodeKeys, nextNodeKeys, updateAndPrevNodeKeys, prevNodeKeys, submitKeys, ignorePlene} = newConfig;
+    const {updateAndNextNodeKeys, nextNodeKeys, updateAndPrevNodeKeys, prevNodeKeys, submitKeys,
+           ignorePlene, fragmInSuffixDict} = newConfig;
 
     const updateAndNextEditableNodeKeys = dismantleFormEntry(updateAndNextNodeKeys);
     const nextEditableNodeKeys = dismantleFormEntry(nextNodeKeys);
@@ -88,7 +91,8 @@ export function Preferences(): JSX.Element {
 
     dispatch(
       updateDictionaryPreferences({
-        ignorePlene
+        ignorePlene,
+        fragmInSuffixDict
       })
     );
 
@@ -129,9 +133,18 @@ export function Preferences(): JSX.Element {
             <Field type="text" id="submitChangesKeys" name="submitKeys" className="mt-2 p-2 rounded border border-slate-500 w-full"/>
           </div>
 
+          <br/>
+
+          <h2 className="font-bold text-xl">{t('hurrianDictionary')}</h2>
+
           <div className="mt-4">
             <label htmlFor="ignorePlene" className="font-bold checkbox-label">{t('ignorePlene')}</label>
             <Field type="checkbox" id="ignorePlene" name="ignorePlene" className="rounded border border-slate-500"/>
+          </div>
+
+          <div className="mt-4">
+            <label htmlFor="fragmInSuffixDict" className="font-bold checkbox-label">{t('fragmInSuffixDict')}</label>
+            <Field type="checkbox" id="fragmInSuffixDict" name="fragmInSuffixDict" className="rounded border border-slate-500"/>
           </div>
 
           {updated && <div className="mt-4 p-2 rounded bg-green-500 text-white text-center">{t('preferencesUpdated')}</div>}
