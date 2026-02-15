@@ -7,8 +7,14 @@ import { containsBrackets } from '../common/brackets';
 const sep = /(?<!\()-(?!\))|=/;
 
 function haveMatchingNumberOfMorphemes(segmentation: string, analysis: string) {
-  const segmentationLength = splitSegmentation(segmentation).length;
-  const analysisLength = analysis.split(sep).filter(tag => tag !== '.ABS').length;
+  const morphemes = splitSegmentation(segmentation);
+  const grammaticalMorphemes = morphemes.slice(1)
+    .map(([morpheme]) => morpheme)
+    .filter((grammaticalMorpheme: string) => !formIsFragment(grammaticalMorpheme));
+  const segmentationLength = grammaticalMorphemes.length + 1;
+  const morphemeLabels = analysis.split(sep)
+    .filter(label => label !== '' && !formIsFragment(label));
+  const analysisLength = morphemeLabels.filter(tag => tag !== '.ABS').length;
   return segmentationLength === analysisLength + 1
       || segmentationLength === analysisLength
       && (analysis.startsWith('=') || analysis === '');
