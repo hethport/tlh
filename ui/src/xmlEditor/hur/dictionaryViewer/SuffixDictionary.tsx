@@ -11,6 +11,7 @@ import { DictionaryUploader } from '../dict/files/DictionaryUploader';
 import { getGrammaticalMorphemes } from './morphemics';
 import { parseGrammaticalMorpheme, GrammaticalMorpheme } from './grammaticalMorpheme';
 import { hasContent } from './suffixDictionaryFilter';
+import { shouldBeInSuffixDict } from './suffixDictionaryFragmentFilter';
 
 interface IProps {
   entries: Entry[];
@@ -26,8 +27,13 @@ function valueFunc(entry: Entry): Entry {
 }
 
 export function SuffixDictionary({entries, setDictionary}: IProps): JSX.Element {
+
+  const filteredEntries = entries.filter((entry: Entry) => {
+    const { morphologicalAnalysis } = entry;
+    return shouldBeInSuffixDict(morphologicalAnalysis);
+  });
   
-  const grouped = groupByMany(entries, keyFunc, valueFunc);
+  const grouped = groupByMany(filteredEntries, keyFunc, valueFunc);
   
   const grammaticalMorphemeReprs = Array.from(grouped.keys()).sort(compare);
 
