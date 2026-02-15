@@ -20,7 +20,7 @@ import { areLexicallyEquivalent, areEquivalent } from '../morphologicalAnalysis/
 import { mergeMultiMorphologicalAnalyses } from '../morphologicalAnalysis/merging';
 import { readMorphAnalysisValue } from '../morphologicalAnalysis/auxiliary';
 import { haveSameSource, updateSourcesAfterMerge } from '../changes/changesAccumulator';
-import { getStem, openingBracket } from '../common/splitter';
+import { openingBracket } from '../common/splitter';
 import { containsBrackets, getBracketBalance } from '../common/brackets';
 
 export const errorSymbol = <>&#9876;</>;
