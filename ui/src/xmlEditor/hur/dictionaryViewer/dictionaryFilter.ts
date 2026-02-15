@@ -1,16 +1,21 @@
 import { Entry } from './Wordform';
 import { getStem, openingBracket } from '../common/splitter';
-import { getBracketBalance } from '../common/brackets';
 
 const unknownMeaningSymbol = 'u.B.';
 const embracketedFragmentarySigns = /\[x+\]/;
+const stemInUnopenedBracket = /^[^[]*\]$/;
+
 function containsEmbracketedFragmentarySigns(stem: string): boolean {
   return stem.search(embracketedFragmentarySigns) !== -1;
 }
 
+function endsInUnopenedBracket(stem: string): boolean {
+  return stemInUnopenedBracket.test(stem);
+}
+
 export function stemIsFragmentary(stem: string) {
   return stem === '' || stem === '[' || stem.startsWith(']') ||
-    stem.endsWith(']') && getBracketBalance(stem) < 0 ||
+    endsInUnopenedBracket(stem) ||
     containsEmbracketedFragmentarySigns(stem);
 }
 
