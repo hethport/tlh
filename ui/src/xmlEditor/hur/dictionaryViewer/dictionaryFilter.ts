@@ -1,5 +1,6 @@
 import { Entry } from './Wordform';
 import { getStem, openingBracket } from '../common/splitter';
+import { getBracketBalance } from '../common/brackets';
 
 const unknownMeaningSymbol = 'u.B.';
 const embracketedFragmentarySigns = /\[x+\]/;
@@ -9,6 +10,7 @@ function containsEmbracketedFragmentarySigns(stem: string): boolean {
 
 export function stemIsFragmentary(stem: string) {
   return stem === '' || stem === '[' || stem.startsWith(']') ||
+    stem.endsWith(']') && getBracketBalance(stem) < 0 ||
     containsEmbracketedFragmentarySigns(stem);
 }
 
