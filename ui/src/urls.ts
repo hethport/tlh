@@ -35,6 +35,8 @@ export const macroeditorUrl = '/macroeditor';
 
 export const suffixDictionaryUrl = '/suffixDictionary';
 
+export const stopListViewerUrl = '/stopList';
+
 export const userManagementUrl = '/userManagement';
 
 export const pipelineManagementUrl = '/pipelineManagement';

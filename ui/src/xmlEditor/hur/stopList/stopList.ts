@@ -21,3 +21,7 @@ export function isOnTheStopListFor(ma: MorphologicalAnalysis, transcription: str
   const analysis = writeMorphAnalysisValue(ma);
   return has(stopList, transcription, analysis);
 }
+
+export function getGlobalStopList(): Dictionary {
+  return stopList;
+}
