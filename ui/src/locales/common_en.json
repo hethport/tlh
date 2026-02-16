@@ -294,5 +294,6 @@
   "uploadEnglishTranslations": "Upload English translations",
   "suffixDictionary": "Suffixes",
   "ignorePlene": "Treat a long vowel and the corresponding short vowel as the same character when performing dictionary lookup for Hurrian words",
-  "fragmInSuffixDict": "Use morphophonemic transcriptions with brackets for constructing the suffix dictionary"
+  "fragmInSuffixDict": "Use morphophonemic transcription+s with brackets for constructing the suffix dictionary",
+  "stopList": "Stop list"
 }

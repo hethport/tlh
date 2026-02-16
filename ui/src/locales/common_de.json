@@ -295,5 +295,6 @@
   "uploadEnglishTranslations": "Englische Glossen hochladen",
   "suffixDictionary": "Suffixe",
   "ignorePlene": "Einen Langvokal und den entsprechenden Kurzvokal beim Nachschlagen im hurritischen Wörterbuch als denselben Buchstaben betrachten",
-  "fragmInSuffixDict": "Morphonologische Umscrhiften mit Bruchklammern bei Erzeugung des Suffixwörterbuchs berücksichtigen"
+  "fragmInSuffixDict": "Morphonologische Umscrhiften mit Bruchklammern bei Erzeugung des Suffixwörterbuchs berücksichtigen",
+  "stopList": "Schwarzliste"
 }
