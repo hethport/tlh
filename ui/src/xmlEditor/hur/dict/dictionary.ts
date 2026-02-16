@@ -19,6 +19,7 @@ import { removeMacron, addMultiple, add } from '../common/utils';
 import { DictionaryConfig } from '../../dictionaryConfig';
 import { dictionaryConfigSelector } from '../../../newStore';
 import { useSelector } from 'react-redux';
+import { isOnTheStopListFor } from '../stopList/stopList';
 
 export type Dictionary = Map<string, Set<string>>;
 
@@ -127,8 +128,11 @@ export function annotateHurrianWord(node: XmlElementNode): void {
       let i = 1;
       for (const analysis of possibilities) {
         if (isValidFor(analysis, transcription)) {
-          node.attributes['mrp' + i.toString()] = analysis;
-          i++;
+          const ma = readMorphAnalysisValue(analysis);
+          if (ma !== undefined && !isOnTheStopListFor(ma, transcription)) {
+            node.attributes['mrp' + i.toString()] = analysis;
+            i++;
+          }
         }
       }
     }

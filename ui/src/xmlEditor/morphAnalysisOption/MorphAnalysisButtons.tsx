@@ -11,6 +11,7 @@ import { deleteAnalysisFromHurrianDictionary } from '../hur/dict/dictionary';
 import { getPartsOfSpeech, getPos } from '../hur/partsOfSpeech/partsOfSpeech';
 import {TranslationEditor} from '../hur/translations/TranslationEditor';
 import {getStem} from '../hur/common/splitter';
+import { addToTheStopListFor } from '../hur/stopList/stopList';
 
 interface IProps extends CanToggleAnalysisSelection {
   morphologicalAnalysis: MorphologicalAnalysis;
@@ -94,6 +95,7 @@ export function MorphAnalysisOptionButtons({morphologicalAnalysis, toggleAnalysi
       deleteMorphology(morphologicalAnalysis);
       const value: string = writeMorphAnalysisValue(morphologicalAnalysis);
       deleteAnalysisFromHurrianDictionary(transcription, value);
+      addToTheStopListFor(morphologicalAnalysis, transcription);
     }
   };
 
