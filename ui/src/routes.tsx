@@ -22,8 +22,10 @@ import {
   xmlComparatorUrl,
   xmlConversionUrl,
   dictionaryViewerUrl,
-  macroeditorUrl, createAnonymousTransliterationUrl,
-  suffixDictionaryUrl
+  createAnonymousTransliterationUrl,
+  macroeditorUrl,
+  suffixDictionaryUrl,
+  stopListViewerUrl
 } from './urls';
 import {RegisterForm} from './forms/RegisterForm';
 import {Home} from './Home';
@@ -56,6 +58,8 @@ import {getGlobalEnglishTranslations} from './xmlEditor/hur/translations/english
 import {getChanges} from './xmlEditor/hur/changes/changesAccumulator';
 import {TextDisplay} from './xmlEditor/hur/concordanceEntryViewer/TextDisplay';
 import {SuffixDictionaryContainer} from './xmlEditor/hur/dictionaryViewer/SuffixDictionaryContainer';
+import {StopListViewer} from './xmlEditor/hur/StopListViewer';
+import {getGlobalStopList} from './xmlEditor/hur/stopList/stopList';
 
 export const router = createBrowserRouter([
     {
@@ -109,6 +113,9 @@ export const router = createBrowserRouter([
 
         {path: suffixDictionaryUrl, element: <SuffixDictionaryContainer
                                               getInitialDictionary={getGlobalDictionary}/>},
+
+        {path: stopListViewerUrl, element: <StopListViewer
+                                            getInitialStopList={getGlobalStopList}/>},
 
         {path: preferencesUrl, element: <Preferences/>},
 
