@@ -91,6 +91,15 @@ export function addMultiple<TKey, TValue>(map: Map<TKey, Set<TValue>>, key: TKey
   }
 }
 
+export function has<TKey, TValue>(map: Map<TKey, Set<TValue>>, key: TKey, value: TValue): boolean {
+  const values = map.get(key);
+  if (values === undefined) {
+    return false;
+  } else {
+    return values.has(value);
+  }
+}
+
 export function replaceKey<TKey, TValue>(map: Map<TKey, Set<TValue>>, oldKey: TKey, newKey: TKey): void {
   const values = map.get(oldKey);
   if (values !== undefined) {
