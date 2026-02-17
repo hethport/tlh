@@ -148,7 +148,8 @@ export function annotateHurrianWord(node: XmlElementNode): void {
   } else {
     const mrps: Map<string, string> = getMrps(node);
     if (mrps.size === 0) {
-      const results: MorphologicalAnalysis[] = segmenter.segment(transcription);
+      const results: MorphologicalAnalysis[] = segmenter.segment(transcription)
+        .filter(ma => !isOnTheStopListFor(ma, transcription));
       if (results.length > 0) {
         let i = 1;
         for (const ma of results) {
@@ -156,7 +157,8 @@ export function annotateHurrianWord(node: XmlElementNode): void {
           i++;
         }
       } else {
-        const analyses: MorphologicalAnalysis[] = makeStandardAnalyses(transcription);
+        const analyses: MorphologicalAnalysis[] = makeStandardAnalyses(transcription)
+          .filter(ma => !isOnTheStopListFor(ma, transcription));
         if (analyses.length > 0) {
           for (const ma of analyses) {
             node.attributes['mrp' + ma.number.toString()]
