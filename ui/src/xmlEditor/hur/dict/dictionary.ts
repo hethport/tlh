@@ -106,6 +106,16 @@ function parameterizedLookup(ignorePlene: boolean, transcription: string): Looku
   }
 }
 
+function isAppropriateFor(analysis: string, transcription: string): boolean {
+  if (isValidFor(analysis, transcription)) {
+    const ma = readMorphAnalysisValue(analysis);
+    if (ma !== undefined && !isOnTheStopListFor(ma, transcription)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 export function annotateHurrianWord(node: XmlElementNode): void {
   const currentDictionaryConfig: DictionaryConfig = useSelector(dictionaryConfigSelector);
   const { ignorePlene } = currentDictionaryConfig;
@@ -129,12 +139,9 @@ export function annotateHurrianWord(node: XmlElementNode): void {
     if (mrps.size === 0) {
       let i = 1;
       for (const analysis of possibilities) {
-        if (isValidFor(analysis, transcription)) {
-          const ma = readMorphAnalysisValue(analysis);
-          if (ma !== undefined && !isOnTheStopListFor(ma, transcription)) {
-            node.attributes['mrp' + i.toString()] = analysis;
-            i++;
-          }
+        if (isAppropriateFor(analysis, transcription)) {
+          node.attributes['mrp' + i.toString()] = analysis;
+          i++;
         }
       }
     }
