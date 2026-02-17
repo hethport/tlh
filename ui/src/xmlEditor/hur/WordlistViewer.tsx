@@ -1,6 +1,7 @@
 import { Entry, WordformElement } from './dictionaryViewer/Wordform';
 import { JSX } from 'react';
 import { writeMorphAnalysisValue } from '../../model/morphologicalAnalysis';
+import { useTranslation } from 'react-i18next';
 
 interface IProps {
   entries: Entry[];
@@ -12,6 +13,8 @@ function doNothing(): void {
 }
 
 export function WordlistViewer({ entries, removeEntry }: IProps): JSX.Element {
+
+  const { t } = useTranslation('common');
   return (
     <div className="mt-2">
     {entries.map((entry: Entry) => {
@@ -28,7 +31,7 @@ export function WordlistViewer({ entries, removeEntry }: IProps): JSX.Element {
           initialShowAttestations={false}/>
         <button type="button" className="p-2 rounded-r border border-slate-500"
           onClick={() => removeEntry(entry)}
-          title={'removeFromTheList'}>
+          title={t('removeFromTheList')}>
           &#10754;
         </button>
       </div>);
