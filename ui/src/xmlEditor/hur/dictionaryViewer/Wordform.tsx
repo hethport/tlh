@@ -41,7 +41,7 @@ export function WordformElement({ entry, handleSegmentationInput,
   });
   
   return (
-    <div>
+    <div className="wordform-element">
       <div className="flex flex-row">
         <pre className="dict-entry">
           <input value={segmentation}

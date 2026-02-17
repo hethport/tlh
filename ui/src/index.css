@@ -303,6 +303,10 @@ code {
   margin-right: 1rem;
 }
 
+.wordform-element {
+  margin-bottom: 1rem;
+}
+
 /*
 .leftList, rightList {
   display: inline;
