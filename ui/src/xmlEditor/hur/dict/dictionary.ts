@@ -27,6 +27,8 @@ export type ModifyDictionary = (dictionary: Dictionary) => Dictionary;
 
 export type SetDictionary = (modifyDictionary: ModifyDictionary) => void;
 
+export type DictionaryObject = { [key: string]: string[] };
+
 let segmenter: Segmenter = new Segmenter();
 let segmenterInfo: SegmenterInfo = new SegmenterInfo(segmenter);
 let noPleneDictionary = new Map<string, Set<string>>();

@@ -1,12 +1,13 @@
-import { Dictionary } from '../dict/dictionary';
+import { Dictionary, DictionaryObject } from '../dict/dictionary';
 import { loadSetValuedMapFromLocalStorage, locallyStoreSetValuedMap }
   from '../dictLocalStorage/localStorageUtils';
 import { MorphologicalAnalysis, writeMorphAnalysisValue }
   from '../../../model/morphologicalAnalysis';
-import { add, has } from '../common/utils';
+import { add, has, objectToSetValuedMap } from '../common/utils';
+import { convertDictionary } from '../common/utility';
 
 const localStorageKey = 'HurrianMorphologicalAnalysisStopList';
-const stopList: Dictionary = loadSetValuedMapFromLocalStorage(localStorageKey);
+let stopList: Dictionary = loadSetValuedMapFromLocalStorage(localStorageKey);
 function locallyStoreHurrianStopList(): void {
   locallyStoreSetValuedMap(stopList, localStorageKey);
 }
@@ -24,4 +25,17 @@ export function isOnTheStopListFor(ma: MorphologicalAnalysis, transcription: str
 
 export function getGlobalStopList(): Dictionary {
   return stopList;
+}
+
+export function setGlobalStopList(newStopList: Dictionary): void {
+  stopList = newStopList;
+  locallyStoreHurrianStopList();
+}
+
+export function getStopList(): DictionaryObject {
+  return convertDictionary(stopList);
+}
+
+export function setStopList(obj: DictionaryObject) {
+  setGlobalStopList(objectToSetValuedMap(obj));
 }
