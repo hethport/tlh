@@ -29,7 +29,7 @@ export function WordlistViewer({ entries, removeEntry }: IProps): JSX.Element {
           handleAnalysisInput={doNothing}
           handleAnalysisBlur={doNothing}
           initialShowAttestations={false}/>
-        <button type="button" className="p-2 rounded-r border border-slate-500"
+        <button type="button" className="p-2 rounded-r border border-slate-500 remove-button"
           onClick={() => removeEntry(entry)}
           title={t('removeFromTheList')}>
           &#10754;

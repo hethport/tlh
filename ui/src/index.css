@@ -307,6 +307,10 @@ code {
   margin-bottom: 1rem;
 }
 
+.remove-button {
+  height: 4rem;
+}
+
 /*
 .leftList, rightList {
   display: inline;
