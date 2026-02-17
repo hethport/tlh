@@ -1,6 +1,7 @@
 import { Dictionary } from './dictionary';
 import { Entry } from '../dictionaryViewer/Wordform';
 import { readMorphAnalysisValue } from '../morphologicalAnalysis/auxiliary';
+import update from 'immutability-helper';
 
 export function extractEntries(dictionary: Dictionary): Entry[] {
   const entries: Entry[] = [];
@@ -18,4 +19,14 @@ export function extractEntries(dictionary: Dictionary): Entry[] {
     }
   }
   return entries;
+}
+
+export function removeEmptyEntries(dictionary: Dictionary): Dictionary {
+  const emptyEntries: string[] = [];
+  for (const [transcription, analyses] of dictionary) {
+    if (analyses.size === 0) {
+      emptyEntries.push(transcription);
+    }
+  }
+  return update(dictionary, { $remove: emptyEntries });
 }

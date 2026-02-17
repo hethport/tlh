@@ -1,7 +1,7 @@
 import { Dictionary } from './dict/dictionary';
 import { JSX, useState, useEffect } from 'react';
 import { Entry } from './dictionaryViewer/Wordform';
-import { extractEntries } from './dict/dictUtils';
+import { extractEntries, removeEmptyEntries } from './dict/dictUtils';
 import { WordlistViewer } from './WordlistViewer';
 import { StopListDownloader } from './stopList/files/StopListDownloader';
 import { StopListUploader } from './stopList/files/StopListUploader';
@@ -23,10 +23,10 @@ export function StopListViewer({ getInitialStopList }: IProps): JSX.Element {
     const transcription = transcriptions[0];
     const analysis = writeMorphAnalysisValue(initialMorphologicalAnalysis);
     setStopList((stopList: Dictionary) =>
-      update(
+      removeEmptyEntries(update(
         stopList,
         { [transcription]: { $remove: [analysis] } }
-      )
+      ))
     );
   };
   return (
