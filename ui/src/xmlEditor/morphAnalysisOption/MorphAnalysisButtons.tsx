@@ -1,7 +1,7 @@
 import {JSX, useState} from 'react';
 import {useTranslation} from 'react-i18next';
 import {SingleMorphAnalysisOptionButton} from './SingleMorphAnalysisOptionButton';
-import {isSingleMorphologicalAnalysis, MorphologicalAnalysis, MultiMorphologicalAnalysis, writeMorphAnalysisValue} from '../../model/morphologicalAnalysis';
+import {isSingleMorphologicalAnalysis, MorphologicalAnalysis, MultiMorphologicalAnalysis} from '../../model/morphologicalAnalysis';
 import {CanToggleAnalysisSelection} from './MorphAnalysisOptionContainer';
 import {MultiMorphAnalysisOptionButtons} from './MultiMorphAnalysisOptionButtons';
 import classNames from 'classnames';
