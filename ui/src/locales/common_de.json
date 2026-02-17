@@ -271,5 +271,10 @@
   "hurrianDictionary": "Hurritisches Wörterbuch",
   "ignorePlene": "Einen Langvokal und den entsprechenden Kurzvokal beim Nachschlagen im hurritischen Wörterbuch als denselben Buchstaben betrachten",
   "fragmInSuffixDict": "Morphonologische Umschriften mit Bruchklammern bei Erzeugung des Suffixwörterbuchs berücksichtigen",
-  "stopList": "Schwarzliste"
+  "stopList": "Schwarzliste",
+  "exportStopList": "Schwarzliste exportieren",
+  "uploadStopList": "Schwarzliste hochladen",
+  "deleteMorphologicalAnalysis": "Morphologische Analyse löschen",
+  "deleteMorphologicalAnalysisAndAddItToTheStopList": "Morphologische Analyse löschen und auf die schwarze Liste setzen",
+  "removeFromTheList": "Aus der Liste entfernen"
 }

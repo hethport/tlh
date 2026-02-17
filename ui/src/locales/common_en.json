@@ -271,5 +271,10 @@
   "hurrianDictionary": "Hurrian dictionary",
   "ignorePlene": "Treat a long vowel and the corresponding short vowel as the same character when performing dictionary lookup for Hurrian words",
   "fragmInSuffixDict": "Use morphophonemic transcription+s with brackets for constructing the suffix dictionary",
-  "stopList": "Stop list"
+  "stopList": "Stop list",
+  "exportStopList": "Export the stop list",
+  "uploadStopList": "Upload a stop list",
+  "deleteMorphologicalAnalysis": "Delete morphological analysis",
+  "deleteMorphologicalAnalysisAndAddItToTheStopList": "Delete morphological analysis and add it to the stop list",
+  "removeFromTheList": "Remove from the list"
 }
