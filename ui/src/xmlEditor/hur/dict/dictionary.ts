@@ -16,9 +16,6 @@ import { reserializeMorphologicalAnalysis } from '../morphologicalAnalysis/reser
 import { containsBrackets, removeBrackets } from '../common/brackets';
 import { SegmenterInfo, IStem } from '../segmentation/segmenterInfo';
 import { removeMacron, addMultiple, add } from '../common/utils';
-import { DictionaryConfig } from '../../dictionaryConfig';
-import { dictionaryConfigSelector } from '../../../newStore';
-import { useSelector } from 'react-redux';
 import { isOnTheStopListFor } from '../stopList/stopList';
 
 export type Dictionary = Map<string, Set<string>>;
@@ -116,9 +113,7 @@ function isAppropriateFor(analysis: string, transcription: string): boolean {
   return false;
 }
 
-export function annotateHurrianWord(node: XmlElementNode): void {
-  const currentDictionaryConfig: DictionaryConfig = useSelector(dictionaryConfigSelector);
-  const { ignorePlene } = currentDictionaryConfig;
+export function annotateHurrianWord(node: XmlElementNode, ignorePlene: boolean): void {
 
   const transliteration: string = getText(node);
   const transcription: string = makeBoundTranscription(transliteration);
