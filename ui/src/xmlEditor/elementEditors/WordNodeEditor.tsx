@@ -16,6 +16,9 @@ import {Attestation, addAttestation, removeAttestation} from '../hur/concordance
 import {basicGetText} from '../hur/common/xmlUtilities';
 import {addOrUpdateLineBySingleNodePath} from '../hur/corpus/corpus';
 import {isSelected} from '../hur/morphologicalAnalysis/auxiliary';
+import {DictionaryConfig} from '../dictionaryConfig';
+import {dictionaryConfigSelector} from '../../newStore';
+import {useSelector} from 'react-redux';
 
 type States = 'DefaultState' | 'AddMorphology' | 'EditEditingQuestion' | 'EditFootNoteState' | 'EditContent';
 
@@ -31,6 +34,9 @@ export function WordNodeEditor({node, path, updateEditedNode, setKeyHandlingEnab
   const updateMorphologyConcordanceModifiers = useRef(new Map<number, EventHandler>());
   const removers = useRef(new Map<number, EventHandler>());
 
+  const currentDictionaryConfig: DictionaryConfig = useSelector(dictionaryConfigSelector);
+  const { ignorePlene } = currentDictionaryConfig;
+
   const textLanguage = AOption.of(findFirstXmlElementByTagName(rootNode, 'text'))
     .map((textElement) => textElement.attributes['xml:lang'])
     .get();
@@ -42,7 +48,7 @@ export function WordNodeEditor({node, path, updateEditedNode, setKeyHandlingEnab
   const language: string = node.attributes.lg || lineBreakLanguage || textLanguage || 'Hit';
   const isHurrian: boolean = (language === 'Hur');
   if (isHurrian) {
-    annotateHurrianWord(node);
+    annotateHurrianWord(node, ignorePlene);
   }
   const transcription = node.attributes.trans || noTranscriptionMarker;
 
