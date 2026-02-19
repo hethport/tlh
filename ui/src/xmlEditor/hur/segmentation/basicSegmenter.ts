@@ -1,6 +1,7 @@
 import { getStemAndGrammaticalMorphemesWithBoundary } from '../common/splitter';
 import { add, removeMacron, groupBy } from '../common/utils';
 import SuffixTrie from './suffixTrie';
+import { startsWithExceptForVowelLength, endsWithExceptForVowelLength } from '../common/stringUtils';
 
 const maximalDeletionCount = 1;
 const minimalFrequency = 1;
@@ -95,10 +96,10 @@ export default class BasicSegmenter {
     if (underlyingStem !== '') {
       const preprocessedStem = preprocessStem(underlyingStem);
       const preprocessedSuffixChain = preprocessSuffixChain(underlyingSuffixChain);
-      const surfaceStem = transcription.endsWith(preprocessedSuffixChain) ?
+      const surfaceStem = endsWithExceptForVowelLength(transcription, preprocessedSuffixChain) ?
         transcription.substring(0, transcription.length - preprocessedSuffixChain.length) :
         preprocessedStem;
-      const surfaceSuffixChain = transcription.startsWith(preprocessedStem) ?
+      const surfaceSuffixChain = startsWithExceptForVowelLength(transcription, preprocessedStem) ?
         transcription.substring(preprocessedStem.length) :
         preprocessedSuffixChain;
       const stem = new Stem(underlyingStem, translation);
