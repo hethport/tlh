@@ -1,7 +1,9 @@
 import { Entry } from './Wordform';
 import { getStem, openingBracket } from '../common/splitter';
+import { MorphologicalAnalysis } from '../../../model/morphologicalAnalysis';
 
 const unknownMeaningSymbol = 'u.B.';
+const unclearPartOfSpeechSymbol = 'unclear';
 const embracketedFragmentarySigns = /\[x+\]/u;
 const stemInUnopenedBracket = /^[^[]*\]$/u;
 
@@ -13,7 +15,7 @@ function endsInUnopenedBracket(stem: string): boolean {
   return stemInUnopenedBracket.test(stem);
 }
 
-export function stemIsFragmentary(stem: string) {
+function stemIsFragmentary(stem: string) {
   return stem === '' || stem === '[' || stem.startsWith(']') ||
     endsInUnopenedBracket(stem) ||
     containsEmbracketedFragmentarySigns(stem);
@@ -25,4 +27,20 @@ export function rootMayBeOnlyPartiallyPreserved(stem: string, translation: strin
   });
   return isFragmentary && !stem.includes('+') &&
     (translation === unknownMeaningSymbol || translation === '');
+}
+
+function hasUnclearMeaningAndPos(ma: MorphologicalAnalysis): boolean {
+  return ma.translation === unknownMeaningSymbol && ma.paradigmClass === unclearPartOfSpeechSymbol;
+}
+
+export function shouldBeShownInTheDictionary(ma: MorphologicalAnalysis, showUnclearForms: boolean): boolean {
+  if (!showUnclearForms && hasUnclearMeaningAndPos(ma)) {
+    return false;
+  }
+  const segmentation = ma.referenceWord;
+  const stem = getStem(segmentation);
+  if (stemIsFragmentary(stem)) {
+    return false;
+  }
+  return true;
 }

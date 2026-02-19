@@ -302,5 +302,6 @@
   "uploadStopList": "Schwarzliste hochladen",
   "deleteMorphologicalAnalysis": "Morphologische Analyse löschen",
   "deleteMorphologicalAnalysisAndAddItToTheStopList": "Morphologische Analyse löschen und auf die schwarze Liste setzen",
-  "removeFromTheList": "Aus der Liste entfernen"
+  "removeFromTheList": "Aus der Liste entfernen",
+  "showFormsWithUnknownMeaningAndUnclearPos": "Formen mit unbekannter Bedeutung und unklarer Wortart im Wörterbuch anzeigen"
 }
