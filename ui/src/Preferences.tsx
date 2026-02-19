@@ -18,6 +18,7 @@ interface FormValues {
   submitKeys: string;
   ignorePlene: boolean;
   fragmInSuffixDict: boolean;
+  showUnclearForms: boolean;
 }
 
 function dismantleFormEntry(entry: string): string[] {
@@ -45,12 +46,13 @@ export function Preferences(): JSX.Element {
     prevNodeKeys: currentEditorConfig.previousEditableNodeKeys.join(splitKey),
     submitKeys: currentEditorConfig.submitChangeKeys.join(splitKey),
     ignorePlene: currentDictionaryConfig.ignorePlene,
-    fragmInSuffixDict: currentDictionaryConfig.fragmInSuffixDict
+    fragmInSuffixDict: currentDictionaryConfig.fragmInSuffixDict,
+    showUnclearForms: currentDictionaryConfig.showUnclearForms,
   };
 
   function onSubmit(newConfig: FormValues): void {
     const {updateAndNextNodeKeys, nextNodeKeys, updateAndPrevNodeKeys, prevNodeKeys, submitKeys,
-           ignorePlene, fragmInSuffixDict} = newConfig;
+           ignorePlene, fragmInSuffixDict, showUnclearForms} = newConfig;
 
     const updateAndNextEditableNodeKeys = dismantleFormEntry(updateAndNextNodeKeys);
     const nextEditableNodeKeys = dismantleFormEntry(nextNodeKeys);
@@ -92,7 +94,8 @@ export function Preferences(): JSX.Element {
     dispatch(
       updateDictionaryPreferences({
         ignorePlene,
-        fragmInSuffixDict
+        fragmInSuffixDict,
+        showUnclearForms,
       })
     );
 
@@ -145,6 +148,11 @@ export function Preferences(): JSX.Element {
           <div className="mt-4">
             <label htmlFor="fragmInSuffixDict" className="font-bold checkbox-label">{t('fragmInSuffixDict')}</label>
             <Field type="checkbox" id="fragmInSuffixDict" name="fragmInSuffixDict" className="rounded border border-slate-500"/>
+          </div>
+
+          <div className="mt-4">
+            <label htmlFor="showUnclearForms" className="font-bold checkbox-label">{t('showFormsWithUnknownMeaningAndUnclearPos')}</label>
+            <Field type="checkbox" id="showUnclearForms" name="showUnclearForms" className="rounded border border-slate-500"/>
           </div>
 
           {updated && <div className="mt-4 p-2 rounded bg-green-500 text-white text-center">{t('preferencesUpdated')}</div>}

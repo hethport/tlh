@@ -17,7 +17,10 @@ import update from 'immutability-helper';
 import { EnglishTranslationsDownloader } from '../translations/files/EnglishTranslationsDownloader';
 import { DictionaryUploader } from '../dict/files/DictionaryUploader';
 import { EnglishTranslationsUploader } from '../translations/files/EnglishTranslationsUploader';
-import { stemIsFragmentary, rootMayBeOnlyPartiallyPreserved } from './dictionaryFilter';
+import { rootMayBeOnlyPartiallyPreserved, shouldBeShownInTheDictionary } from './dictionaryFilter';
+import { DictionaryConfig } from '../../dictionaryConfig';
+import { dictionaryConfigSelector } from '../../../newStore';
+import { useSelector } from 'react-redux';
 
 interface IProps {
   entries: Entry[];
@@ -53,10 +56,12 @@ export function DictionaryViewer({entries, setDictionary, initialEnglishTranslat
     setGlobalEnglishTranslations(englishTranslations);
   }, [englishTranslations]);
 
+  const currentDictionaryConfig: DictionaryConfig = useSelector(dictionaryConfigSelector);
+  const { showUnclearForms } = currentDictionaryConfig;
+
   const filteredEntries = entries.filter(entry => {
-    const segmentation = entry.morphologicalAnalysis.referenceWord;
-    const stem = getStem(segmentation);
-    return !stemIsFragmentary(stem);
+    const { morphologicalAnalysis } = entry;
+    return shouldBeShownInTheDictionary(morphologicalAnalysis, showUnclearForms);
   });
   
   const grouped = groupBy(filteredEntries, keyFunc, valueFunc);
