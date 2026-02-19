@@ -12,6 +12,9 @@ import { getGrammaticalMorphemes } from './morphemics';
 import { parseGrammaticalMorpheme, GrammaticalMorpheme } from './grammaticalMorpheme';
 import { hasContent } from './suffixDictionaryFilter';
 import { shouldBeInSuffixDict } from './suffixDictionaryFragmentFilter';
+import { DictionaryConfig } from '../../dictionaryConfig';
+import { dictionaryConfigSelector } from '../../../newStore';
+import { useSelector } from 'react-redux';
 
 interface IProps {
   entries: Entry[];
@@ -28,9 +31,12 @@ function valueFunc(entry: Entry): Entry {
 
 export function SuffixDictionary({entries, setDictionary}: IProps): JSX.Element {
 
+  const currentDictionaryConfig: DictionaryConfig = useSelector(dictionaryConfigSelector);
+  const { fragmInSuffixDict } = currentDictionaryConfig;
+
   const filteredEntries = entries.filter((entry: Entry) => {
     const { morphologicalAnalysis } = entry;
-    return shouldBeInSuffixDict(morphologicalAnalysis);
+    return shouldBeInSuffixDict(morphologicalAnalysis, fragmInSuffixDict);
   });
   
   const grouped = groupByMany(filteredEntries, keyFunc, valueFunc);
