@@ -17,6 +17,8 @@ import { containsBrackets, removeBrackets } from '../common/brackets';
 import { SegmenterInfo, IStem } from '../segmentation/segmenterInfo';
 import { removeMacron, addMultiple, add } from '../common/utils';
 import { isOnTheStopListFor } from '../stopList/stopList';
+import { SuffixChainInventories, getSuffixChainInventories }
+  from '../segmentation/suffixChainInventories';
 
 export type Dictionary = Map<string, Set<string>>;
 
@@ -248,4 +250,8 @@ export function setDictionary(obj: { [key: string]: string[] }): void {
 
 export function getStemVariants(stem: IStem): Set<string> {
   return segmenterInfo.getStemVariants(stem);
+}
+
+export function getSuffixChains(): SuffixChainInventories {
+  return getSuffixChainInventories(segmenter);
 }

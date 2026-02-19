@@ -1,4 +1,4 @@
-import { getDictionary, setDictionary } from '../dictionary';
+import { getDictionary, setDictionary, getSuffixChains } from '../dictionary';
 import { getGlosses, setGlosses } from '../../translations/glossProvider';
 import { getPartsOfSpeech, setPartsOfSpeech } from '../../partsOfSpeech/partsOfSpeech';
 import { getConcordance, setConcordance } from '../../concordance/concordance';
@@ -13,7 +13,8 @@ export function downloadDictionary() {
   const concordance = getConcordance();
   const corpus = getCorpus();
   const englishTranslations = getEnglishTranslations();
-  const obj = {partsOfSpeech, dictionary, glosses, concordance, corpus, englishTranslations};
+  const suffixChains = getSuffixChains();
+  const obj = {partsOfSpeech, dictionary, glosses, concordance, corpus, englishTranslations, suffixChains};
   const jsonText = JSON.stringify(obj, undefined, '\t');
   makeDownload(jsonText, 'Dictionary.json');
 }

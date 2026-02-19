@@ -25,7 +25,7 @@ export function parseStem(repr: string): Stem {
   return new Stem(form, translation);
 }
 
-class SuffixChain {
+export class SuffixChain {
   segmentation: string;
   morphTag: string;
 
@@ -37,6 +37,11 @@ class SuffixChain {
   toString(): string {
     return this.segmentation + '@' + this.morphTag;
   }
+}
+
+export function parseSuffixChain(repr: string): SuffixChain {
+  const [segmentation, morphTag] = repr.split(sep);
+  return new SuffixChain(segmentation, morphTag);
 }
 
 const inParentheses = /\(.*\)/g;
