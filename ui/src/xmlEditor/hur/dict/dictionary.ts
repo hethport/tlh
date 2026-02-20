@@ -9,7 +9,6 @@ import { convertDictionary } from '../common/utility';
 import { isValid, normalize, isValidFor } from './morphologicalAnalysisValidator';
 import { Segmenter, createSegmenter } from '../segmentation/segmenter';
 import { readMorphAnalysisValue } from '../morphologicalAnalysis/auxiliary';
-import { inConcordance } from '../concordance/concordance';
 import { objectToSetValuedMap, updateSetValuedMapWithOverride, remove } from '../common/utils';
 import { locallyStoreSetValuedMap } from '../dictLocalStorage/localStorageUtils';
 import { reserializeMorphologicalAnalysis } from '../morphologicalAnalysis/reserialization';
@@ -219,7 +218,7 @@ export function cleanUpDictionary(object: { [key: string]: string[] }): { [key: 
   for (const [key, values] of Object.entries(object)) {
     const newValues = values.filter(analysis => {
       const ma = readMorphAnalysisValue(analysis);
-      return ma !== undefined && inConcordance(ma);
+      return ma !== undefined;
     });
     if (newValues.length > 0) {
       newObject[key] = newValues;
