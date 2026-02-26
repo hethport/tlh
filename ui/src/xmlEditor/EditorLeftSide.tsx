@@ -23,6 +23,7 @@ interface IState {
   fontSize: number;
   useSerifFont: boolean;
   xmlSource: string | undefined;
+  headerEditorOpen: boolean;
 }
 
 export function EditorLeftSide({
@@ -42,14 +43,45 @@ export function EditorLeftSide({
     fontSize: 100,
     useSerifFont: false,
     xmlSource: undefined,
+    headerEditorOpen: false,
   });
 
-  const [modalOpen, setModalOpen] = useState(false);
+  const openHeaderEditor = (): void => {
+    setKeyHandlingEnabled(false);
+    const xmlString = writeXml(node as XmlElementNode, true);
+    setUiState((s) => update(s, {
+      xmlSource: { $set: xmlString },
+      headerEditorOpen: { $set: true }
+    }));
+  };
 
-  const handleSave = (newXml: string) => {
-    uiState.xmlSource = newXml;
-    onXmlSourceUpdate();
-    setModalOpen(false);
+  const closeHeaderEditor = (): void => {
+    setKeyHandlingEnabled(true);
+    setUiState((s) => update(s, {
+      xmlSource: { $set: undefined },
+      headerEditorOpen: { $set: false }
+    }));
+  };
+
+  const handleSave = (newXml: string): void => {
+    console.log('saving new header');
+    // Parse and apply the new XML
+    parseNewXml(newXml, tlhXmlEditorConfig.readConfig).handle(
+      (rootNode) => {
+        updateNode(rootNode as XmlElementNode);
+        console.log('Header saved successfully');
+        // Close the header editor
+        setKeyHandlingEnabled(true);
+        setUiState((s) => update(s, {
+          xmlSource: { $set: undefined },
+          headerEditorOpen: { $set: false }
+        }));
+      },
+      (err) => {
+        console.error('Error parsing updated XML:', err);
+        alert(`Error saving header: ${err}`);
+      }
+    );
   };
 
   const [hoveredPath, setHoveredPath] = useState<NodePath | null>(null);
@@ -85,37 +117,52 @@ export function EditorLeftSide({
     setUiState((s) => update(s, { fontSize: { $apply: (v) => v + delta } }));
 
   return (
-    <div className="flex flex-col h-full min-h-full max-h-full">
+    <div className="flex flex-col min-h-80 max-h-90 overflow-y-hidden">
       <div className="p-4 rounded-t border border-slate-300 shadow-md">
         <span className="font-bold">{filename}</span>
 
         <div className="float-right space-x-2">
-          <FontSizeSelector
-            currentFontSize={uiState.fontSize}
-            updateFontSize={changeFontSize}
-          />
 
           {uiState.xmlSource ? (
             <>
-              <button className="px-2 rounded bg-green-500 text-white font-bold" onClick={() => setModalOpen(true)}>Edit Header</button>
-              <button
-                className="px-2 rounded bg-red-500 text-white font-bold"
-                onClick={deactivateShowSource}
-                title={t('cancelEditXmlSource')}
-              >
-                &#x270e; {t('cancelEditXmlSourceButton')}
-              </button>
+              {uiState.headerEditorOpen ? (
+                <>
+                  <button
+                    className="px-2 rounded bg-red-500 text-white font-bold"
+                    onClick={closeHeaderEditor}
+                    title={t('Cancel')}>
+                    &#x270e; {t('Cancel')}
+                  </button>
+                </>
+              ) : (
+                <>
+                  <FontSizeSelector
+                    currentFontSize={uiState.fontSize}
+                    updateFontSize={changeFontSize}
+                  />
+                  <button className="px-2 rounded bg-green-500 text-white font-bold" onClick={openHeaderEditor}>Edit Header</button>
+                  <button
+                    className="px-2 rounded bg-red-500 text-white font-bold"
+                    onClick={deactivateShowSource}
+                    title={t('cancelEditXmlSource')}
+                  >
+                    &#x270e; {t('cancelEditXmlSourceButton')}
+                  </button>
 
-              <button
-                className="px-2 rounded bg-blue-500 text-white font-bold"
-                onClick={onXmlSourceUpdate}
-                title={t('applyXmlSourceChange')}
-              >
-                &#x270e; {t('applyXmlSourceChangeButton')}
-              </button>
+                  <button
+                    className="px-2 rounded bg-blue-500 text-white font-bold"
+                    onClick={onXmlSourceUpdate}
+                    title={t('applyXmlSourceChange')}
+                  >
+                    &#x270e; {t('applyXmlSourceChangeButton')}
+                  </button>
+                </>
+              )}
             </>
           ) : (
             <>
+
+              <button className="px-2 rounded bg-green-500 text-white font-bold" onClick={openHeaderEditor}>Edit Header</button>
               <button
                 onClick={() =>
                   setUiState((s) =>
@@ -153,11 +200,21 @@ export function EditorLeftSide({
 
       <div className="flex p-4 rounded-b border border-slate-300 shadow-md flex-auto overflow-auto">
         {uiState.xmlSource ? (
-          <XmlSourceEditor
-            style={{ fontSize: `${uiState.fontSize}%` }}
-            source={uiState.xmlSource}
-            onChange={setXmlSource}
-          />
+          <>
+            {uiState.headerEditorOpen ? (
+              <HeaderEditor
+                xml={uiState.xmlSource as string}
+                onSave={handleSave}
+                onCancel={closeHeaderEditor}
+              />
+            ) : (
+              <XmlSourceEditor
+                style={{ fontSize: `${uiState.fontSize}%` }}
+                source={uiState.xmlSource}
+                onChange={setXmlSource}
+              />
+            )}
+          </>
         ) : (
           <div
             className={classNames(
@@ -180,12 +237,6 @@ export function EditorLeftSide({
           </div>
         )}
       </div>
-      <HeaderEditor
-        xml={uiState.xmlSource as string}
-        open={modalOpen}
-        onSave={handleSave}
-        onCancel={() => setModalOpen(false)}
-      />
     </div>
   );
 }
