@@ -6,6 +6,7 @@ import {tlhXmlEditorConfig} from '../../tlhXmlEditorConfig';
 import {NodeDisplay} from '../../NodeDisplay';
 import {useTranslation} from 'react-i18next';
 import {blueButtonClasses, whiteButtonClasses} from '../../../defaultDesign';
+import {wait} from "@apollo/client/testing";
 
 interface IProps {
   oldAttributes: Attributes;
@@ -23,13 +24,18 @@ export function ParsedWord({oldAttributes, initialParsedWord: initialParsedWord,
 
   const updateMorphologies = async (): Promise<void> => {
     try {
-      const res = await fetchMorphologicalAnalyses(writeNode(parsedNode, tlhXmlEditorConfig.writeConfig).join(''), language);
+      const res = await fetchMorphologicalAnalyses(writeNode(parsedNode, tlhXmlEditorConfig.writeConfig).join(''), language).then((res) => {
+        if (res) {
+          setParsedNode((state) => update(state, {attributes: {$set: res}}));
+          const buttonElement = document.getElementById('submitEditButton') as HTMLElement;
+          wait(0).then(() => {
+            buttonElement.click();
+          });
 
-      if (res) {
-        setParsedNode((state) => update(state, {attributes: {$set: res}}));
-      } else {
-        alert('Could not find any morphological analyses...');
-      }
+        } else {
+          alert('Could not find any morphological analyses...');
+        }
+      });
     } catch (err) {
       console.error(err);
     }
@@ -40,20 +46,18 @@ export function ParsedWord({oldAttributes, initialParsedWord: initialParsedWord,
       <div className="p-2 rounded bg-white">
         <NodeDisplay rootNode={undefined} node={parsedNode} currentSelectedPath={undefined} isLeftSide={false}/>
       </div>
-
-      <div className="mt-2 p-2 rounded bg-white">{writeNode(parsedNode, tlhXmlEditorConfig.writeConfig).join('')}</div>
-
+      {/*      <div className="mt-2 p-2 rounded bg-white">{writeNode(parsedNode, tlhXmlEditorConfig.writeConfig).join('')}</div> --> */}
       <div className="mt-4 grid grid-cols-2 gap-2">
         <div className="text-center">
           <button type="button" className={whiteButtonClasses} onClick={copyMorphologicalAnalyses}>{t('copyMorphologicalAnalyses')}</button>
         </div>
         <div className="text-center">
-          <button type="button" className={whiteButtonClasses} onClick={updateMorphologies}>{t('fetchMorphologicalAnalyses')}</button>
+          <button type="button" className={blueButtonClasses} onClick={updateMorphologies}>{t('fetchMorphologicalAnalyses')}</button>
         </div>
       </div>
 
       <div className="text-center">
-        <button type="button" className={blueButtonClasses} onClick={() => submitEdit(parsedNode)}>{t('submitEdit')}</button>
+        <button hidden={true} type="button" id="submitEditButton" className={blueButtonClasses} onClick={() => submitEdit(parsedNode)}>{t('submitEdit')}</button>
       </div>
     </>
   );

@@ -13,12 +13,13 @@ interface IProps {
 interface IState {
   editor: string | undefined;
   editType: DocumentEditTypes;
+  condenseOnExport: boolean;
   attributes: Attributes;
 }
 
 const defaultEditType = DocumentEditTypes.Correction;
 
-const defaultState: IState = {editor: undefined, editType: defaultEditType, attributes: attributesForDocEditType(defaultEditType)};
+const defaultState: IState = {editor: undefined, editType: defaultEditType, condenseOnExport: true, attributes: attributesForDocEditType(defaultEditType)};
 
 export function OxtedExportData({setExportNode}: IProps): ReactElement {
 

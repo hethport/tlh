@@ -56,9 +56,13 @@ export function NodeEditorRightSide({
             <>{t('update')}</>
           </SelectableButton>
 
-          <button type="button" className="ml-2 px-2 rounded border border-slate-500" onClick={cancelSelection}
+          <button type="button" className="ml-2 px-2 rounded border border-slate-500 bg-yellow-300" onClick={cancelSelection}
                   title={t('cancelSelection') || 'cancelSelection'}>
             &#x2715;
+          </button>
+          <button type="button" className="ml-2 px-2 rounded border border-slate-500 bg-green-500" onClick={cancelSelection}
+                  title={t('applySelection') || 'applySelection'}>
+            &#x2714;
           </button>
 
           {jumpElement &&

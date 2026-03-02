@@ -1,5 +1,5 @@
 import {ReactElement, useEffect, useState, useRef} from 'react';
-import {isXmlElementNode, XmlElementNode, XmlNode} from 'simple_xml';
+import {isXmlElementNode, XmlElementNode, XmlNode, xmlTextNode} from 'simple_xml';
 import {XmlEditorConfig, XmlSingleEditableNodeConfig} from './editorConfig';
 import {useTranslation} from 'react-i18next';
 import {useSelector} from 'react-redux';
@@ -17,6 +17,7 @@ import {writeXml} from './StandAloneOXTED';
 import {fetchCuneiform} from './elementEditors/LineBreakEditor';
 import {getPriorSiblingPath} from '../nodeIterators';
 import {coloredButtonClasses} from '../defaultDesign';
+import {condenseXmlEvents} from './HeaderEditor';
 
 export function buildActionSpec(innerAction: Spec<XmlNode>, path: number[]): Spec<XmlNode> {
   return path.reduceRight(
@@ -52,6 +53,9 @@ interface IState {
   author?: string;
   rightSideFontSize: number;
   lbCuneiformDirtyPath?: number[];
+  insertModeActive: boolean;
+  deleteModeActive: boolean;
+  markedForDeletion: string[];
 }
 
 function searchEditableNode(tagName: string, rootNode: XmlElementNode, currentPath: number[], forward: boolean): number[] | undefined {
@@ -96,6 +100,30 @@ const buildSpec = (path: number  [], innerSpec: Spec<XmlNode>) => path.reduceRig
   innerSpec
 );
 
+// Convert DOM Element to XmlElementNode (simple_xml format)
+const domElementToXmlNode = (element: Element): XmlElementNode => {
+  const attributes: Record<string, string> = {};
+  for (let i = 0; i < element.attributes.length; i++) {
+    const attr = element.attributes[i];
+    attributes[attr.name] = attr.value;
+  }
+
+  const children: XmlNode[] = [];
+  element.childNodes.forEach(child => {
+    if (child.nodeType === Node.ELEMENT_NODE) {
+      children.push(domElementToXmlNode(child as Element));
+    } else if (child.nodeType === Node.TEXT_NODE && child.textContent && child.textContent.trim()) {
+      children.push(xmlTextNode(child.textContent));
+    }
+  });
+
+  return {
+    tagName: element.tagName,
+    attributes,
+    children
+  };
+};
+
 export function XmlDocumentEditor({
   node: initialNode,
   editorConfig = tlhXmlEditorConfig,
@@ -116,7 +144,10 @@ export function XmlDocumentEditor({
     rootNode: initialNode,
     editorState: defaultRightSideState,
     changed: false,
-    rightSideFontSize: 100
+    rightSideFontSize: 100,
+    insertModeActive: false,
+    deleteModeActive: false,
+    markedForDeletion: []
   });
   const globalUpdateButtonRef = useRef<HTMLButtonElement>(null);
 
@@ -129,9 +160,31 @@ export function XmlDocumentEditor({
     return () => document.removeEventListener('keydown', handleJumpKey);
   });
 
-  function exportXml(): void {
+  function exportXml(condenseEvents?: boolean): void {
     setState((state) => update(state, {changed: {$set: false}}));
-    onExportXml(state.rootNode as XmlElementNode);
+
+    let nodeToExport = state.rootNode as XmlElementNode;
+
+    // If condenseEvents is requested, process the XML through condenseXmlEvents
+    if (condenseEvents) {
+      try {
+        const xmlString = writeXml(nodeToExport, true);
+        const condensedXml = condenseXmlEvents(xmlString);
+
+        // Parse the condensed XML back into XmlNode structure
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(condensedXml, 'application/xml');
+
+        if (doc.documentElement) {
+          nodeToExport = domElementToXmlNode(doc.documentElement);
+        }
+      } catch (error) {
+        console.error('Error condensing events:', error);
+        // Fall back to original node if condensing fails
+      }
+    }
+
+    onExportXml(nodeToExport);
   }
 
   const onNodeSelect = (node: XmlElementNode, path: number[]): void => setState((state) => update(state, {
@@ -245,6 +298,69 @@ export function XmlDocumentEditor({
     );
   }
 
+  const toggleInsertMode = (): void => setState((state) => update(state, {
+    insertModeActive: {$apply: (v) => !v},
+    editorState: {$set: defaultRightSideState}
+  }));
+
+  const cancelInsertMode = (): void => setState((state) => update(state, {
+    insertModeActive: {$set: false},
+    editorState: {$set: defaultRightSideState}
+  }));
+
+  const toggleDeleteMode = (): void => setState((state) => update(state, {
+    deleteModeActive: {$apply: (v) => !v},
+    markedForDeletion: {$set: []},
+    editorState: {$set: defaultRightSideState}
+  }));
+
+  const cancelDeleteMode = (): void => setState((state) => update(state, {
+    deleteModeActive: {$set: false},
+    markedForDeletion: {$set: []}
+  }));
+
+  const toggleMarkForDeletion = (path: NodePath): void => {
+    const key = path.join('.');
+    setState((state) => {
+      const already = state.markedForDeletion.includes(key);
+      return update(state, {
+        markedForDeletion: already
+          ? {$apply: (arr: string[]) => arr.filter((p) => p !== key)}
+          : {$push: [key]}
+      });
+    });
+  };
+
+  function deleteMarkedNodes(): void {
+    if (state.markedForDeletion.length === 0) return;
+    if (!confirm(t('deleteThisElement'))) return;
+
+    // Sort deepest-and-rightmost-first so earlier indices aren't shifted when splicing
+    const sortedPaths = state.markedForDeletion
+      .map((s) => s.split('.').map(Number))
+      .sort((a, b) => {
+        for (let i = Math.max(a.length, b.length) - 1; i >= 0; i--) {
+          const diff = (b[i] ?? -1) - (a[i] ?? -1);
+          if (diff !== 0) return diff;
+        }
+        return 0;
+      });
+
+    setState((state) => {
+      let rootNode = state.rootNode;
+      for (const path of sortedPaths) {
+        const spec = buildSpec(path.slice(0, -1), {children: {$splice: [[path[path.length - 1], 1]]}});
+        rootNode = update(rootNode, spec);
+      }
+      return update(state, {
+        rootNode: {$set: rootNode},
+        deleteModeActive: {$set: false},
+        markedForDeletion: {$set: []},
+        changed: {$set: true}
+      });
+    });
+  }
+
   const toggleElementInsert = (tagName: string, insertablePositions: InsertablePositions): void => setState((state) => {
       switch (state.editorState._type) {
         case 'DefaultEditorState':
@@ -279,12 +395,22 @@ export function XmlDocumentEditor({
       ? getPriorSiblingPath(state.rootNode as XmlElementNode, path, 'lb')
       : undefined;
 
-    setState((state) => update(state, {
-      rootNode: actionSpec,
-      editorState: {$set: editNodeEditorState(newNode, editorConfig, path)},
-      changed: {$set: true},
-      lbCuneiformDirtyPath: {$set: lbCuneiformDirtyPath}
-    }));
+    if (state.insertModeActive) {
+      // In insert mode: apply the node but stay in AddNodeRightState (no editor opened)
+      setState((state) => update(state, {
+        rootNode: actionSpec,
+        changed: {$set: true},
+        lbCuneiformDirtyPath: {$set: lbCuneiformDirtyPath}
+      }));
+    } else {
+      // Default behaviour: open the node editor after insertion
+      setState((state) => update(state, {
+        rootNode: actionSpec,
+        editorState: {$set: editNodeEditorState(newNode, editorConfig, path)},
+        changed: {$set: true},
+        lbCuneiformDirtyPath: {$set: lbCuneiformDirtyPath}
+      }));
+    }
   }
 
   const currentInsertedElement = 'tagName' in state.editorState
@@ -312,7 +438,10 @@ export function XmlDocumentEditor({
       : undefined,
     updateNode: (node) => setState((state) => update(state, {rootNode: {$set: node}})),
     setKeyHandlingEnabled: (value) => setState((state) => update(state, {keyHandlingEnabled: {$set: value}})),
-    isLeftSide: true
+    isLeftSide: true,
+    deleteModeActive: state.deleteModeActive,
+    markedForDeletion: state.markedForDeletion,
+    onToggleMarkForDeletion: toggleMarkForDeletion
   };
 
   if (state.lbCuneiformDirtyPath !== undefined) {
@@ -355,7 +484,15 @@ export function XmlDocumentEditor({
                                   toggleCompareChanges={toggleCompareChanges} onExportXml={exportXml}
                                   onExportDict={onExportDict}
                                   exportDisabled={exportDisabled || false}
-                                  otherButton={otherButton}>
+                                  otherButton={otherButton}
+                                  insertModeActive={state.insertModeActive}
+                                  toggleInsertMode={toggleInsertMode}
+                                  cancelInsertMode={cancelInsertMode}
+                                  deleteModeActive={state.deleteModeActive}
+                                  toggleDeleteMode={toggleDeleteMode}
+                                  markedForDeletionCount={state.markedForDeletion.length}
+                                  onDeleteMarked={deleteMarkedNodes}
+                                  onCancelDeleteMode={cancelDeleteMode}>
               {children}
             </EditorEmptyRightSide>
           )}

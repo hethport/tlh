@@ -263,11 +263,18 @@ export function WordNodeEditor({node, path, updateEditedNode, setKeyHandlingEnab
         <LanguageInput initialValue={node.attributes.lg} parentLanguages={{text: textLanguage, lb: lineBreakLanguage}}
                        onChange={(lg) => updateAttribute('lg', lg.trim() || '')} onFocus={onFocus} onBlur={onBlur}/>
       </div>
+      <div className="mt-2 gap-2">
+        <WordContentEditor
+          oldNode={node}
+          language={node.attributes.lg || lineBreakLanguage || textLanguage || 'Hit'}
+          cancelEdit={cancelEdit}
+          updateNode={handleEditUpdate}/>
+      </div>
 
       <div className="mt-2 grid grid-cols-3 gap-2">
-        <button type="button" className="p-2 rounded bg-blue-500 text-white w-full" onClick={enableEditWordState}>
+        {/* <button type="button" className="p-2 rounded bg-blue-500 text-white w-full" onClick={enableEditWordState}>
           &#9998; {t('editContent')}
-        </button>
+        </button> */}
         <button type="button" onClick={onEditEditingQuestionButtonClick} className="p-2 rounded bg-teal-400 text-white w-full">
           &#10068; {t('editEditingQuestion')}
         </button>
@@ -297,13 +304,14 @@ export function WordNodeEditor({node, path, updateEditedNode, setKeyHandlingEnab
       <section>
         <h2 className="mb-2 font-bold text-center">
           {t('morphologicalAnalysis_plural')}
-          {node.attributes.mrp0sel !== undefined && <span>(mrp0sel=&quot;{node.attributes.mrp0sel}&quot;)</span>}
+          {node.attributes.mrp0sel !== undefined && <span>(&quot;{node.attributes.mrp0sel}&quot;)</span>}
         </h2>
 
         {morphologies.length === 0
           ? (
             <div>
-              <div className="p-2 rounded bg-amber-400 text-center">{t('noMorphologicalAnalysesFound')}</div>
+              <div className="p-2 rounded bg-amber-400 text-center">
+          {t('noMorphologicalAnalysesFound')}</div>
 
               {node.attributes.mrp0sel === 'DEL'
                 ? <div className="mt-2 p-2 rounded bg-blue-600 text-white text-center w-full">mrp0sel=&quot;DEL&quot;</div>

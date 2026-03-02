@@ -17,6 +17,9 @@ export interface EditorLeftSideProps extends NodeDisplayIProps {
   updateNode: (node: XmlElementNode) => void;
   setKeyHandlingEnabled: (value: boolean) => void;
   closeFile: (() => void) | undefined;
+  deleteModeActive?: boolean;
+  markedForDeletion?: string[];
+  onToggleMarkForDeletion?: (path: NodePath) => void;
 }
 
 interface IState {
@@ -35,6 +38,9 @@ export function EditorLeftSide({
   updateNode,
   setKeyHandlingEnabled,
   closeFile,
+  deleteModeActive,
+  markedForDeletion,
+  onToggleMarkForDeletion,
 }: EditorLeftSideProps): JSX.Element {
   const { t } = useTranslation('common');
 
@@ -233,6 +239,9 @@ export function EditorLeftSide({
               hoveredPath={hoveredPath}
               onHoverEnter={handleHoverEnter}
               onHoverLeave={handleHoverLeave}
+              deleteModeActive={deleteModeActive}
+              markedForDeletion={markedForDeletion}
+              onToggleMarkForDeletion={onToggleMarkForDeletion}
             />
           </div>
         )}

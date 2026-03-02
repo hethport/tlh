@@ -84,10 +84,6 @@ export function WordContentEditor({oldNode, language, cancelEdit, updateNode}: I
             : <pre>{JSON.stringify(state, null, 2)}</pre>}
         </div>
       </div>}
-
-      <div className="text-center">
-        <button type="button" onClick={cancelEdit} className={amberButtonClasses}>{t('cancelEdit')}</button>
-      </div>
     </div>
   );
 }

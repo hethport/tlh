@@ -4,7 +4,7 @@ import {
   XmlElementNode,
   XmlNode,
 } from 'simple_xml';
-import { isValidElement, ReactElement } from 'react';
+import React, { isValidElement, ReactElement } from 'react';
 import {
   isXmlEditableNodeConfig,
   XmlEditorSingleNodeConfig,
@@ -30,6 +30,11 @@ export interface NodeDisplayIProps {
   hoveredPath?: NodePath | null;
   onHoverEnter?: (path: NodePath) => void;
   onHoverLeave?: () => void;
+
+  /** ↓ Delete mode */
+  deleteModeActive?: boolean;
+  markedForDeletion?: string[];
+  onToggleMarkForDeletion?: (path: NodePath) => void;
 }
 
 const InsertButton = ({
@@ -78,6 +83,9 @@ export function NodeDisplay({
     onSelect,
     insertionData,
     isLeftSide,
+    deleteModeActive,
+    markedForDeletion,
+    onToggleMarkForDeletion,
   } = inheritedProps;
 
   const currentConfig: XmlEditorSingleNodeConfig | undefined =
@@ -118,10 +126,18 @@ export function NodeDisplay({
     ? { clickablePrior: replacement, notClickable: undefined, posterior: undefined }
     : replacement;
 
+  /* -----------------------------------------------------------------
+       Delete mode – is this node marked for deletion?
+  ----------------------------------------------------------------- */
+  const pathKey = path.join('.');
+  const isMarkedForDeletion = !!deleteModeActive && !!markedForDeletion?.includes(pathKey);
+
   const onClick =
-    currentConfig && isXmlEditableNodeConfig(currentConfig) && onSelect
-      ? () => onSelect(node, path)
-      : undefined;
+    deleteModeActive && onToggleMarkForDeletion
+      ? (e: React.MouseEvent) => { e.stopPropagation(); onToggleMarkForDeletion(path); }
+      : currentConfig && isXmlEditableNodeConfig(currentConfig) && onSelect
+        ? () => onSelect(node, path)
+        : undefined;
 
   /* -----------------------------------------------------------------
        Hover handling – decide if *this* line is the hovered one
@@ -135,14 +151,22 @@ export function NodeDisplay({
     onHoverLeave?.();
   };
 
+  const deleteModeHoverClass = deleteModeActive && isHovered && !isMarkedForDeletion
+    ? 'outline outline-2 outline-red-400 bg-red-50 rounded cursor-pointer'
+    : '';
+  const markedClass = isMarkedForDeletion
+    ? 'outline outline-2 outline-red-600 bg-red-200 rounded line-through opacity-60 cursor-pointer'
+    : '';
+
   return (
     <div
-      className="group/item inline"
+      className={`group/item inline ${markedClass || deleteModeHoverClass}`}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
+      title={deleteModeActive ? (isMarkedForDeletion ? 'Click to unmark' : 'Click to mark for deletion') : undefined}
     >
-      {/*  Insert‑button *before* the node content */}
-      {insertionData && insertionData.insertablePaths.includes(path.join('.')) && (
+      {/*  Insert-button *before* the node content */}
+      {!deleteModeActive && insertionData && insertionData.insertablePaths.includes(path.join('.')) && (
         <InsertButton
           initiate={() => insertionData.initiateInsert(path)}
           show={isHovered}
@@ -152,11 +176,11 @@ export function NodeDisplay({
       {/*  The actual node content (clickable, etc.) */}
       <span onClick={onClick}>{clickablePrior}</span>
 
-      {/*  If we are rendering the left‑side “extra” stuff */}
+      {/*  If we are rendering the left-side "extra" stuff */}
       {isLeftSide && notClickable}
 
-      {/*  Insert‑button *as a child* of the node (last‑child case) */}
-      {insertionData && insertionData.insertAsLastChildOf.includes(node.tagName) && (
+      {/*  Insert-button *as a child* of the node (last-child case) */}
+      {!deleteModeActive && insertionData && insertionData.insertAsLastChildOf.includes(node.tagName) && (
         <InsertButton
           initiate={() =>
             insertionData.initiateInsert([...path, node.children.length])
