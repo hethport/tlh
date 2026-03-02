@@ -27,7 +27,7 @@ SelectableButton.displayName = 'SelectableButton';
 
 export function DeleteButton({title, onClick, otherClasses}: BaseProps): JSX.Element {
   return (
-    <button type="button" className={classNames('bg-red-500', 'text-white', otherClasses)} onClick={onClick} title={title}>&ndash;</button>
+    <button type="button" className={classNames('bg-red-500', 'text-white', otherClasses)} onClick={onClick} title={title}>&#x1F5D1;</button>
   );
 }
 
