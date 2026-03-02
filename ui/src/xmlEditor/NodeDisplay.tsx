@@ -39,7 +39,6 @@ export interface NodeDisplayIProps {
 
 const InsertButton = ({
   initiate,
-  show,
 }: {
   initiate: () => void;
   show: boolean;

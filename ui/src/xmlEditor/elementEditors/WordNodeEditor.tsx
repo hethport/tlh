@@ -126,10 +126,12 @@ export function WordNodeEditor({node, path, updateEditedNode, setKeyHandlingEnab
     attributes: {mrp0sel: (value) => toggleMorphology(value || '', morphNumber, letter, encLetter, targetState)}
   });
 
+  /*
   function enableEditWordState(): void {
     setKeyHandlingEnabled(false);
     setState('EditContent');
   }
+  */
 
   async function handleEditUpdate(node: XmlElementNode<'w'>): Promise<void> {
     const maybeLineBreakPath = getPriorSiblingPath(rootNode, path, 'lb');

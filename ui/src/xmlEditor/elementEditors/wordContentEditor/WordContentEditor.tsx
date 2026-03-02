@@ -7,7 +7,6 @@ import {WordWithLbContentEditor} from './WordWithLbContentEditor';
 import {WordWithoutLbContentEditor} from './WordWithoutLbContentEditor';
 import classNames from 'classnames';
 import {ParsedWord} from './ParsedWord';
-import {amberButtonClasses} from '../../../defaultDesign';
 
 interface IProps {
   oldNode: XmlElementNode<'w'>;
@@ -58,7 +57,7 @@ function splitAtLbTag(children: XmlNode[]): SplitAtLbResult | undefined {
   }
 }
 
-export function WordContentEditor({oldNode, language, cancelEdit, updateNode}: IProps): ReactElement {
+export function WordContentEditor({oldNode, language, updateNode}: IProps): ReactElement {
 
   const {t} = useTranslation('common');
 

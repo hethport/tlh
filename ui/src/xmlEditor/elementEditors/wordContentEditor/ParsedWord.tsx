@@ -6,7 +6,7 @@ import {tlhXmlEditorConfig} from '../../tlhXmlEditorConfig';
 import {NodeDisplay} from '../../NodeDisplay';
 import {useTranslation} from 'react-i18next';
 import {blueButtonClasses, whiteButtonClasses} from '../../../defaultDesign';
-import {wait} from "@apollo/client/testing";
+import {wait} from '@apollo/client/testing';
 
 interface IProps {
   oldAttributes: Attributes;
@@ -23,8 +23,9 @@ export function ParsedWord({oldAttributes, initialParsedWord: initialParsedWord,
   const copyMorphologicalAnalyses = (): void => setParsedNode((state) => update(state, {attributes: {$set: oldAttributes}}));
 
   const updateMorphologies = async (): Promise<void> => {
+    let res;
     try {
-      const res = await fetchMorphologicalAnalyses(writeNode(parsedNode, tlhXmlEditorConfig.writeConfig).join(''), language).then((res) => {
+      res = await fetchMorphologicalAnalyses(writeNode(parsedNode, tlhXmlEditorConfig.writeConfig).join(''), language).then((res) => {
         if (res) {
           setParsedNode((state) => update(state, {attributes: {$set: res}}));
           const buttonElement = document.getElementById('submitEditButton') as HTMLElement;
@@ -38,6 +39,7 @@ export function ParsedWord({oldAttributes, initialParsedWord: initialParsedWord,
       });
     } catch (err) {
       console.error(err);
+      console.log('res: ' + res);
     }
   };
 

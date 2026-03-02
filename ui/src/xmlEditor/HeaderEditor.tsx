@@ -1,6 +1,6 @@
 // HeaderEditor.tsx
 import React, { useEffect, useState } from 'react';
-import { MergeAttrs, MergedDoc } from './headerTypes';
+import { MergeAttrs } from './headerTypes';
 import {
   DocumentEditTypes,
   allDocEditTypes,
@@ -45,7 +45,7 @@ export const condenseEvents = (events: EditEvent[]): EditEvent[] => {
     if (!groups.has(dayKey)) {
       groups.set(dayKey, []);
     }
-    groups.get(dayKey)!.push(event);
+    groups.get(dayKey)?.push(event);
   });
 
   // Condense each group
@@ -633,7 +633,7 @@ export const HeaderEditor: React.FC<HeaderEditorProps> = ({
     onDelete: () => void;
     t: (s: string) => string;
     namePrefix: string;
-  }> = ({ ev, idx, onChangeType, onDelete, t, namePrefix }) => {
+  }> = ({ ev, onChangeType, onDelete, t, namePrefix }) => {
     const handleTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
       const newType = e.target.value as DocumentEditTypes;
       onChangeType(newType);
