@@ -7,6 +7,7 @@ import {WordWithLbContentEditor} from './WordWithLbContentEditor';
 import {WordWithoutLbContentEditor} from './WordWithoutLbContentEditor';
 import classNames from 'classnames';
 import {ParsedWord} from './ParsedWord';
+import {reconstructTransliterationForNodes} from '../../transliterationReconstruction';
 
 interface IProps {
   oldNode: XmlElementNode<'w'>;
@@ -57,15 +58,20 @@ function splitAtLbTag(children: XmlNode[]): SplitAtLbResult | undefined {
   }
 }
 
+
+function getInitialState(oldNode: XmlElementNode<'w'>, language: string): WordContentEditState {
+  const {reconstruction} = reconstructTransliterationForNodes(oldNode.children);
+  return readTransliteration(reconstruction, language);
+}
+
 export function WordContentEditor({oldNode, language, updateNode}: IProps): ReactElement {
 
   const {t} = useTranslation('common');
 
   const maybeSplit = splitAtLbTag(oldNode.children);
 
-  const [state, setState] = useState<WordContentEditState | undefined>(
-    // FIXME: initial state!
-    // maybeSplit ? undefined : undefined
+  const [state, setState] = useState<WordContentEditState>(
+    getInitialState(oldNode, language)
   );
 
   return (
