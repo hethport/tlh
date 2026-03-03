@@ -248,5 +248,15 @@
   "deleteModeInstructions": "Select elements to be deleted",
   "deleteMarked": "Delete Selected",
   "cancel": "Cancel",
-  "nodesMarkedForDeletion": "Element(s) selected for deletion"
+  "nodesMarkedForDeletion": "Element(s) selected for deletion",
+  "w": "word",
+  "space": "space",
+  "clb": "colonID",
+  "lb": "line",
+  "cl": "Colon (trscr.)",
+  "devi": "text variation",
+  "gap": "gap",
+  "wsep": "word separator",
+  "parsep": "paragraph marker",
+  "parsep_dbl": "double paragraph marker"
 }

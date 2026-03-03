@@ -248,5 +248,15 @@
   "deleteModeInstructions": "Elemente zum Löschen markieren",
   "deleteMarked": "Markierte Löschen",
   "cancel": "Abbrechen",
-  "nodesMarkedForDeletion": "Element(e) zum Löschen markiert"
+  "nodesMarkedForDeletion": "Element(e) zum Löschen markiert",
+  "w": "Wort",
+  "space": "Spatium",
+  "clb": "KolonID",
+  "lb": "Zeile",
+  "cl": "Kolon (Trskr.)",
+  "devi": "Textvariant",
+  "gap": "Lücke",
+  "wsep": "Worttrenner",
+  "parsep": "Paragraph-Strich",
+  "parsep_dbl": "Doppelparagraph-Strich"
 }
