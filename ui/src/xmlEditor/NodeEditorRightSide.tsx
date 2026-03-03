@@ -36,6 +36,16 @@ export function NodeEditorRightSide({
 
   const {t} = useTranslation('common');
 
+  const handleJumpElement = (forward: boolean) => {
+    if (!jumpElement) return;
+
+    // Apply updates before jumping, similar to handleJumpKey in XmlDocumentEditor
+    if (changed) {
+      applyUpdates();
+    }
+    jumpElement(forward);
+  };
+
   return (
     <div>
       <div className="p-4 rounded-t border border-slate-300 shadow-md">
@@ -45,7 +55,7 @@ export function NodeEditorRightSide({
           <FontSizeSelector {...fontSizeSelectorProps}/>
 
           {jumpElement &&
-            <button type="button" className="ml-2 px-2 rounded border border-slate-500" onClick={() => jumpElement(false)}
+            <button type="button" className="ml-2 px-2 rounded border border-slate-500" onClick={() => handleJumpElement(false)}
                     title={t('previousTag') || 'previousTag'}>
               &larr;
             </button>}
@@ -66,7 +76,7 @@ export function NodeEditorRightSide({
           </button>
 
           {jumpElement &&
-            <button type="button" className="ml-2 px-2 rounded border border-slate-500" onClick={() => jumpElement(true)} title={t('nextTag') || 'nextTag'}>
+            <button type="button" className="ml-2 px-2 rounded border border-slate-500" onClick={() => handleJumpElement(true)} title={t('nextTag') || 'nextTag'}>
               &rarr;
             </button>}
         </div>
