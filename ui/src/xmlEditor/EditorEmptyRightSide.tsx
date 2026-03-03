@@ -46,7 +46,7 @@ export function EditorEmptyRightSide({
 }: IProps): ReactElement {
 
   const {t} = useTranslation('common');
-  const [condenseOnExport, setCondenseOnExport] = useState(false);
+  const [condenseOnExport, setCondenseOnExport] = useState(true);
 
   const insertableTags: [string, InsertablePositions][] = Object.entries(editorConfig.nodeConfigs)
     .filter((c): c is [string, XmlSingleInsertableEditableNodeConfig] => isXmlSingleInsertableEditableNodeConfig(c[1]))
