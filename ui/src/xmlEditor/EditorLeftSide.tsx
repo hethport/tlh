@@ -123,8 +123,8 @@ export function EditorLeftSide({
     setUiState((s) => update(s, { fontSize: { $apply: (v) => v + delta } }));
 
   return (
-    <div className="flex flex-col min-h-80 max-h-90 overflow-y-hidden">
-      <div className="p-4 rounded-t border border-slate-300 shadow-md">
+    <div className="flex flex-col h-full overflow-hidden">
+      <div className="p-4 rounded-t border border-slate-300 shadow-md flex-shrink-0">
         <span className="font-bold">{filename}</span>
 
         <div className="float-right space-x-2">
@@ -204,7 +204,7 @@ export function EditorLeftSide({
         </div>
       </div>
 
-      <div className="flex p-4 rounded-b border border-slate-300 shadow-md flex-auto overflow-auto">
+      <div className="flex p-4 rounded-b border border-slate-300 shadow-md flex-1 overflow-auto min-h-0">
         {uiState.xmlSource ? (
           <>
             {uiState.headerEditorOpen ? (

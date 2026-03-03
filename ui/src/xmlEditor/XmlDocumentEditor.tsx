@@ -470,7 +470,7 @@ export function XmlDocumentEditor({
                        rightFile={{name: t('currentDocumentState'), baseContent: writeXml(state.rootNode as XmlElementNode, true)}}/>
       </div>
     ) : (
-      <div className="px-2 grid grid-cols-2 gap-4 h-full max-h-full">
+      <div className="px-2 grid grid-cols-2 gap-4" style={{ height: 'calc(100vh - 5.5rem)' }}>
         <EditorLeftSide {...leftSideProps} filename={filename} node={state.rootNode} onNodeSelect={onNodeSelect}/>
 
         {state.editorState._type === 'EditNodeRightState'
