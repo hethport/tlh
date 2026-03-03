@@ -167,7 +167,10 @@ export function EditorLeftSide({
             </>
           ) : (
             <>
-
+              <FontSizeSelector
+                currentFontSize={uiState.fontSize}
+                updateFontSize={changeFontSize}
+              />
               <button className="px-2 rounded bg-green-500 text-white font-bold" onClick={openHeaderEditor}>Edit Header</button>
               <button
                 onClick={() =>
