@@ -116,7 +116,7 @@ export function EditorEmptyRightSide({
               {insertableTags.map(([tagName, insertablePositions]) =>
                 <SelectableButton
                   key={tagName}
-                  title={t(tagName)}
+                  title={tagName}
                   selected={tagName === currentInsertedElement}
                   onClick={() => toggleElementInsert(tagName, insertablePositions)}
                   otherClasses={['p-2', 'rounded']}
@@ -142,7 +142,7 @@ export function EditorEmptyRightSide({
         {!insertModeActive && (
           <div className="my-4 grid grid-cols-4 gap-2">
             {insertableTags.map(([tagName, insertablePositions]) =>
-              <SelectableButton key={tagName} title={t(tagName)} selected={tagName === currentInsertedElement}
+              <SelectableButton key={tagName} title={tagName} selected={tagName === currentInsertedElement}
                                 onClick={() => toggleElementInsert(tagName, insertablePositions)} otherClasses={['p-2', 'rounded']}>
                 <>{t(tagName)}</>
               </SelectableButton>
