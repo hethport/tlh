@@ -331,11 +331,37 @@ export function XmlDocumentEditor({
     });
   };
 
+  /**
+   * After bulk deletion, remove element nodes that have become empty,
+   * but only along the ancestor paths of deleted nodes — not across the
+   * whole tree (which would wrongly prune legitimate self-closing or
+   * structurally-empty containers elsewhere).
+   *
+   * `affectedParentKeys` is a Set of path strings for every parent of a
+   * deleted node (e.g. if "0.1.2" was deleted, "0.1" and "0" are affected).
+   */
+  function pruneEmptyAncestors(node: XmlNode, path: number[], affectedParentKeys: Set<string>): XmlNode | null {
+    if (!isXmlElementNode(node)) {
+      return node;
+    }
+    const key = path.join('.');
+    if (!affectedParentKeys.has(key)) {
+      // This subtree had no deletions — leave it entirely alone
+      return node;
+    }
+    const cleanedChildren = node.children
+      .map((child, i) => pruneEmptyAncestors(child, [...path, i], affectedParentKeys))
+      .filter((c): c is XmlNode => c !== null);
+    if (cleanedChildren.length === 0) {
+      return null;
+    }
+    return {...node, children: cleanedChildren};
+  }
+
   function deleteMarkedNodes(): void {
     if (state.markedForDeletion.length === 0) return;
     if (!confirm(t('deleteThisElement'))) return;
 
-    // Sort deepest-and-rightmost-first so earlier indices aren't shifted when splicing
     const sortedPaths = state.markedForDeletion
       .map((s) => s.split('.').map(Number))
       .sort((a, b) => {
@@ -346,12 +372,24 @@ export function XmlDocumentEditor({
         return 0;
       });
 
+    // Build the set of all ancestor path keys for deleted nodes
+    const affectedParentKeys = new Set<string>();
+    for (const path of sortedPaths) {
+      for (let len = 1; len < path.length; len++) {
+        affectedParentKeys.add(path.slice(0, len).join('.'));
+      }
+      // Also add the root
+      affectedParentKeys.add('');
+    }
+
     setState((state) => {
       let rootNode = state.rootNode;
       for (const path of sortedPaths) {
         const spec = buildSpec(path.slice(0, -1), {children: {$splice: [[path[path.length - 1], 1]]}});
         rootNode = update(rootNode, spec);
       }
+      // Prune only along the affected ancestor paths
+      rootNode = pruneEmptyAncestors(rootNode, [], affectedParentKeys) ?? rootNode;
       return update(state, {
         rootNode: {$set: rootNode},
         deleteModeActive: {$set: false},
