@@ -258,5 +258,6 @@
   "gap": "gap",
   "wsep": "word separator",
   "parsep": "paragraph marker",
-  "parsep_dbl": "double paragraph marker"
+  "parsep_dbl": "double paragraph marker",
+  "tabsep": "table column"
 }

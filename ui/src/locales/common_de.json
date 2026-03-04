@@ -258,5 +258,6 @@
   "gap": "Lücke",
   "wsep": "Worttrenner",
   "parsep": "Paragraph-Strich",
-  "parsep_dbl": "Doppelparagraph-Strich"
+  "parsep_dbl": "Doppelparagraph-Strich",
+  "tabsep": "Tabellenkolumne"
 }
