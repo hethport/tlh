@@ -6,7 +6,6 @@ import {tlhXmlEditorConfig} from '../../tlhXmlEditorConfig';
 import {NodeDisplay} from '../../NodeDisplay';
 import {useTranslation} from 'react-i18next';
 import {blueButtonClasses, whiteButtonClasses} from '../../../defaultDesign';
-import {wait} from '@apollo/client/testing';
 
 interface IProps {
   oldAttributes: Attributes;
@@ -20,26 +19,24 @@ export function ParsedWord({oldAttributes, initialParsedWord: initialParsedWord,
   const {t} = useTranslation('common');
   const [parsedNode, setParsedNode] = useState(initialParsedWord);
 
-  const copyMorphologicalAnalyses = (): void => setParsedNode((state) => update(state, {attributes: {$set: oldAttributes}}));
+  const copyMorphologicalAnalyses = (): void => {
+    const updatedNode = update(parsedNode, {attributes: {$set: oldAttributes}});
+    setParsedNode(updatedNode);
+    submitEdit(updatedNode);
+  };
 
   const updateMorphologies = async (): Promise<void> => {
-    let res;
     try {
-      res = await fetchMorphologicalAnalyses(writeNode(parsedNode, tlhXmlEditorConfig.writeConfig).join(''), language).then((res) => {
-        if (res) {
-          setParsedNode((state) => update(state, {attributes: {$set: res}}));
-          const buttonElement = document.getElementById('submitEditButton') as HTMLElement;
-          wait(0).then(() => {
-            buttonElement.click();
-          });
-
-        } else {
-          alert('Could not find any morphological analyses...');
-        }
-      });
+      const res = await fetchMorphologicalAnalyses(writeNode(parsedNode, tlhXmlEditorConfig.writeConfig).join(''), language);
+      if (res) {
+        const updatedNode = update(parsedNode, {attributes: {$set: res}});
+        setParsedNode(updatedNode);
+        submitEdit(updatedNode);
+      } else {
+        alert('Could not find any morphological analyses...');
+      }
     } catch (err) {
       console.error(err);
-      console.log('res: ' + res);
     }
   };
 
