@@ -112,7 +112,8 @@ const domElementToXmlNode = (element: Element): XmlElementNode => {
   element.childNodes.forEach(child => {
     if (child.nodeType === Node.ELEMENT_NODE) {
       children.push(domElementToXmlNode(child as Element));
-    } else if (child.nodeType === Node.TEXT_NODE && child.textContent && child.textContent.trim()) {
+    } else if (child.nodeType === Node.TEXT_NODE && child.textContent !== null) {
+      // Preserve all text content, including spaces - don't trim
       children.push(xmlTextNode(child.textContent));
     }
   });
