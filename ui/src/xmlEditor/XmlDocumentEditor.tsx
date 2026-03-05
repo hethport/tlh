@@ -240,6 +240,17 @@ export function XmlDocumentEditor({
       return;
     }
 
+    // Don't trigger shortcuts when user is typing in an input field
+    const activeElement = document.activeElement;
+    if (activeElement && (
+      activeElement.tagName === 'INPUT' ||
+      activeElement.tagName === 'TEXTAREA' ||
+      activeElement.tagName === 'SELECT' ||
+      (activeElement as HTMLElement).isContentEditable
+    )) {
+      return;
+    }
+
     const tagName = state.editorState.node.tagName;
 
     if (editorKeyConfig.updateAndNextEditableNodeKeys.includes(event.key)) {
