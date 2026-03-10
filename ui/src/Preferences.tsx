@@ -10,6 +10,8 @@ import {DictionaryConfig} from './xmlEditor/dictionaryConfig';
 
 const splitKey = ',';
 
+const dictionaryConfigKeys = ['alphabetizeIAsE', 'alphabetizeOAsU', 'alphabetizeVoicedConsonantsAsVoiceless'];
+
 interface FormValues {
   updateAndNextNodeKeys: string;
   nextNodeKeys: string;
@@ -19,6 +21,9 @@ interface FormValues {
   ignorePlene: boolean;
   fragmInSuffixDict: boolean;
   showUnclearForms: boolean;
+  alphabetizeIAsE: boolean;
+  alphabetizeOAsU: boolean;
+  alphabetizeVoicedConsonantsAsVoiceless: boolean;
 }
 
 function dismantleFormEntry(entry: string): string[] {
@@ -48,11 +53,15 @@ export function Preferences(): JSX.Element {
     ignorePlene: currentDictionaryConfig.ignorePlene,
     fragmInSuffixDict: currentDictionaryConfig.fragmInSuffixDict,
     showUnclearForms: currentDictionaryConfig.showUnclearForms,
+    alphabetizeIAsE: currentDictionaryConfig.alphabetizeIAsE,
+    alphabetizeOAsU: currentDictionaryConfig.alphabetizeOAsU,
+    alphabetizeVoicedConsonantsAsVoiceless: currentDictionaryConfig.alphabetizeVoicedConsonantsAsVoiceless,
   };
 
   function onSubmit(newConfig: FormValues): void {
     const {updateAndNextNodeKeys, nextNodeKeys, updateAndPrevNodeKeys, prevNodeKeys, submitKeys,
-           ignorePlene, fragmInSuffixDict, showUnclearForms} = newConfig;
+           ignorePlene, fragmInSuffixDict, showUnclearForms, alphabetizeIAsE, alphabetizeOAsU,
+           alphabetizeVoicedConsonantsAsVoiceless} = newConfig;
 
     const updateAndNextEditableNodeKeys = dismantleFormEntry(updateAndNextNodeKeys);
     const nextEditableNodeKeys = dismantleFormEntry(nextNodeKeys);
@@ -96,6 +105,9 @@ export function Preferences(): JSX.Element {
         ignorePlene,
         fragmInSuffixDict,
         showUnclearForms,
+        alphabetizeIAsE,
+        alphabetizeOAsU,
+        alphabetizeVoicedConsonantsAsVoiceless
       })
     );
 
@@ -154,6 +166,15 @@ export function Preferences(): JSX.Element {
             <label htmlFor="showUnclearForms" className="font-bold checkbox-label">{t('showFormsWithUnknownMeaningAndUnclearPos')}</label>
             <Field type="checkbox" id="showUnclearForms" name="showUnclearForms" className="rounded border border-slate-500"/>
           </div>
+
+          <>
+            {dictionaryConfigKeys.map((key: string) => (
+              <div className="mt-4" key={key}>
+                <label htmlFor={key} className="font-bold checkbox-label">{t(key)}</label>
+                <Field type="checkbox" id={key} name={key} className="rounded border border-slate-500"/>
+              </div>
+            ))}
+          </>
 
           {updated && <div className="mt-4 p-2 rounded bg-green-500 text-white text-center">{t('preferencesUpdated')}</div>}
 

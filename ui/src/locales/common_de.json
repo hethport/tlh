@@ -303,5 +303,8 @@
   "deleteMorphologicalAnalysis": "Morphologische Analyse löschen",
   "deleteMorphologicalAnalysisAndAddItToTheStopList": "Morphologische Analyse löschen und auf die schwarze Liste setzen",
   "removeFromTheList": "Aus der Liste entfernen",
-  "showFormsWithUnknownMeaningAndUnclearPos": "Formen mit unbekannter Bedeutung und unklarer Wortart im Wörterbuch anzeigen"
+  "showFormsWithUnknownMeaningAndUnclearPos": "Formen mit unbekannter Bedeutung und unklarer Wortart im Wörterbuch anzeigen",
+  "alphabetizeIAsE": "⟨i⟩ als ⟨e⟩ alphabetisieren",
+  "alphabetizeOAsU": "⟨o⟩ als ⟨u⟩ alphabetisieren",
+  "alphabetizeVoicedConsonantsAsVoiceless": "Stimmhafte Konsonanten als stimmlose alphabetisieren"
 }
