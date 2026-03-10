@@ -1,7 +1,14 @@
 import { removeMacron } from './utils';
 import { removeBrackets } from './brackets';
 
-function preprocessString(s: string): string {
+export type AlphabetizationOptions = {
+  alphabetizeIAsE: boolean;
+  alphabetizeOAsU: boolean;
+  alphabetizeVoicedConsonantsAsVoiceless: boolean;
+}
+
+function preprocessString(s: string, {alphabetizeIAsE, alphabetizeOAsU,
+    alphabetizeVoicedConsonantsAsVoiceless}: AlphabetizationOptions): string {
   return removeBrackets(removeMacron(s))
     .toLowerCase()
     .replaceAll('+', '');
@@ -19,9 +26,9 @@ function compareLetter(a: string, b: string): number {
   }
 }
 
-export function compare(a: string, b: string): number {
-  a = preprocessString(a);
-  b = preprocessString(b);
+export function compare(a: string, b: string, options: AlphabetizationOptions): number {
+  a = preprocessString(a, options);
+  b = preprocessString(b, options);
   for (let i = 0; i < Math.min(a.length, b.length); i++) {
     const comparisonResult = compareLetter(a[i], b[i]);
     if (comparisonResult === 0) {

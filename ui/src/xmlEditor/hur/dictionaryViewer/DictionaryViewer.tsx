@@ -7,7 +7,7 @@ import { DictionaryDownloader } from '../dict/files/DictionaryDownloader';
 import { ChangesDownloader } from '../changes/ChangesDownloader';
 import { writeMorphAnalysisValue } from '../../../model/morphologicalAnalysis';
 import { SetDictionary, getGlobalDictionary } from '../dict/dictionary';
-import { compare } from '../common/comparison';
+import { compare, AlphabetizationOptions } from '../common/comparison';
 import { blueButtonClasses } from '../../../defaultDesign';
 import { useTranslation } from 'react-i18next';
 import { getEnglishTranslationKey, EnglishTranslations, setGlobalEnglishTranslations,
@@ -57,7 +57,11 @@ export function DictionaryViewer({entries, setDictionary, initialEnglishTranslat
   }, [englishTranslations]);
 
   const currentDictionaryConfig: DictionaryConfig = useSelector(dictionaryConfigSelector);
-  const { showUnclearForms } = currentDictionaryConfig;
+  const { showUnclearForms, alphabetizeIAsE, alphabetizeOAsU,
+    alphabetizeVoicedConsonantsAsVoiceless } = currentDictionaryConfig;
+  const alphabetizationOptions: AlphabetizationOptions = { alphabetizeIAsE, alphabetizeOAsU,
+    alphabetizeVoicedConsonantsAsVoiceless };
+  const compareWithOptions = (a: string, b: string) => compare(a, b, alphabetizationOptions);
 
   const filteredEntries = entries.filter(entry => {
     const { morphologicalAnalysis } = entry;
@@ -75,7 +79,7 @@ export function DictionaryViewer({entries, setDictionary, initialEnglishTranslat
       }
       return !rootMayBeOnlyPartiallyPreserved(stem, translation, Array.from(entries));
     })
-    .sort(compare);
+    .sort(compareWithOptions);
   
   return (
     <div className="grid grid-cols-2 gap-2 my-2 uneven-columns">
