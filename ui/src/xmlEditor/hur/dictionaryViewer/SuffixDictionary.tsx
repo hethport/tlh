@@ -6,7 +6,7 @@ import { DictionaryDownloader } from '../dict/files/DictionaryDownloader';
 import { ChangesDownloader } from '../changes/ChangesDownloader';
 import { writeMorphAnalysisValue } from '../../../model/morphologicalAnalysis';
 import { SetDictionary, getGlobalDictionary } from '../dict/dictionary';
-import { compare } from '../common/comparison';
+import { compare, AlphabetizationOptions } from '../common/comparison';
 import { DictionaryUploader } from '../dict/files/DictionaryUploader';
 import { getGrammaticalMorphemes } from './morphemics';
 import { parseGrammaticalMorpheme, GrammaticalMorpheme } from './grammaticalMorpheme';
@@ -32,7 +32,11 @@ function valueFunc(entry: Entry): Entry {
 export function SuffixDictionary({entries, setDictionary}: IProps): JSX.Element {
 
   const currentDictionaryConfig: DictionaryConfig = useSelector(dictionaryConfigSelector);
-  const { fragmInSuffixDict } = currentDictionaryConfig;
+  const { fragmInSuffixDict, alphabetizeIAsE, alphabetizeOAsU,
+    alphabetizeVoicedConsonantsAsVoiceless } = currentDictionaryConfig;
+  const alphabetizationOptions: AlphabetizationOptions = { alphabetizeIAsE, alphabetizeOAsU,
+    alphabetizeVoicedConsonantsAsVoiceless };
+  const compareWithOptions = (a: string, b: string) => compare(a, b, alphabetizationOptions);
 
   const filteredEntries = entries.filter((entry: Entry) => {
     const { morphologicalAnalysis } = entry;
@@ -41,7 +45,7 @@ export function SuffixDictionary({entries, setDictionary}: IProps): JSX.Element 
   
   const grouped = groupByMany(filteredEntries, keyFunc, valueFunc);
   
-  const grammaticalMorphemeReprs = Array.from(grouped.keys()).sort(compare);
+  const grammaticalMorphemeReprs = Array.from(grouped.keys()).sort(compareWithOptions);
 
   const grammaticalMorphemes = grammaticalMorphemeReprs.map(parseGrammaticalMorpheme).filter(hasContent);
   
