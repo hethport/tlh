@@ -1,6 +1,6 @@
 {
   "name": "tlh_dig_react",
-  "version": "DEV",
+  "version": "0.10.32",
   "private": true,
   "homepage": "./",
   "dependencies": {
