@@ -9,9 +9,21 @@ export type AlphabetizationOptions = {
 
 function preprocessString(s: string, {alphabetizeIAsE, alphabetizeOAsU,
     alphabetizeVoicedConsonantsAsVoiceless}: AlphabetizationOptions): string {
-  return removeBrackets(removeMacron(s))
+  s = removeBrackets(removeMacron(s))
     .toLowerCase()
     .replaceAll('+', '');
+  if (alphabetizeIAsE) {
+    s = s.replaceAll('i', 'e');
+  }
+  if (alphabetizeOAsU) {
+    s = s.replaceAll('o', 'u');
+  }
+  if (alphabetizeVoicedConsonantsAsVoiceless) {
+    s = s.replaceAll('b', 'p')
+      .replaceAll('d', 't')
+      .replaceAll('g', 'k')
+  }
+  return s;
 }
 
 const lang = 'lv';
