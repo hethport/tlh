@@ -8,7 +8,7 @@ export interface FontSizeSelectorProps {
   updateFontSize: (delta: number) => void;
 }
 
-export function FontSizeSelector({currentFontSize, updateFontSize}: FontSizeSelectorProps): JSX.Element {
+export function FontSizeSelector({updateFontSize}: FontSizeSelectorProps): JSX.Element {
 
   const {t} = useTranslation('common');
 
