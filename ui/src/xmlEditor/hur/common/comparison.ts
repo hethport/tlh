@@ -21,7 +21,7 @@ function preprocessString(s: string, {alphabetizeIAsE, alphabetizeOAsU,
   if (alphabetizeVoicedConsonantsAsVoiceless) {
     s = s.replaceAll('b', 'p')
       .replaceAll('d', 't')
-      .replaceAll('g', 'k')
+      .replaceAll('g', 'k');
   }
   return s;
 }
