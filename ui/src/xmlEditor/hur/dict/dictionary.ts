@@ -29,15 +29,15 @@ export type DictionaryObject = { [key: string]: string[] };
 
 let segmenter: Segmenter = new Segmenter();
 let segmenterInfo: SegmenterInfo = new SegmenterInfo(segmenter);
-let noPleneDictionary = new Map<string, Set<string>>();
+let simplifiedDictionary = new Map<string, Set<string>>();
 
 function initializeNoPleneDictionary(dictionary: Dictionary): Dictionary {
-  noPleneDictionary = new Map<string, Set<string>>();
+  simplifiedDictionary = new Map<string, Set<string>>();
   for (const [transcription, analyses] of dictionary) {
     const noPleneTranscription = removeMacron(transcription);
-    addMultiple(noPleneDictionary, noPleneTranscription, analyses);
+    addMultiple(simplifiedDictionary, noPleneTranscription, analyses);
   }
-  return noPleneDictionary;
+  return simplifiedDictionary;
 }
 
 function initializeDictionary(locStorKey: string): Dictionary {
@@ -49,7 +49,7 @@ function initializeDictionary(locStorKey: string): Dictionary {
     const dict = objectToSetValuedMap(cleanUpDictionary(dictObject));
     segmenter = createSegmenter(dict);
     segmenterInfo = new SegmenterInfo(segmenter);
-    noPleneDictionary = initializeNoPleneDictionary(dict);
+    simplifiedDictionary = initializeNoPleneDictionary(dict);
     return dict;
   }
 }
@@ -93,7 +93,7 @@ function lookup(dictionary: Dictionary, transcription: string): LookupResult {
 
 function noPleneLookup(transcription: string): LookupResult {
   const noPleneTranscription = removeMacron(transcription);
-  return lookup(noPleneDictionary, noPleneTranscription);
+  return lookup(simplifiedDictionary, noPleneTranscription);
 }
 
 function parameterizedLookup(ignorePlene: boolean, transcription: string): LookupResult {
@@ -192,7 +192,7 @@ export function basicUpdateHurrianDictionary(
   if (normalized !== null) {
     add(dictionary, transcription, normalized);
     const noPleneTranscription = removeMacron(transcription);
-    add(noPleneDictionary, noPleneTranscription, normalized);
+    add(simplifiedDictionary, noPleneTranscription, normalized);
     const ma = readMorphologicalAnalysis(1, normalized, []);
     if (ma !== undefined) {
       segmenter.add(transcription, ma);
@@ -244,7 +244,7 @@ export function setDictionary(obj: { [key: string]: string[] }): void {
   dictionary = objectToSetValuedMap(newObj);
   segmenter = createSegmenter(dictionary);
   segmenterInfo = new SegmenterInfo(segmenter);
-  noPleneDictionary = initializeNoPleneDictionary(dictionary);
+  simplifiedDictionary = initializeNoPleneDictionary(dictionary);
 }
 
 export function getStemVariants(stem: IStem): Set<string> {
