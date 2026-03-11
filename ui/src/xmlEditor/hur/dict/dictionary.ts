@@ -18,6 +18,7 @@ import { removeMacron, addMultiple, add } from '../common/utils';
 import { isOnTheStopListFor } from '../stopList/stopList';
 import { SuffixChainInventories, getSuffixChainInventories }
   from '../segmentation/suffixChainInventories';
+import { newStore } from '../../../newStore';
 
 export type Dictionary = Map<string, Set<string>>;
 
@@ -27,18 +28,37 @@ export type SetDictionary = (modifyDictionary: ModifyDictionary) => void;
 
 export type DictionaryObject = { [key: string]: string[] };
 
+export type LookupOptions = {
+  ignorePlene: boolean;
+}
+
 let segmenter: Segmenter = new Segmenter();
 let segmenterInfo: SegmenterInfo = new SegmenterInfo(segmenter);
-let simplifiedDictionary = new Map<string, Set<string>>();
 
-function initializeNoPleneDictionary(dictionary: Dictionary): Dictionary {
+function getLookupOptions(): LookupOptions {
+  const state = newStore.getState();
+  const dictionaryConfig = state.dictionaryConfig.dictionaryConfig;
+  return { ignorePlene: dictionaryConfig.ignorePlene };
+}
+
+function simplifyDictionary(dictionary: Dictionary, { ignorePlene }: LookupOptions): Dictionary {
   simplifiedDictionary = new Map<string, Set<string>>();
   for (const [transcription, analyses] of dictionary) {
-    const noPleneTranscription = removeMacron(transcription);
-    addMultiple(simplifiedDictionary, noPleneTranscription, analyses);
+    let simplifiedTranscription = transcription;
+    if (ignorePlene) {
+      simplifiedTranscription = removeMacron(transcription);
+    }
+    addMultiple(simplifiedDictionary, simplifiedTranscription, analyses);
   }
   return simplifiedDictionary;
 }
+
+export function rebuildSimplifiedDictionary(dictionary: Dictionary): void {
+  const lookupOptions = getLookupOptions();
+  simplifiedDictionary = simplifyDictionary(dictionary, lookupOptions);
+}
+
+let simplifiedDictionary: Dictionary = new Map();
 
 function initializeDictionary(locStorKey: string): Dictionary {
   const locallyStoredDictionary = localStorage.getItem(locStorKey);
@@ -49,7 +69,7 @@ function initializeDictionary(locStorKey: string): Dictionary {
     const dict = objectToSetValuedMap(cleanUpDictionary(dictObject));
     segmenter = createSegmenter(dict);
     segmenterInfo = new SegmenterInfo(segmenter);
-    simplifiedDictionary = initializeNoPleneDictionary(dict);
+    rebuildSimplifiedDictionary(dict);
     return dict;
   }
 }
@@ -244,7 +264,7 @@ export function setDictionary(obj: { [key: string]: string[] }): void {
   dictionary = objectToSetValuedMap(newObj);
   segmenter = createSegmenter(dictionary);
   segmenterInfo = new SegmenterInfo(segmenter);
-  simplifiedDictionary = initializeNoPleneDictionary(dictionary);
+  rebuildSimplifiedDictionary(dictionary);
 }
 
 export function getStemVariants(stem: IStem): Set<string> {

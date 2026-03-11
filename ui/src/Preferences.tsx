@@ -7,6 +7,7 @@ import {editorKeyConfigSelector, updatePreferences,
 import {JSX, useState} from 'react';
 import {EditorKeyConfig} from './xmlEditor/editorKeyConfig';
 import {DictionaryConfig} from './xmlEditor/dictionaryConfig';
+import {getGlobalDictionary, rebuildSimplifiedDictionary} from './xmlEditor/hur/dict/dictionary';
 
 const splitKey = ',';
 
@@ -112,6 +113,8 @@ export function Preferences(): JSX.Element {
     );
 
     setUpdated(true);
+
+    rebuildSimplifiedDictionary(getGlobalDictionary());
   }
 
   return (
