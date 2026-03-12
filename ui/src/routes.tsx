@@ -22,7 +22,7 @@ import {
   xmlComparatorUrl,
   xmlConversionUrl,
   dictionaryViewerUrl,
-  macroeditorUrl
+  macroeditorUrl, createAnonymousTransliterationUrl
 } from './urls';
 import {RegisterForm} from './forms/RegisterForm';
 import {Home} from './Home';
@@ -41,6 +41,7 @@ import {Rights, XmlReviewType} from './graphql';
 import {ManuscriptData} from './manuscript/ManuscriptData';
 import {UploadPicturesForm} from './manuscript/UploadPicturesForm';
 import {TransliterationInputContainer} from './manuscript/TransliterationInput';
+import {AnonymousTransliterationInput} from './manuscript/AnonymousTransliterationInput';
 import {UserManagement} from './UserManagement';
 import {TransliterationReview} from './manuscript/TransliterationReview';
 import {XmlConversion} from './manuscript/xmlConversion/XmlConversion';
@@ -103,6 +104,8 @@ export const router = createBrowserRouter([
         {path: preferencesUrl, element: <Preferences/>},
 
         {path: documentMergerUrl, element: <DocumentMergerContainer/>},
+
+        {path: createAnonymousTransliterationUrl, element: <AnonymousTransliterationInput/>},
       ],
       errorElement: <ErrorBoundary/>
     }

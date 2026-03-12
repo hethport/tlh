@@ -259,5 +259,9 @@
   "wsep": "word separator",
   "parsep": "paragraph marker",
   "parsep_dbl": "double paragraph marker",
-  "tabsep": "table column"
+  "tabsep": "table column",
+  "anonymousTransliteration": "Anonymous Transliteration Parser",
+  "mainIdentifierType": "Identifier Type",
+  "anonymousNote": "Note",
+  "anonymousTransliterationInfo": "This is an anonymous parser. You can view the parse result and export XML, but cannot save to the database."
 }

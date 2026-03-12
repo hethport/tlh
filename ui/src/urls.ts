@@ -45,6 +45,8 @@ export const managePicturesUrl = 'managePictures';
 
 export const createTransliterationUrl = 'createTransliteration';
 
+export const createAnonymousTransliterationUrl = 'createAnonymousTransliteration';
+
 export const transliterationReviewUrl = 'transliterationReview';
 
 export const xmlConversionUrl = 'xmlConversion';
