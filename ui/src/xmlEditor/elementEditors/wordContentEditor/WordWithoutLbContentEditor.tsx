@@ -17,7 +17,7 @@ export function WordWithoutLbContentEditor({childNodes, language, onNewParseResu
 
   const {reconstruction, warnings} = reconstructTransliterationForNodes(childNodes);
 
-  const onChange = (event: ChangeEvent<HTMLInputElement>): void => onNewParseResult(readTransliteration(event.target.value, language));
+  const onChange = (event: ChangeEvent<HTMLTextAreaElement>): void => onNewParseResult(readTransliteration(event.target.value, language));
 
   return (
     <div>
@@ -31,8 +31,15 @@ export function WordWithoutLbContentEditor({childNodes, language, onNewParseResu
           {t('newTransliteration')} ({t('language')}: {language}):
         </label>
 
-        <input defaultValue={reconstruction} id="newTransliteration" className="flex-grow p-2 rounded-r border border-slate-500"
-               placeholder={t('newTransliteration')} onChange={onChange}/>
+        <textarea defaultValue={reconstruction} id="newTransliteration"
+                  className="flex-grow p-2 rounded-r border border-slate-500 resize-none overflow-hidden min-h-[2.5rem]"
+                  placeholder={t('newTransliteration')} onChange={onChange}
+                  rows={1}
+                  onInput={(e) => {
+                    const target = e.target as HTMLTextAreaElement;
+                    target.style.height = 'auto';
+                    target.style.height = target.scrollHeight + 'px';
+                  }}/>
       </div>
     </div>
   );

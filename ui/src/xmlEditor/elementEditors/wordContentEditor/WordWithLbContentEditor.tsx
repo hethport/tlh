@@ -42,7 +42,7 @@ export function WordWithLbContentEditor({preLbContent, lbNode, postLbContent, la
     }
   };
 
-  const onPreLbChange = (event: ChangeEvent<HTMLInputElement>): void => {
+  const onPreLbChange = (event: ChangeEvent<HTMLTextAreaElement>): void => {
     const preLbParseResult = readTransliteration(event.target.value, language);
 
     const {postLbParseResult} = state;
@@ -52,7 +52,7 @@ export function WordWithLbContentEditor({preLbContent, lbNode, postLbContent, la
     onPartChanged(preLbParseResult, postLbParseResult);
   };
 
-  const onPostLbChange = (event: ChangeEvent<HTMLInputElement>): void => {
+  const onPostLbChange = (event: ChangeEvent<HTMLTextAreaElement>): void => {
     const postLbParseResult = readTransliteration(event.target.value, language);
 
     const {preLbParseResult} = state;
@@ -72,8 +72,15 @@ export function WordWithLbContentEditor({preLbContent, lbNode, postLbContent, la
 
         <label htmlFor="newPreLbTransliteration" className="font-bold">{t('newPreLbTransliteration')} ({t('language')}: {language}):</label>
 
-        <input defaultValue={preRecon} id="newPreTransliteration" className={inputClasses(true, !state.preLbParseResult.status)}
-               placeholder={t('newPreLbTransliteration')} onChange={onPreLbChange}/>
+        <textarea defaultValue={preRecon} id="newPreTransliteration"
+                  className={`${inputClasses(true, !state.preLbParseResult.status)} resize-none overflow-hidden min-h-[2.5rem]`}
+                  placeholder={t('newPreLbTransliteration')} onChange={onPreLbChange}
+                  rows={1}
+                  onInput={(e) => {
+                    const target = e.target as HTMLTextAreaElement;
+                    target.style.height = 'auto';
+                    target.style.height = target.scrollHeight + 'px';
+                  }}/>
       </div>
 
       <div className="my-4">
@@ -84,8 +91,15 @@ export function WordWithLbContentEditor({preLbContent, lbNode, postLbContent, la
 
         <label htmlFor="newPostLbTransliteration" className="font-bold">{t('newPostLbTransliteration')} ({t('language')}: {language}):</label>
 
-        <input defaultValue={postRecon} id="newPostLbTransliteration" className={inputClasses(true, !state.postLbParseResult.status)}
-               placeholder={t('newPostLbTransliteration')} onChange={onPostLbChange}/>
+        <textarea defaultValue={postRecon} id="newPostLbTransliteration"
+                  className={`${inputClasses(true, !state.postLbParseResult.status)} resize-none overflow-hidden min-h-[2.5rem]`}
+                  placeholder={t('newPostLbTransliteration')} onChange={onPostLbChange}
+                  rows={1}
+                  onInput={(e) => {
+                    const target = e.target as HTMLTextAreaElement;
+                    target.style.height = 'auto';
+                    target.style.height = target.scrollHeight + 'px';
+                  }}/>
       </div>
     </>
   );
