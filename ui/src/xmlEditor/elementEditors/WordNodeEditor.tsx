@@ -92,7 +92,7 @@ export function WordNodeEditor({node, path, updateEditedNode, setKeyHandlingEnab
             }
           } else {
             if (targetState === undefined || targetState === true) {
-              concordanceModifier = () => addAttestation(transcription, analysis, attestation);
+              concordanceModifier = () => addAttestation(transcription, analysis, attestation, currentLookupConfig);
             }
           }
           if (concordanceModifier !== undefined) {
@@ -184,7 +184,7 @@ export function WordNodeEditor({node, path, updateEditedNode, setKeyHandlingEnab
           globalUpdateButtonRef.current.addEventListener('click', remover, {once: true});
         }
         const concordanceModifier = () => {
-          addAttestation(transcription, value, attestation);
+          addAttestation(transcription, value, attestation, currentLookupConfig);
         };
         const oldConcordanceModifier = updateMorphologyConcordanceModifiers.current.get(number);
         if (oldConcordanceModifier !== undefined) {

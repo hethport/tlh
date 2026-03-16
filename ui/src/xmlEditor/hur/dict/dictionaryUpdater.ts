@@ -2,8 +2,9 @@ import { basicUpdateHurrianDictionary } from '../dict/dictionary';
 import { readMorphAnalysisValue } from '../morphologicalAnalysis/auxiliary';
 import { basicSaveGloss } from '../translations/glossUpdater';
 import { containsBrackets, removeBrackets } from '../common/brackets';
+import { LookupConfig } from '../../lookupConfig';
 
-export function addMorphologicalAnalysis(transcription: string, analysis: string) {
+export function addMorphologicalAnalysis(transcription: string, analysis: string, lookupConfig: LookupConfig) {
   const morphologicalAnalysis = readMorphAnalysisValue(analysis);
   if (morphologicalAnalysis !== undefined) {
     const segmentation = morphologicalAnalysis.referenceWord;
@@ -20,7 +21,7 @@ export function addMorphologicalAnalysis(transcription: string, analysis: string
     } else {
       normalizedTranscription = transcription;
     }
-    basicUpdateHurrianDictionary(normalizedTranscription, analysis);
+    basicUpdateHurrianDictionary(normalizedTranscription, analysis, lookupConfig);
     basicSaveGloss(morphologicalAnalysis);
   }
 }

@@ -183,18 +183,18 @@ export function annotateHurrianWord(node: XmlElementNode, lookupConfig: LookupCo
 }
 
 export function updateHurrianDictionary(
-  node: XmlElementNode, number: number, value: string
+  node: XmlElementNode, number: number, value: string, lookupConfig: LookupConfig
 ): void {
   if (number === 1) {
     delete node.attributes.firstAnalysisIsPlaceholder;
   }
   const transcription: string = node.attributes.trans || '';
-  basicUpdateHurrianDictionary(transcription, value);
+  basicUpdateHurrianDictionary(transcription, value, lookupConfig);
   saveGloss(number, value);
 }
 
 export function basicUpdateHurrianDictionary(
-  transcription: string, value: string
+  transcription: string, value: string, lookupConfig: LookupConfig
 ): void {
   if (!isValid(value)) {
     return;
@@ -202,7 +202,6 @@ export function basicUpdateHurrianDictionary(
   const normalized = normalize(value, true, false);
   if (normalized !== null) {
     add(dictionary, transcription, normalized);
-    const lookupConfig = getLookupConfig();
     const simplifiedTranscription = simplifyTranscription(transcription, lookupConfig);
     add(simplifiedDictionary, simplifiedTranscription, normalized);
     const ma = readMorphologicalAnalysis(1, normalized, []);
