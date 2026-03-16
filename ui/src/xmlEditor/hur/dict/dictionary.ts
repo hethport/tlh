@@ -19,6 +19,7 @@ import { isOnTheStopListFor } from '../stopList/stopList';
 import { SuffixChainInventories, getSuffixChainInventories }
   from '../segmentation/suffixChainInventories';
 import { newStore } from '../../../newStore';
+import { LookupConfig } from '../../lookupConfig';
 
 export type Dictionary = Map<string, Set<string>>;
 
@@ -28,34 +29,35 @@ export type SetDictionary = (modifyDictionary: ModifyDictionary) => void;
 
 export type DictionaryObject = { [key: string]: string[] };
 
-export type LookupOptions = {
-  ignorePlene: boolean;
-}
-
 let segmenter: Segmenter = new Segmenter();
 let segmenterInfo: SegmenterInfo = new SegmenterInfo(segmenter);
 
-function getLookupOptions(): LookupOptions {
+function getLookupConfig(): LookupConfig {
   const state = newStore.getState();
-  const dictionaryConfig = state.dictionaryConfig.dictionaryConfig;
-  return { ignorePlene: dictionaryConfig.ignorePlene };
+  const lookupConfig = state.lookupConfig.lookupConfig;
+  return lookupConfig;
 }
 
-function simplifyDictionary(dictionary: Dictionary, { ignorePlene }: LookupOptions): Dictionary {
+export function simplifyTranscription(transcription: string, { ignorePlene }: LookupConfig): string {
+  let simplifiedTranscription = transcription;
+  if (ignorePlene) {
+    simplifiedTranscription = removeMacron(transcription);
+  }
+  return simplifiedTranscription;
+}
+
+function simplifyDictionary(dictionary: Dictionary, lookupConfig: LookupConfig): Dictionary {
   simplifiedDictionary = new Map<string, Set<string>>();
   for (const [transcription, analyses] of dictionary) {
-    let simplifiedTranscription = transcription;
-    if (ignorePlene) {
-      simplifiedTranscription = removeMacron(transcription);
-    }
+    const simplifiedTranscription = simplifyTranscription(transcription, lookupConfig);
     addMultiple(simplifiedDictionary, simplifiedTranscription, analyses);
   }
   return simplifiedDictionary;
 }
 
 export function rebuildSimplifiedDictionary(dictionary: Dictionary): void {
-  const lookupOptions = getLookupOptions();
-  simplifiedDictionary = simplifyDictionary(dictionary, lookupOptions);
+  const lookupConfig = getLookupConfig();
+  simplifiedDictionary = simplifyDictionary(dictionary, lookupConfig);
 }
 
 let simplifiedDictionary: Dictionary = new Map();
@@ -111,17 +113,9 @@ function lookup(dictionary: Dictionary, transcription: string): LookupResult {
   }
 }
 
-function noPleneLookup(transcription: string): LookupResult {
-  const noPleneTranscription = removeMacron(transcription);
-  return lookup(simplifiedDictionary, noPleneTranscription);
-}
-
-function parameterizedLookup(ignorePlene: boolean, transcription: string): LookupResult {
-  if (ignorePlene) {
-    return noPleneLookup(transcription);
-  } else {
-    return lookup(dictionary, transcription);
-  }
+function parameterizedLookup(transcription: string, lookupConfig: LookupConfig): LookupResult {
+  const simplifiedTranscription = simplifyTranscription(transcription, lookupConfig);
+  return lookup(simplifiedDictionary, simplifiedTranscription);
 }
 
 function isAppropriateFor(analysis: string, transcription: string): boolean {
@@ -134,7 +128,7 @@ function isAppropriateFor(analysis: string, transcription: string): boolean {
   return false;
 }
 
-export function annotateHurrianWord(node: XmlElementNode, ignorePlene: boolean): void {
+export function annotateHurrianWord(node: XmlElementNode, lookupConfig: LookupConfig): void {
 
   const transliteration: string = getText(node);
   const transcription: string = makeBoundTranscription(transliteration);
@@ -144,7 +138,7 @@ export function annotateHurrianWord(node: XmlElementNode, ignorePlene: boolean):
     node.attributes.mrp0sel = '';
   }
 
-  const possibilities: Set<string> | undefined = parameterizedLookup(ignorePlene, transcription);
+  const possibilities: Set<string> | undefined = parameterizedLookup(transcription, lookupConfig);
   if (possibilities !== undefined) {
     setGlosses(node);
     if (node.attributes.firstAnalysisIsPlaceholder === 'true') {
