@@ -9,7 +9,7 @@ import {JSX, useState} from 'react';
 import {EditorKeyConfig} from './xmlEditor/editorKeyConfig';
 import {DictionaryConfig} from './xmlEditor/dictionaryConfig';
 import {LookupConfig, lookupConfigKeys} from './xmlEditor/lookupConfig';
-import {getGlobalDictionary, rebuildSimplifiedDictionary} from './xmlEditor/hur/dict/dictionary';
+import {getGlobalDictionary, rebuildSimplifiedDictionaryWithNewConfig} from './xmlEditor/hur/dict/dictionary';
 
 const splitKey = ',';
 
@@ -114,15 +114,17 @@ export function Preferences(): JSX.Element {
       })
     );
 
+    const newLookupConfig: LookupConfig = {
+      ignorePlene,
+    };
+
     dispatch(
-      updateLookupPreferences({
-        ignorePlene,
-      })
+      updateLookupPreferences(newLookupConfig)
     );
 
     setUpdated(true);
 
-    rebuildSimplifiedDictionary(getGlobalDictionary());
+    rebuildSimplifiedDictionaryWithNewConfig(getGlobalDictionary(), newLookupConfig);
   }
 
   return (
