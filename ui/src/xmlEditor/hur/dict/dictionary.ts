@@ -55,7 +55,7 @@ function simplifyDictionary(dictionary: Dictionary, lookupConfig: LookupConfig):
   return simplifiedDictionary;
 }
 
-export function rebuildSimplifiedDictionaryWithNewConfig(dictionary: Dictionary, lookupConfig: LookupConfig): void {
+export function rebuildSimplifiedDictionaryWithNewConfig(lookupConfig: LookupConfig): void {
   simplifiedDictionary = simplifyDictionary(dictionary, lookupConfig);
 }
 
