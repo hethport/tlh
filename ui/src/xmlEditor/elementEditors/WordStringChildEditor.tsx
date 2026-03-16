@@ -18,8 +18,16 @@ export function WordStringChildEditor({title, initialValue, onFocus, onBlur, onD
     <div className="mt-2 flex">
       <label htmlFor="stringChildInput" className="p-2 rounded-l border-l border-y border-slate-500 bg-slate-100 font-bold">{title}:</label>
 
-      <input type="text" id="stringChildInput" placeholder={title} defaultValue={value} onChange={(event) => setValue(event.target.value)}
-             className="p-2 border border-slate-500 flex-grow" onFocus={onFocus} onBlur={onBlur}/>
+      <textarea id="stringChildInput" placeholder={title} defaultValue={value}
+                onChange={(event) => setValue(event.target.value)}
+                className="p-2 border border-slate-500 flex-grow resize-none overflow-hidden min-h-[2.5rem]"
+                onFocus={onFocus} onBlur={onBlur}
+                rows={1}
+                onInput={(e) => {
+                  const target = e.target as HTMLTextAreaElement;
+                  target.style.height = 'auto';
+                  target.style.height = target.scrollHeight + 'px';
+                }}/>
 
       <button type="button" className="p-2 border-y border-slate-500 bg-red-600 text-white" onClick={onDelete}>&#128465;</button>
 
