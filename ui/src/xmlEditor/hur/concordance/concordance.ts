@@ -10,6 +10,7 @@ import { hasMultipleOccurences } from '../corpus/corpus';
 import { addMorphologicalAnalysis } from '../dict/dictionaryUpdater';
 import { deleteAnalysisFromHurrianDictionary } from '../dict/dictionary';
 import { reserializeMorphologicalAnalysis } from '../morphologicalAnalysis/reserialization';
+import { LookupConfig } from '../../lookupConfig';
 
 const sep = ',';
 
@@ -41,9 +42,10 @@ function preprocess(analysis: string): string {
   }
 }
 
-export function addAttestation(transcription: string, analysis: string, attestation: Attestation) {
+export function addAttestation(transcription: string, analysis: string, attestation: Attestation,
+                               lookupConfig: LookupConfig) {
   if (isValid(analysis)) {
-    addMorphologicalAnalysis(transcription, analysis);
+    addMorphologicalAnalysis(transcription, analysis, lookupConfig);
     add(concordance, preprocess(analysis), attestation.toString());
   }
 }
