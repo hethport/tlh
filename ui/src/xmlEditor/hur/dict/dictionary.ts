@@ -14,12 +14,13 @@ import { locallyStoreSetValuedMap } from '../dictLocalStorage/localStorageUtils'
 import { reserializeMorphologicalAnalysis } from '../morphologicalAnalysis/reserialization';
 import { containsBrackets, removeBrackets } from '../common/brackets';
 import { SegmenterInfo, IStem } from '../segmentation/segmenterInfo';
-import { removeMacron, addMultiple, add } from '../common/utils';
+import { addMultiple, add } from '../common/utils';
 import { isOnTheStopListFor } from '../stopList/stopList';
 import { SuffixChainInventories, getSuffixChainInventories }
   from '../segmentation/suffixChainInventories';
 import { newStore } from '../../../newStore';
 import { LookupConfig } from '../../lookupConfig';
+import { simplifyTranscription } from '../transduction/simplifyTranscription';
 
 export type Dictionary = Map<string, Set<string>>;
 
@@ -36,14 +37,6 @@ function getLookupConfig(): LookupConfig {
   const state = newStore.getState();
   const lookupConfig = state.lookupConfig.lookupConfig;
   return lookupConfig;
-}
-
-export function simplifyTranscription(transcription: string, { ignorePlene }: LookupConfig): string {
-  let simplifiedTranscription = transcription;
-  if (ignorePlene) {
-    simplifiedTranscription = removeMacron(transcription);
-  }
-  return simplifiedTranscription;
 }
 
 function simplifyDictionary(dictionary: Dictionary, lookupConfig: LookupConfig): Dictionary {
@@ -209,8 +202,9 @@ export function basicUpdateHurrianDictionary(
   const normalized = normalize(value, true, false);
   if (normalized !== null) {
     add(dictionary, transcription, normalized);
-    const noPleneTranscription = removeMacron(transcription);
-    add(simplifiedDictionary, noPleneTranscription, normalized);
+    const lookupConfig = getLookupConfig();
+    const simplifiedTranscription = simplifyTranscription(transcription, lookupConfig);
+    add(simplifiedDictionary, simplifiedTranscription, normalized);
     const ma = readMorphologicalAnalysis(1, normalized, []);
     if (ma !== undefined) {
       segmenter.add(transcription, ma);
