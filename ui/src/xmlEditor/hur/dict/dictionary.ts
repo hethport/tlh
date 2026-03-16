@@ -48,13 +48,19 @@ function simplifyDictionary(dictionary: Dictionary, lookupConfig: LookupConfig):
   return simplifiedDictionary;
 }
 
-export function rebuildSimplifiedDictionaryWithNewConfig(lookupConfig: LookupConfig): void {
+function rebuildSimplifiedDictionary(dictionary: Dictionary, lookupConfig: LookupConfig): void {
   simplifiedDictionary = simplifyDictionary(dictionary, lookupConfig);
+  segmenter = createSegmenter(simplifiedDictionary);
+  segmenterInfo = new SegmenterInfo(segmenter);
+}
+
+export function rebuildSimplifiedDictionaryWithNewConfig(lookupConfig: LookupConfig): void {
+  rebuildSimplifiedDictionary(dictionary, lookupConfig);
 }
 
 function readLookupConfigAndRebuildSimplifiedDictionary(dictionary: Dictionary): void {
   const lookupConfig = getLookupConfig();
-  simplifiedDictionary = simplifyDictionary(dictionary, lookupConfig);
+  rebuildSimplifiedDictionary(dictionary, lookupConfig);
 }
 
 let simplifiedDictionary: Dictionary = new Map();
@@ -66,8 +72,6 @@ function initializeDictionary(locStorKey: string): Dictionary {
   } else {
     const dictObject: { [key: string]: string[] } = JSON.parse(locallyStoredDictionary);
     const dict = objectToSetValuedMap(cleanUpDictionary(dictObject));
-    segmenter = createSegmenter(dict);
-    segmenterInfo = new SegmenterInfo(segmenter);
     readLookupConfigAndRebuildSimplifiedDictionary(dict);
     return dict;
   }
@@ -110,11 +114,6 @@ function lookup(dictionary: Dictionary, transcription: string): LookupResult {
   }
 }
 
-function parameterizedLookup(transcription: string, lookupConfig: LookupConfig): LookupResult {
-  const simplifiedTranscription = simplifyTranscription(transcription, lookupConfig);
-  return lookup(simplifiedDictionary, simplifiedTranscription);
-}
-
 function isAppropriateFor(analysis: string, transcription: string): boolean {
   if (isValidFor(analysis, transcription)) {
     const ma = readMorphAnalysisValue(analysis);
@@ -134,8 +133,9 @@ export function annotateHurrianWord(node: XmlElementNode, lookupConfig: LookupCo
   if (node.attributes.mrp0sel === 'HURR') {
     node.attributes.mrp0sel = '';
   }
+  const simplifiedTranscription = simplifyTranscription(transcription, lookupConfig);
 
-  const possibilities: Set<string> | undefined = parameterizedLookup(transcription, lookupConfig);
+  const possibilities: Set<string> | undefined = lookup(simplifiedDictionary, simplifiedTranscription);
   if (possibilities !== undefined) {
     setGlosses(node);
     if (node.attributes.firstAnalysisIsPlaceholder === 'true') {
@@ -155,7 +155,7 @@ export function annotateHurrianWord(node: XmlElementNode, lookupConfig: LookupCo
   } else {
     const mrps: Map<string, string> = getMrps(node);
     if (mrps.size === 0) {
-      const results: MorphologicalAnalysis[] = segmenter.segment(transcription)
+      const results: MorphologicalAnalysis[] = segmenter.segment(simplifiedTranscription)
         .filter(ma => !isOnTheStopListFor(ma, transcription));
       if (results.length > 0) {
         let i = 1;
@@ -253,8 +253,6 @@ export function setDictionary(obj: { [key: string]: string[] }): void {
     }
   }
   dictionary = objectToSetValuedMap(newObj);
-  segmenter = createSegmenter(dictionary);
-  segmenterInfo = new SegmenterInfo(segmenter);
   readLookupConfigAndRebuildSimplifiedDictionary(dictionary);
 }
 
