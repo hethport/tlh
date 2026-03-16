@@ -55,7 +55,11 @@ function simplifyDictionary(dictionary: Dictionary, lookupConfig: LookupConfig):
   return simplifiedDictionary;
 }
 
-export function rebuildSimplifiedDictionary(dictionary: Dictionary): void {
+export function rebuildSimplifiedDictionaryWithNewConfig(dictionary: Dictionary, lookupConfig: LookupConfig): void {
+  simplifiedDictionary = simplifyDictionary(dictionary, lookupConfig);
+}
+
+function readLookupConfigAndRebuildSimplifiedDictionary(dictionary: Dictionary): void {
   const lookupConfig = getLookupConfig();
   simplifiedDictionary = simplifyDictionary(dictionary, lookupConfig);
 }
@@ -71,7 +75,7 @@ function initializeDictionary(locStorKey: string): Dictionary {
     const dict = objectToSetValuedMap(cleanUpDictionary(dictObject));
     segmenter = createSegmenter(dict);
     segmenterInfo = new SegmenterInfo(segmenter);
-    rebuildSimplifiedDictionary(dict);
+    readLookupConfigAndRebuildSimplifiedDictionary(dict);
     return dict;
   }
 }
@@ -258,7 +262,7 @@ export function setDictionary(obj: { [key: string]: string[] }): void {
   dictionary = objectToSetValuedMap(newObj);
   segmenter = createSegmenter(dictionary);
   segmenterInfo = new SegmenterInfo(segmenter);
-  rebuildSimplifiedDictionary(dictionary);
+  readLookupConfigAndRebuildSimplifiedDictionary(dictionary);
 }
 
 export function getStemVariants(stem: IStem): Set<string> {
