@@ -521,7 +521,9 @@ export function XmlDocumentEditor({
       </div>
     ) : (
       <div className="px-2 grid grid-cols-2 gap-4" style={{ height: 'calc(100vh - 5.5rem)' }}>
-        <EditorLeftSide {...leftSideProps} filename={filename} node={state.rootNode} onNodeSelect={onNodeSelect}/>
+        <div className="max-h-full overflow-auto" style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word', overflowWrap: 'break-word' }}>
+          <EditorLeftSide {...leftSideProps} filename={filename} node={state.rootNode} onNodeSelect={onNodeSelect}/>
+        </div>
 
         {state.editorState._type === 'EditNodeRightState'
           ? (
