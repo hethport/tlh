@@ -269,7 +269,6 @@
   "uploadEnglishTranslations": "Upload English translations",
   "suffixDictionary": "Suffixes",
   "hurrianDictionary": "Hurrian dictionary",
-  "ignorePlene": "Treat a long vowel and the corresponding short vowel as the same character when performing dictionary lookup for Hurrian words",
   "fragmInSuffixDict": "Use morphophonemic transcriptions with brackets for constructing the suffix dictionary",
   "stopList": "Stop list",
   "exportStopList": "Export the stop list",
@@ -280,5 +279,10 @@
   "showFormsWithUnknownMeaningAndUnclearPos": "Show forms with unknown meaning and unclear part of speech in the dictionary",
   "alphabetizeIAsE": "Alphabetize ⟨i⟩ as ⟨e⟩",
   "alphabetizeOAsU": "Alphabetize ⟨o⟩ as ⟨u⟩",
-  "alphabetizeVoicedConsonantsAsVoiceless": "Alphabetize voiced consonants as voiced"
+  "alphabetizeVoicedConsonantsAsVoiceless": "Alphabetize voiced consonants as voiced",
+  "lookupOptions": "Dictionary lookup for Hurrian words",
+  "ignorePlene": "Do not distinguish long and short vowels",
+  "mergeLabials": "Do not distinguish ⟨f⟩ from ⟨p⟩ and ⟨v⟩ from ⟨b⟩",
+  "mergeMidAndHighVowels": "Do not distinguish ⟨e⟩ from ⟨i⟩ and ⟨o⟩ from ⟨u⟩",
+  "ignoreVoice": "Do not distinguish voiced and voiceless consonants"
 }
