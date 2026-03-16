@@ -295,7 +295,6 @@
   "uploadEnglishTranslations": "Englische Glossen hochladen",
   "suffixDictionary": "Suffixe",
   "hurrianDictionary": "Hurritisches Wörterbuch",
-  "ignorePlene": "Einen Langvokal und den entsprechenden Kurzvokal beim Nachschlagen im hurritischen Wörterbuch als denselben Buchstaben betrachten",
   "fragmInSuffixDict": "Morphonologische Umschriften mit Bruchklammern bei Erzeugung des Suffixwörterbuchs berücksichtigen",
   "stopList": "Schwarzliste",
   "exportStopList": "Schwarzliste exportieren",
@@ -306,5 +305,10 @@
   "showFormsWithUnknownMeaningAndUnclearPos": "Formen mit unbekannter Bedeutung und unklarer Wortart im Wörterbuch anzeigen",
   "alphabetizeIAsE": "⟨i⟩ als ⟨e⟩ alphabetisieren",
   "alphabetizeOAsU": "⟨o⟩ als ⟨u⟩ alphabetisieren",
-  "alphabetizeVoicedConsonantsAsVoiceless": "Stimmhafte Konsonanten als stimmlose alphabetisieren"
+  "alphabetizeVoicedConsonantsAsVoiceless": "Stimmhafte Konsonanten als stimmlose alphabetisieren",
+  "lookupOptions": "Nachschlagen im hurritischen Wörterbuch",
+  "ignorePlene": "Langvokale von Kurzvokalen nicht unterscheiden",
+  "mergeLabials": "⟨f⟩ von ⟨p⟩, ⟨v⟩ von ⟨b⟩ nicht unterscheiden",
+  "mergeMidAndHighVowels": "⟨e⟩ von ⟨i⟩, ⟨o⟩ von ⟨u⟩ nicht unterscheiden",
+  "ignoreVoice": "Stimmhafte Konsonanten vom stimmlosen nicht unterscheiden"
 }

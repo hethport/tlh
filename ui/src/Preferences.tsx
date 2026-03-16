@@ -21,12 +21,15 @@ interface FormValues {
   updateAndPrevNodeKeys: string;
   prevNodeKeys: string;
   submitKeys: string;
-  ignorePlene: boolean;
   fragmInSuffixDict: boolean;
   showUnclearForms: boolean;
   alphabetizeIAsE: boolean;
   alphabetizeOAsU: boolean;
   alphabetizeVoicedConsonantsAsVoiceless: boolean;
+  ignorePlene: boolean;
+  mergeLabials: boolean;
+  mergeMidAndHighVowels: boolean;
+  ignoreVoice: boolean;
 }
 
 function dismantleFormEntry(entry: string): string[] {
@@ -64,8 +67,9 @@ export function Preferences(): JSX.Element {
 
   function onSubmit(newConfig: FormValues): void {
     const {updateAndNextNodeKeys, nextNodeKeys, updateAndPrevNodeKeys, prevNodeKeys, submitKeys,
-           ignorePlene, fragmInSuffixDict, showUnclearForms, alphabetizeIAsE, alphabetizeOAsU,
-           alphabetizeVoicedConsonantsAsVoiceless} = newConfig;
+           fragmInSuffixDict, showUnclearForms, alphabetizeIAsE, alphabetizeOAsU,
+           alphabetizeVoicedConsonantsAsVoiceless,
+           ignorePlene, mergeLabials,mergeMidAndHighVowels, ignoreVoice,} = newConfig;
 
     const updateAndNextEditableNodeKeys = dismantleFormEntry(updateAndNextNodeKeys);
     const nextEditableNodeKeys = dismantleFormEntry(nextNodeKeys);
@@ -116,6 +120,9 @@ export function Preferences(): JSX.Element {
 
     const newLookupConfig: LookupConfig = {
       ignorePlene,
+      mergeLabials,
+      mergeMidAndHighVowels,
+      ignoreVoice,
     };
 
     dispatch(
@@ -183,6 +190,8 @@ export function Preferences(): JSX.Element {
               </div>
             ))}
           </>
+
+          <br/>
 
           <h2 className="font-bold text-xl">{t('lookupOptions')}</h2>
 
