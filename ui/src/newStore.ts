@@ -2,6 +2,7 @@ import { configureStore, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { Rights } from './graphql';
 import { defaultEditorKeyConfig, EditorKeyConfig } from './xmlEditor/editorKeyConfig';
 import { defaultDictionaryConfig, DictionaryConfig } from './xmlEditor/dictionaryConfig';
+import { defaultLookupConfig, LookupConfig } from './xmlEditor/lookupConfig';
 
 function loadFromLocalStorage<T>(key: string, defaultValue: T): T {
   const foundString = localStorage.getItem(key);
@@ -73,7 +74,7 @@ export const { updatePreferences } = editorKeyConfigSlice.actions;
 
 export const editorKeyConfigSelector: (store: StoreState) => EditorKeyConfig = ({ editorKeyConfig }) => editorKeyConfig.editorKeyConfig;
 
-// Dictionary lookup configuration
+// Dictionary display configuration
 
 const dictionaryConfigKey = 'dictionaryPreferences';
 
@@ -92,12 +93,36 @@ export const { updateDictionaryPreferences } = dictionaryConfigSlice.actions;
 
 export const dictionaryConfigSelector: (store: StoreState) => DictionaryConfig = ({ dictionaryConfig }) => dictionaryConfig.dictionaryConfig;
 
+// Dictionary lookup configuration
+
+const lookupConfigKey = 'lookupPreferences';
+
+const lookupConfigSlice = createSlice({
+  name: 'lookupConfig',
+  initialState: () => ({
+    lookupConfig:
+    loadFromLocalStorage<LookupConfig>(lookupConfigKey, defaultLookupConfig)
+  }),
+  reducers: {
+    updateLookupPreferences(state, { payload }: PayloadAction<LookupConfig>) {
+      localStorage.setItem(lookupConfigKey, JSON.stringify(payload));
+      state.lookupConfig = payload;
+    }
+  }
+});
+
+export const { updateLookupPreferences } = lookupConfigSlice.actions;
+
+export const lookupConfigSelector: (store: StoreState) => LookupConfig =
+  ({ lookupConfig }) => lookupConfig.lookupConfig;
+
 // Store
 
 interface StoreState {
   user: { user: User | null };
   editorKeyConfig: { editorKeyConfig: EditorKeyConfig };
   dictionaryConfig: { dictionaryConfig: DictionaryConfig };
+  lookupConfig: { lookupConfig: LookupConfig };
 }
 
 export const newStore = configureStore({
@@ -105,6 +130,7 @@ export const newStore = configureStore({
     user: userSlice.reducer,
     editorKeyConfig: editorKeyConfigSlice.reducer,
     dictionaryConfig: dictionaryConfigSlice.reducer,
+    lookupConfig: lookupConfigSlice.reducer,
   }
 });
 

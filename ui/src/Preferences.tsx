@@ -2,11 +2,13 @@ import {Field, Form, Formik} from 'formik';
 import {useTranslation} from 'react-i18next';
 import {useDispatch, useSelector} from 'react-redux';
 import {editorKeyConfigSelector, updatePreferences,
-  dictionaryConfigSelector, updateDictionaryPreferences}
+  dictionaryConfigSelector, updateDictionaryPreferences,
+  lookupConfigSelector, updateLookupPreferences}
   from './newStore';
 import {JSX, useState} from 'react';
 import {EditorKeyConfig} from './xmlEditor/editorKeyConfig';
 import {DictionaryConfig} from './xmlEditor/dictionaryConfig';
+import {LookupConfig, lookupConfigKeys} from './xmlEditor/lookupConfig';
 import {getGlobalDictionary, rebuildSimplifiedDictionary} from './xmlEditor/hur/dict/dictionary';
 
 const splitKey = ',';
@@ -43,6 +45,7 @@ export function Preferences(): JSX.Element {
   const dispatch = useDispatch();
   const currentEditorConfig: EditorKeyConfig = useSelector(editorKeyConfigSelector);
   const currentDictionaryConfig: DictionaryConfig = useSelector(dictionaryConfigSelector);
+  const currentLookupConfig: LookupConfig = useSelector(lookupConfigSelector);
   const [updated, setUpdated] = useState(false);
 
   const initialValues: FormValues = {
@@ -51,12 +54,12 @@ export function Preferences(): JSX.Element {
     updateAndPrevNodeKeys: currentEditorConfig.updateAndPreviousEditableNodeKeys.join(splitKey),
     prevNodeKeys: currentEditorConfig.previousEditableNodeKeys.join(splitKey),
     submitKeys: currentEditorConfig.submitChangeKeys.join(splitKey),
-    ignorePlene: currentDictionaryConfig.ignorePlene,
     fragmInSuffixDict: currentDictionaryConfig.fragmInSuffixDict,
     showUnclearForms: currentDictionaryConfig.showUnclearForms,
     alphabetizeIAsE: currentDictionaryConfig.alphabetizeIAsE,
     alphabetizeOAsU: currentDictionaryConfig.alphabetizeOAsU,
     alphabetizeVoicedConsonantsAsVoiceless: currentDictionaryConfig.alphabetizeVoicedConsonantsAsVoiceless,
+    ...currentLookupConfig,
   };
 
   function onSubmit(newConfig: FormValues): void {
@@ -103,12 +106,17 @@ export function Preferences(): JSX.Element {
 
     dispatch(
       updateDictionaryPreferences({
-        ignorePlene,
         fragmInSuffixDict,
         showUnclearForms,
         alphabetizeIAsE,
         alphabetizeOAsU,
         alphabetizeVoicedConsonantsAsVoiceless
+      })
+    );
+
+    dispatch(
+      updateLookupPreferences({
+        ignorePlene,
       })
     );
 
@@ -156,11 +164,6 @@ export function Preferences(): JSX.Element {
           <h2 className="font-bold text-xl">{t('hurrianDictionary')}</h2>
 
           <div className="mt-4">
-            <label htmlFor="ignorePlene" className="font-bold checkbox-label">{t('ignorePlene')}</label>
-            <Field type="checkbox" id="ignorePlene" name="ignorePlene" className="rounded border border-slate-500"/>
-          </div>
-
-          <div className="mt-4">
             <label htmlFor="fragmInSuffixDict" className="font-bold checkbox-label">{t('fragmInSuffixDict')}</label>
             <Field type="checkbox" id="fragmInSuffixDict" name="fragmInSuffixDict" className="rounded border border-slate-500"/>
           </div>
@@ -175,6 +178,17 @@ export function Preferences(): JSX.Element {
               <div className="mt-4" key={key}>
                 <label htmlFor={key} className="font-bold checkbox-label">{t(key)}</label>
                 <Field type="checkbox" id={key} name={key} className="rounded border border-slate-500"/>
+              </div>
+            ))}
+          </>
+
+          <h2 className="font-bold text-xl">{t('lookupOptions')}</h2>
+
+          <>
+            {lookupConfigKeys.map((key: string) => (
+              <div className="mt-4" key={key}>
+              <label htmlFor={key} className="font-bold checkbox-label">{t(key)}</label>
+              <Field type="checkbox" id={key} name={key} className="rounded border border-slate-500"/>
               </div>
             ))}
           </>

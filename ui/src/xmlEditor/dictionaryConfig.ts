@@ -1,5 +1,4 @@
 export interface DictionaryConfig {
-  ignorePlene: boolean;
   fragmInSuffixDict: boolean;
   showUnclearForms: boolean;
   alphabetizeIAsE: boolean;
@@ -8,7 +7,6 @@ export interface DictionaryConfig {
 }
 
 export const defaultDictionaryConfig: DictionaryConfig = {
-  ignorePlene: false,
   fragmInSuffixDict: false,
   showUnclearForms: false,
   alphabetizeIAsE: false,
