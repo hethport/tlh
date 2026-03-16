@@ -9,7 +9,7 @@ import {JSX, useState} from 'react';
 import {EditorKeyConfig} from './xmlEditor/editorKeyConfig';
 import {DictionaryConfig} from './xmlEditor/dictionaryConfig';
 import {LookupConfig, lookupConfigKeys} from './xmlEditor/lookupConfig';
-import {getGlobalDictionary, rebuildSimplifiedDictionaryWithNewConfig} from './xmlEditor/hur/dict/dictionary';
+import {rebuildSimplifiedDictionaryWithNewConfig} from './xmlEditor/hur/dict/dictionary';
 
 const splitKey = ',';
 
@@ -124,7 +124,7 @@ export function Preferences(): JSX.Element {
 
     setUpdated(true);
 
-    rebuildSimplifiedDictionaryWithNewConfig(getGlobalDictionary(), newLookupConfig);
+    rebuildSimplifiedDictionaryWithNewConfig(newLookupConfig);
   }
 
   return (
