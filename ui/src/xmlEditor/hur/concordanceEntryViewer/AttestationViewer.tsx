@@ -1,6 +1,6 @@
 import { JSX } from 'react';
 import { Attestation } from '../concordance/concordance';
-import { Line } from '../corpus/lineConstructor';
+import { Line } from '../corpus/lineType';
 import { LineViewer } from './LineViewer';
 import { getCTH } from '../concordance/cthProvider';
 import { Link } from 'react-router-dom';

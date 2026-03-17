@@ -2,7 +2,7 @@ import { getDictionary, setDictionary, getSuffixChains } from '../dictionary';
 import { getGlosses, setGlosses } from '../../translations/glossProvider';
 import { getPartsOfSpeech, setPartsOfSpeech } from '../../partsOfSpeech/partsOfSpeech';
 import { getConcordance, setConcordance } from '../../concordance/concordance';
-import { getCorpus, setCorpus } from '../../corpus/corpus';
+import { getCorpus, setCorpus } from '../../corpus/basicCorpus';
 import { getEnglishTranslations, updateEnglishTranslations } from '../../translations/englishTranslations';
 import { makeDownload } from '../../../../downloadHelper';
 

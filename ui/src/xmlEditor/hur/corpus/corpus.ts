@@ -1,54 +1,14 @@
-import { updateMapping, convertMapping } from '../common/utility';
 import { Attestation, quickGetAttestations } from '../concordance/concordance';
 import { XmlElementNode, getElementByPath } from 'simple_xml';
-import { Line, makeLine } from './lineConstructor';
+import { Line } from './lineType';
+import { makeLine } from './lineConstructor';
 import { makeWord, updateMorphologicalAnalysis, hasGivenAnalysis } from './wordConstructor';
 import { findLine, findLineStart, getParent } from './lineFinder';
 import { readMorphAnalysisValue } from '../morphologicalAnalysis/auxiliary';
-import { loadMapFromLocalStorage, locallyStoreMap } from '../dictLocalStorage/localStorageUtils';
-import { makeGlossFromMorphologicalAnalysis, objectToMap, add } from '../common/utils';
+import { makeGlossFromMorphologicalAnalysis } from '../common/utils';
 import { compareLineNumbers } from './lineNumberComparer';
 import { MorphologicalAnalysis } from '../../../model/morphologicalAnalysis';
-
-const localStorageKey = 'HurrianCorpus';
-type Corpus = Map<string, Line>;
-let corpus: Corpus;
-try {
-  corpus = loadMapFromLocalStorage(localStorageKey);
-} catch(SyntaxError) {
-  console.log('The corpus could not be loaded from the local storage.');
-  corpus = new Map();
-}
-cleanUpCorpus();
-export function locallyStoreHurrianCorpus(): void {
-  locallyStoreMap(corpus, localStorageKey);
-}
-
-type LineNumbers = Map<string, Set<string>>;
-
-function addLineNumber(lineNums: LineNumbers, attestation: string): void {
-  if (attestation.includes(',')) {
-    const [text, line] = attestation.split(',', 2);
-    add(lineNums, text, line);
-  }
-}
-
-function defineLineNumbers(): LineNumbers {
-  const lineNumbers = new Map<string, Set<string>>();
-  for (const key of corpus.keys()) {
-    addLineNumber(lineNumbers, key);
-  }
-  return lineNumbers;
-}
-
-let lineNumbers = defineLineNumbers();
-
-function cleanUpCorpus(): void {
-  for (const [key, line] of corpus.entries()) {
-    const newLine = line.filter(word => word !== null);
-    corpus.set(key, newLine);
-  }
-}
+import { corpus, lineNumbers, addLineNumber } from './basicCorpus';
 
 /*fetch('Concordance.json')
   .then(response => response.json())
@@ -86,16 +46,6 @@ export function addOrUpdateLineBySingleNodePath(address: Attestation,
   } else {
     addLine(key, nodes);
   }
-}
-
-export function updateCorpus(object: { [key: string]: Line }) {
-  updateMapping(corpus, object);
-  cleanUpCorpus();
-}
-
-export function getCorpus(): { [key: string]: Line } {
-  cleanUpCorpus();
-  return convertMapping(corpus);
 }
 
 export function getLine(attestation: Attestation): Line {
@@ -145,11 +95,6 @@ export function hasMultipleOccurences(analysis: string, attestation: string): bo
     }
   }
   return false;
-}
-
-export function setCorpus(obj: { [key: string]: Line }): void {
-  corpus = objectToMap(obj);
-  lineNumbers = defineLineNumbers();
 }
 
 type TaggedLine = {
