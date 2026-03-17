@@ -7,7 +7,8 @@ import { readMorphAnalysisValue } from '../morphologicalAnalysis/auxiliary';
 
 const localStorageKey = 'HurrianCorpus';
 
-type Corpus = Map<string, Line>;
+export type Corpus = Map<string, Line>;
+export type CorpusObject = { [key: string]: Line };
 type LineNumbers = Map<string, Set<string>>;
 
 export let corpus: Corpus;
@@ -46,18 +47,18 @@ function defineLineNumbers(): LineNumbers {
 
 export let lineNumbers = defineLineNumbers();
 
-export function setCorpus(obj: { [key: string]: Line }): void {
+export function setCorpus(obj: CorpusObject): void {
   corpus = objectToMap(obj);
   lineNumbers = defineLineNumbers();
 }
 
-export function getCorpus(): { [key: string]: Line } {
+export function getCorpus(): CorpusObject {
   cleanUpCorpus();
   return convertMapping(corpus);
 }
 
-export function updateCorpus(object: { [key: string]: Line }) {
-  updateMapping(corpus, object);
+export function updateCorpus(obj: CorpusObject) {
+  updateMapping(corpus, obj);
   cleanUpCorpus();
 }
 

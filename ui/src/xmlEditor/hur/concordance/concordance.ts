@@ -12,6 +12,9 @@ import { deleteAnalysisFromHurrianDictionary } from '../dict/dictionary';
 import { reserializeMorphologicalAnalysis } from '../morphologicalAnalysis/reserialization';
 import { LookupConfig } from '../../lookupConfig';
 
+export type Concordance = Map<string, Set<string>>;
+export type ConcordanceObject = { [key: string]: string[] };
+
 const sep = ',';
 
 export class Attestation {
@@ -27,7 +30,7 @@ export class Attestation {
 }
 
 const localStorageKey = 'HurrianConcordance';
-let concordance: Map<string, Set<string>> = loadSetValuedMapFromLocalStorage(localStorageKey);
+let concordance: Concordance = loadSetValuedMapFromLocalStorage(localStorageKey);
 export function locallyStoreHurrianConcordance(): void {
   locallyStoreSetValuedMap(concordance, localStorageKey);
 }
@@ -102,12 +105,12 @@ export function getAttestations(morphologicalAnalysis: MorphologicalAnalysis): A
   }
 }
 
-export function getConcordance(): { [key: string]: string[] } {
+export function getConcordance(): ConcordanceObject {
   return convertDictionary(concordance);
 }
 
-export function updateConcordance(object: { [key: string]: string[] }) {
-  updateSetValuedMapWithOverride(concordance, object);
+export function updateConcordance(obj: ConcordanceObject) {
+  updateSetValuedMapWithOverride(concordance, obj);
 }
 
 export function updateConcordanceKey(oldAnalysis: string, newAnalysis: string): void {
@@ -123,7 +126,7 @@ export function inConcordance(ma: MorphologicalAnalysis): boolean {
   return concordance.has(value);
 }
 
-export function setConcordance(obj: { [key: string]: string[] }): void {
+export function setConcordance(obj: ConcordanceObject): void {
   concordance = new Map();
   for (const [analysis, attestations] of objectToSetValuedMap(obj)) {
     const reserialized = reserializeMorphologicalAnalysis(analysis);

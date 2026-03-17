@@ -8,7 +8,7 @@ export function getEnglishTranslationKey(stem: string, pos: string, germanTransl
 }
 
 export type EnglishTranslations = Map<string, string>;
-type EnglishTranslationsObject = { [key: string]: string };
+export type EnglishTranslationsObject = { [key: string]: string };
 
 const localStorageKey = 'englishTranslations';
 let englishTranslations: EnglishTranslations;
