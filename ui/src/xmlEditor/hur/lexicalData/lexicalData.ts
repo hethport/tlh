@@ -11,7 +11,7 @@ export type LexicalData = {
   glosses: GlossaryObject;
   concordance: ConcordanceObject;
   corpus: CorpusObject;
-  partsOfSpeech: PartsOfSpeech;
-  englishTranslations: EnglishTranslationsObject;
+  partsOfSpeech?: PartsOfSpeech;
+  englishTranslations?: EnglishTranslationsObject;
   suffixChains?: SuffixChainInventories;
 }

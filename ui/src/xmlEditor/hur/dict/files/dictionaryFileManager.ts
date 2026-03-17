@@ -23,10 +23,9 @@ export function downloadDictionary() {
 export async function readDict(file: File) {
   const source = await file.text();
   const parsed: LexicalData = JSON.parse(source);
-  const {dictionary} = parsed;
-  const {glosses} = parsed;
-  if ('partsOfSpeech' in parsed) {
-    setPartsOfSpeech(parsed.partsOfSpeech);
+  const {dictionary, glosses, partsOfSpeech, englishTranslations} = parsed;
+  if (partsOfSpeech !== undefined) {
+    setPartsOfSpeech(partsOfSpeech);
   }
   if ('concordance' in parsed) {
     setConcordance(parsed.concordance);
@@ -40,7 +39,7 @@ export async function readDict(file: File) {
   if ('corpus' in parsed) {
     setCorpus(parsed.corpus);
   }
-  if ('englishTranslations' in parsed) {
-    updateEnglishTranslations(parsed.englishTranslations);
+  if (englishTranslations !== undefined) {
+    updateEnglishTranslations(englishTranslations);
   }
 }
