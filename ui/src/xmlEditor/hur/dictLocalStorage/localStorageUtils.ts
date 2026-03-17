@@ -41,6 +41,11 @@ export function loadArrayFromLocalStorage<T>(localStorageKey: string, defaultArr
   }
 }
 
+export function loadFromLocalStorage<T>(key: string, defaultValue: T): T {
+  const foundString = localStorage.getItem(key);
+  return foundString ? JSON.parse(foundString) : defaultValue;
+}
+
 export function locallyStoreSetValuedMap(map: Map<string, Set<string>>, localStorageKey: string): void {
   const object = convertDictionary(map);
   const jsonText = JSON.stringify(object);
