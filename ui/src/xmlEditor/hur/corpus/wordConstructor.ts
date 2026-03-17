@@ -10,12 +10,7 @@ import { makeGloss } from '../common/auxiliary';
 import { getTranslationAndMorphTag } from '../common/splitter';
 import { xmlElementNode, writeNode, writeNodeWithDefaultWriteConfig } from 'simple_xml';
 import { tlhXmlEditorConfig } from '../../tlhXmlEditorConfig';
-
-export type Word = {
-  transliteration: string;
-  segmentation: string;
-  gloss: string;
-}
+import { Word } from './wordType';
 
 /*
  * MORPHOLOGICAL ANALYSIS REPLACEMENT

@@ -1,5 +1,5 @@
 import { JSX } from 'react';
-import { Word } from '../corpus/wordConstructor';
+import { Word } from '../corpus/wordType';
 import { MyLeft, parseNewXml, XmlElementNode } from 'simple_xml';
 import { tlhXmlEditorConfig } from '../../tlhXmlEditorConfig';
 import { NodeDisplay } from '../../NodeDisplay';

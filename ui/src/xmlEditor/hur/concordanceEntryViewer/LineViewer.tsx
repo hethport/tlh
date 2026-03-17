@@ -1,6 +1,6 @@
 import { JSX } from 'react';
-import { Line } from '../corpus/lineConstructor';
-import { Word } from '../corpus/wordConstructor';
+import { Line } from '../corpus/lineType';
+import { Word } from '../corpus/wordType';
 import { WordViewer } from './WordViewer';
 
 interface IProps {

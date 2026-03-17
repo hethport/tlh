@@ -1,7 +1,6 @@
 import { XmlElementNode } from 'simple_xml';
-import { Word, makeWord } from './wordConstructor';
-
-export type Line = Word[];
+import { makeWord } from './wordConstructor';
+import { Line } from './lineType';
 
 export function makeLine(nodes: XmlElementNode[]): Line {
   const line: Line = [];
