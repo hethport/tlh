@@ -6,7 +6,7 @@ import { writeMorphAnalysisValue, MorphologicalAnalysis } from '../../../model/m
 import { readMorphAnalysisValue } from '../morphologicalAnalysis/auxiliary';
 import { loadSetValuedMapFromLocalStorage, locallyStoreSetValuedMap }
   from '../dictLocalStorage/localStorageUtils';
-import { hasMultipleOccurences } from '../corpus/corpus';
+import { hasMultipleOccurences } from '../corpus/basicCorpus';
 import { addMorphologicalAnalysis } from '../dict/dictionaryUpdater';
 import { deleteAnalysisFromHurrianDictionary } from '../dict/dictionary';
 import { reserializeMorphologicalAnalysis } from '../morphologicalAnalysis/reserialization';
