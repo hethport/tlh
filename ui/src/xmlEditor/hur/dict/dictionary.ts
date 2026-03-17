@@ -10,7 +10,7 @@ import { isValid, normalize, isValidFor } from './morphologicalAnalysisValidator
 import { Segmenter, createSegmenter } from '../segmentation/segmenter';
 import { readMorphAnalysisValue } from '../morphologicalAnalysis/auxiliary';
 import { objectToSetValuedMap, updateSetValuedMapWithOverride, remove } from '../common/utils';
-import { locallyStoreSetValuedMap } from '../dictLocalStorage/localStorageUtils';
+import { locallyStoreSetValuedMap, loadFromLocalStorage } from '../dictLocalStorage/localStorageUtils';
 import { reserializeMorphologicalAnalysis } from '../morphologicalAnalysis/reserialization';
 import { containsBrackets, removeBrackets } from '../common/brackets';
 import { SegmenterInfo, IStem } from '../segmentation/segmenterInfo';
@@ -18,8 +18,7 @@ import { addMultiple, add } from '../common/utils';
 import { isOnTheStopListFor } from '../stopList/stopList';
 import { SuffixChainInventories, getSuffixChainInventories }
   from '../segmentation/suffixChainInventories';
-import { newStore } from '../../../newStore';
-import { LookupConfig } from '../../lookupConfig';
+import { LookupConfig, defaultLookupConfig } from '../../lookupConfig';
 import { simplifyTranscription } from '../transduction/simplifyTranscription';
 
 export type Dictionary = Map<string, Set<string>>;
@@ -33,9 +32,10 @@ export type DictionaryObject = { [key: string]: string[] };
 let segmenter: Segmenter = new Segmenter();
 let segmenterInfo: SegmenterInfo = new SegmenterInfo(segmenter);
 
+const lookupConfigKey = 'lookupPreferences';
+
 function getLookupConfig(): LookupConfig {
-  const state = newStore.getState();
-  const lookupConfig = state.lookupConfig.lookupConfig;
+  const lookupConfig = loadFromLocalStorage<LookupConfig>(lookupConfigKey, defaultLookupConfig);
   return lookupConfig;
 }
 
