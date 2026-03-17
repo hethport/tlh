@@ -1,9 +1,10 @@
-import { DictionaryObject } from '../dict/dictionary';
-import { GlossaryObject } from '../translations/glossProvider';
-import { ConcordanceObject } from '../concordance/concordance';
-import { CorpusObject } from '../corpus/basicCorpus';
-import { PartsOfSpeech } from '../partsOfSpeech/partsOfSpeech';
-import { EnglishTranslationsObject } from '../translations/englishTranslations';
+import { DictionaryObject, getDictionary, setDictionary, getSuffixChains } from '../dict/dictionary';
+import { GlossaryObject, getGlosses, setGlosses } from '../translations/glossProvider';
+import { ConcordanceObject, getConcordance, setConcordance } from '../concordance/concordance';
+import { CorpusObject, getCorpus, setCorpus } from '../corpus/basicCorpus';
+import { PartsOfSpeech, getPartsOfSpeech, setPartsOfSpeech } from '../partsOfSpeech/partsOfSpeech';
+import { EnglishTranslationsObject, getEnglishTranslations, updateEnglishTranslations }
+  from '../translations/englishTranslations';
 import { SuffixChainInventories } from '../segmentation/suffixChainInventories';
 
 export type LexicalData = {
@@ -14,4 +15,41 @@ export type LexicalData = {
   partsOfSpeech?: PartsOfSpeech;
   englishTranslations?: EnglishTranslationsObject;
   suffixChains?: SuffixChainInventories;
+}
+
+export function getLexicalData(): LexicalData {
+  const dictionary = getDictionary();
+  const glosses = getGlosses();
+  const partsOfSpeech = getPartsOfSpeech();
+  const concordance = getConcordance();
+  const corpus = getCorpus();
+  const englishTranslations = getEnglishTranslations();
+  const suffixChains = getSuffixChains();
+  const lexicalData: LexicalData = {partsOfSpeech, dictionary, glosses, concordance,
+    corpus, englishTranslations, suffixChains};
+  return lexicalData;
+}
+
+export function setLexicalData(lexicalData: LexicalData): void {
+  const {dictionary, glosses, concordance, corpus, partsOfSpeech, englishTranslations} = lexicalData;
+  // The undefined checks for required fields are needed for the case the user
+  // uploads a JSON file with another structure.
+  if (dictionary !== undefined) {
+    setDictionary(dictionary);
+  }
+  if (glosses !== undefined) {
+    setGlosses(glosses);
+  }
+  if (concordance !== undefined) {
+    setConcordance(concordance);
+  }
+  if (corpus !== undefined) {
+    setCorpus(corpus);
+  }
+  if (partsOfSpeech !== undefined) {
+    setPartsOfSpeech(partsOfSpeech);
+  }
+  if (englishTranslations !== undefined) {
+    updateEnglishTranslations(englishTranslations);
+  }
 }
