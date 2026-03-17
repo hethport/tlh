@@ -34,14 +34,18 @@ export function setLexicalData(lexicalData: LexicalData): void {
   const {dictionary, glosses, concordance, corpus, partsOfSpeech, englishTranslations} = lexicalData;
   // The undefined checks for required fields are needed for the case the user
   // uploads a JSON file with another structure.
+  // The concordance should be initialized before the dictionary,
+  // because the frequency couns for segmenter initialization are
+  // taken from the concordance and the segmenter is initialized
+  // together with the dictionary.
+  if (concordance !== undefined) {
+    setConcordance(concordance);
+  }
   if (dictionary !== undefined) {
     setDictionary(dictionary);
   }
   if (glosses !== undefined) {
     setGlosses(glosses);
-  }
-  if (concordance !== undefined) {
-    setConcordance(concordance);
   }
   if (corpus !== undefined) {
     setCorpus(corpus);
