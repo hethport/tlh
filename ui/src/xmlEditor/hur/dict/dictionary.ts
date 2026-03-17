@@ -34,7 +34,7 @@ let segmenterInfo: SegmenterInfo = new SegmenterInfo(segmenter);
 
 const lookupConfigKey = 'lookupPreferences';
 
-function getLookupConfig(): LookupConfig {
+export function getLookupConfig(): LookupConfig {
   const lookupConfig = loadFromLocalStorage<LookupConfig>(lookupConfigKey, defaultLookupConfig);
   return lookupConfig;
 }
