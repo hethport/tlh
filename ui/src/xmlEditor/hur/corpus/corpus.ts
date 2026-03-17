@@ -2,10 +2,9 @@ import { Attestation, quickGetAttestations } from '../concordance/concordance';
 import { XmlElementNode, getElementByPath } from 'simple_xml';
 import { Line } from './lineType';
 import { makeLine } from './lineConstructor';
-import { makeWord, updateMorphologicalAnalysis, hasGivenAnalysis } from './wordConstructor';
+import { makeWord, updateMorphologicalAnalysis } from './wordConstructor';
 import { findLine, findLineStart, getParent } from './lineFinder';
 import { readMorphAnalysisValue } from '../morphologicalAnalysis/auxiliary';
-import { makeGlossFromMorphologicalAnalysis } from '../common/utils';
 import { compareLineNumbers } from './lineNumberComparer';
 import { MorphologicalAnalysis } from '../../../model/morphologicalAnalysis';
 import { corpus, lineNumbers, addLineNumber } from './basicCorpus';
@@ -72,29 +71,6 @@ export function replaceMorphologicalAnalysis(oldAnalysis: string, newAnalyses: s
       }
     }
   }
-}
-
-/* Check whether an analysis occurs in multiple positions in the specified line.
- */
-export function hasMultipleOccurences(analysis: string, attestation: string): boolean {
-  const line = corpus.get(attestation);
-  if (line !== undefined) {
-    const morphologicalAnalysis = readMorphAnalysisValue(analysis);
-    if (morphologicalAnalysis !== undefined) {
-      const gloss = makeGlossFromMorphologicalAnalysis(morphologicalAnalysis);
-      for (let i = 0, counter = 0; i < line.length; i++) {
-        const word = line[i];
-        const hasSameAnalysis = hasGivenAnalysis(word, gloss, morphologicalAnalysis);
-        if (hasSameAnalysis) {
-          counter++;
-        }
-        if (counter > 1) {
-          return true;
-        }
-      }
-    }
-  }
-  return false;
 }
 
 type TaggedLine = {
