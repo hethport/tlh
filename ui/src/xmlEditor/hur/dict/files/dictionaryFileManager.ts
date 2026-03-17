@@ -4,6 +4,7 @@ import { getPartsOfSpeech, setPartsOfSpeech } from '../../partsOfSpeech/partsOfS
 import { getConcordance, setConcordance } from '../../concordance/concordance';
 import { getCorpus, setCorpus } from '../../corpus/basicCorpus';
 import { getEnglishTranslations, updateEnglishTranslations } from '../../translations/englishTranslations';
+import { LexicalData } from '../../lexicalData/lexicalData';
 import { makeDownload } from '../../../../downloadHelper';
 
 export function downloadDictionary() {
@@ -14,14 +15,14 @@ export function downloadDictionary() {
   const corpus = getCorpus();
   const englishTranslations = getEnglishTranslations();
   const suffixChains = getSuffixChains();
-  const obj = {partsOfSpeech, dictionary, glosses, concordance, corpus, englishTranslations, suffixChains};
+  const obj: LexicalData = {partsOfSpeech, dictionary, glosses, concordance, corpus, englishTranslations, suffixChains};
   const jsonText = JSON.stringify(obj, undefined, '\t');
   makeDownload(jsonText, 'Dictionary.json');
 }
 
 export async function readDict(file: File) {
   const source = await file.text();
-  const parsed = JSON.parse(source);
+  const parsed: LexicalData = JSON.parse(source);
   const {dictionary} = parsed;
   const {glosses} = parsed;
   if ('partsOfSpeech' in parsed) {
