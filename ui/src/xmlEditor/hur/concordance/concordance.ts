@@ -135,3 +135,15 @@ export function setConcordance(obj: ConcordanceObject): void {
     }
   }
 }
+
+export function getFrequency(morphologicalAnalysis: MorphologicalAnalysis): number {
+  return quickGetAttestations(morphologicalAnalysis).length;
+}
+
+export function getFrequencyDifference(ma1: MorphologicalAnalysis, ma2: MorphologicalAnalysis): number {
+  return getFrequency(ma1) - getFrequency(ma2);
+}
+
+export function getNegatedFrequencyDifference(ma1: MorphologicalAnalysis, ma2: MorphologicalAnalysis): number {
+  return - getFrequencyDifference(ma1, ma2);
+}
