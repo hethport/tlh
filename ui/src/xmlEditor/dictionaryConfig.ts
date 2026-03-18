@@ -1,3 +1,5 @@
+export const dictionaryConfigKey = 'dictionaryPreferences';
+
 export interface DictionaryConfig {
   fragmInSuffixDict: boolean;
   showUnclearForms: boolean;

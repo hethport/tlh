@@ -1,8 +1,8 @@
 import { configureStore, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { Rights } from './graphql';
 import { defaultEditorKeyConfig, EditorKeyConfig } from './xmlEditor/editorKeyConfig';
-import { defaultDictionaryConfig, DictionaryConfig } from './xmlEditor/dictionaryConfig';
-import { defaultLookupConfig, LookupConfig } from './xmlEditor/lookupConfig';
+import { defaultDictionaryConfig, DictionaryConfig, dictionaryConfigKey } from './xmlEditor/dictionaryConfig';
+import { defaultLookupConfig, LookupConfig, lookupConfigKey } from './xmlEditor/lookupConfig';
 
 function loadFromLocalStorage<T>(key: string, defaultValue: T): T {
   const foundString = localStorage.getItem(key);
@@ -76,8 +76,6 @@ export const editorKeyConfigSelector: (store: StoreState) => EditorKeyConfig = (
 
 // Dictionary display configuration
 
-const dictionaryConfigKey = 'dictionaryPreferences';
-
 const dictionaryConfigSlice = createSlice({
   name: 'dictionaryConfig',
   initialState: () => ({ dictionaryConfig: loadFromLocalStorage<DictionaryConfig>(dictionaryConfigKey, defaultDictionaryConfig) }),
@@ -94,8 +92,6 @@ export const { updateDictionaryPreferences } = dictionaryConfigSlice.actions;
 export const dictionaryConfigSelector: (store: StoreState) => DictionaryConfig = ({ dictionaryConfig }) => dictionaryConfig.dictionaryConfig;
 
 // Dictionary lookup configuration
-
-const lookupConfigKey = 'lookupPreferences';
 
 const lookupConfigSlice = createSlice({
   name: 'lookupConfig',

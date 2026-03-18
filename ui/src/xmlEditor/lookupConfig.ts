@@ -1,3 +1,5 @@
+export const lookupConfigKey = 'lookupPreferences';
+
 export interface LookupConfig {
   ignorePlene: boolean;
   mergeLabials: boolean;
