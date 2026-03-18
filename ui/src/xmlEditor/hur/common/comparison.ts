@@ -38,6 +38,9 @@ function compareLetter(a: string, b: string): number {
   }
 }
 
+export const englishCompare = new Intl.Collator('en').compare;
+export const germanCompare = new Intl.Collator('de').compare;
+
 export function compare(a: string, b: string, options: AlphabetizationOptions): number {
   a = preprocessString(a, options);
   b = preprocessString(b, options);
