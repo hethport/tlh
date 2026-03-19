@@ -48,10 +48,17 @@ export function parseSuffixChain(repr: string): SuffixChain {
 const inParentheses = /\(.*\)/g;
 const boundary = /[-=]/g;
 
+const initial = /(?<=^|\.)(\p{Lu})(?!\p{Lu}|$)/gu;
+function lowerCaseInitials(stem: string) {
+  return stem.replaceAll(initial, (letter: string) => letter.toLowerCase());
+}
+
 function preprocessStem(stem: string): string {
-  return stem.replaceAll(inParentheses, '')
+  return lowerCaseInitials(
+    stem
+    .replaceAll(inParentheses, '')
     .replaceAll('+', '')
-    .toLowerCase();
+  );
 }
 
 function preprocessSuffixChain(stem: string): string {
