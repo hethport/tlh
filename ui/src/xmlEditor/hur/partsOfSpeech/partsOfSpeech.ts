@@ -18,7 +18,7 @@ const defaultPartsOfSpeech: PartsOfSpeech = [
 ];
 
 const localStorageKey = 'HurrianPartsOfSpeech';
-let partsOfSpeech: PartsOfSpeech = loadArrayFromLocalStorage(localStorageKey, defaultPartsOfSpeech);
+export let partsOfSpeech: PartsOfSpeech = loadArrayFromLocalStorage(localStorageKey, defaultPartsOfSpeech);
 export function locallyStoreHurrianPartsOfSpeech(): void {
   locallyStoreArray(partsOfSpeech, localStorageKey);
 }

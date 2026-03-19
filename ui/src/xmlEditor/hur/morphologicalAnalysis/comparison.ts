@@ -4,6 +4,7 @@ import { getNegatedFrequencyDifference } from '../concordance/concordance';
 import { compare, englishCompare, germanCompare, AlphabetizationOptions }
   from '../common/comparison';
 import { removeBrackets } from '../common/brackets';
+import { comparePartsOfSpeech } from '../partsOfSpeech/comparison';
 
 const alphabetizationOptions: AlphabetizationOptions = {
   alphabetizeIAsE: true,
@@ -33,7 +34,7 @@ export function compareMorphologicalAnalyses(ma1: MorphologicalAnalysis, ma2: Mo
   if (transComp !== 0) {
     return transComp;
   }
-  const posComp = englishCompare(ma1.paradigmClass, ma2.paradigmClass);
+  const posComp = comparePartsOfSpeech(ma1.paradigmClass, ma2.paradigmClass);
   if (posComp !== 0) {
     return posComp;
   }
