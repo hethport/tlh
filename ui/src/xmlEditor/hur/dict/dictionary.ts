@@ -3,7 +3,7 @@ import { getText, getMrps } from '../common/xmlUtilities';
 import { makeBoundTranscription } from '../transduction/transcribe';
 import { makeStandardAnalyses } from '../transduction/standardAnalysis';
 import { setGlosses, saveGloss } from '../translations/glossUpdater';
-import { MorphologicalAnalysis, writeMorphAnalysisValue, readMorphologicalAnalysis }
+import { MorphologicalAnalysis, readMorphologicalAnalysis }
   from '../../../model/morphologicalAnalysis';
 import { convertDictionary } from '../common/utility';
 import { isValid, normalize, isValidFor } from './morphologicalAnalysisValidator';
@@ -20,6 +20,8 @@ import { SuffixChainInventories, getSuffixChainInventories }
   from '../segmentation/suffixChainInventories';
 import { LookupConfig, defaultLookupConfig } from '../../lookupConfig';
 import { simplifyTranscription } from '../transduction/simplifyTranscription';
+import { parseMorphologicalAnalyses } from './parseMorphologicalAnalyses';
+import { writeMorphologicalAnalysesToNode } from './writeMorphologicalAnalysesToNode';
 
 export type Dictionary = Map<string, Set<string>>;
 
@@ -105,6 +107,9 @@ export function containsAnalysis(dictionary: Dictionary, analysis: string): bool
 
 type LookupResult = Set<string> | undefined;
 
+/*
+ * Repeat the lookup with brackets removed if it was unsuccessful.
+ */
 function lookup(dictionary: Dictionary, transcription: string): LookupResult {
   const analyses = dictionary.get(transcription);
   if (analyses === undefined && containsBrackets(transcription)) {
@@ -114,14 +119,9 @@ function lookup(dictionary: Dictionary, transcription: string): LookupResult {
   }
 }
 
-function isAppropriateFor(analysis: string, transcription: string): boolean {
-  if (isValidFor(analysis, transcription)) {
-    const ma = readMorphAnalysisValue(analysis);
-    if (ma !== undefined && !isOnTheStopListFor(ma, transcription)) {
-      return true;
-    }
-  }
-  return false;
+function isAppropriateFor(morphologicalAnalysis: MorphologicalAnalysis, transcription: string): boolean {
+  return isValidFor(morphologicalAnalysis, transcription) &&
+    !isOnTheStopListFor(morphologicalAnalysis, transcription);
 }
 
 export function annotateHurrianWord(node: XmlElementNode, lookupConfig: LookupConfig): void {
@@ -144,13 +144,9 @@ export function annotateHurrianWord(node: XmlElementNode, lookupConfig: LookupCo
     }
     const mrps: Map<string, string> = getMrps(node);
     if (mrps.size === 0) {
-      let i = 1;
-      for (const analysis of possibilities) {
-        if (isAppropriateFor(analysis, transcription)) {
-          node.attributes['mrp' + i.toString()] = analysis;
-          i++;
-        }
-      }
+      const morphologicalAnalyses = parseMorphologicalAnalyses(possibilities)
+        .filter(morphologicalAnalysis => isAppropriateFor(morphologicalAnalysis, transcription));
+      writeMorphologicalAnalysesToNode(morphologicalAnalyses, node);
     }
   } else {
     const mrps: Map<string, string> = getMrps(node);
@@ -158,19 +154,12 @@ export function annotateHurrianWord(node: XmlElementNode, lookupConfig: LookupCo
       const results: MorphologicalAnalysis[] = segmenter.segment(simplifiedTranscription)
         .filter(ma => !isOnTheStopListFor(ma, transcription));
       if (results.length > 0) {
-        let i = 1;
-        for (const ma of results) {
-          node.attributes['mrp' + i.toString()] = writeMorphAnalysisValue(ma);
-          i++;
-        }
+        writeMorphologicalAnalysesToNode(results, node);
       } else {
         const analyses: MorphologicalAnalysis[] = makeStandardAnalyses(transcription)
           .filter(ma => !isOnTheStopListFor(ma, transcription));
         if (analyses.length > 0) {
-          for (const ma of analyses) {
-            node.attributes['mrp' + ma.number.toString()]
-            = writeMorphAnalysisValue(ma);
-          }
+          writeMorphologicalAnalysesToNode(analyses, node);
         }
         else {
           node.attributes.mrp1 = transcription + '@@@@';

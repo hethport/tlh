@@ -1,8 +1,8 @@
 import { formIsFragment } from '../common/utils';
 import { getPos } from '../partsOfSpeech/partsOfSpeech';
 import { splitSegmentation } from '../common/morphemeSplitting';
-import { readMorphAnalysisValue } from '../morphologicalAnalysis/auxiliary';
 import { containsBrackets } from '../common/brackets';
+import { MorphologicalAnalysis } from '../../../model/morphologicalAnalysis';
 
 const sep = /(?<!\()-(?!\))|=/;
 
@@ -37,11 +37,7 @@ const inflecting = new Set<string>(['noun', 'verb', 'PRON', 'NF']);
  * Determine whether a morphological analysis is valid
  * for a word with the given transcription.
  */
-export function isValidFor(analysis: string, transcription: string): boolean {
-  const ma = readMorphAnalysisValue(analysis);
-  if (ma === undefined) {
-    return false;
-  }
+export function isValidFor(ma: MorphologicalAnalysis, transcription: string): boolean {
   // Analyses with brackets should never be proposed for words which contain no brackets.
   return !(containsBrackets(ma.referenceWord) && !containsBrackets(transcription));
 }
