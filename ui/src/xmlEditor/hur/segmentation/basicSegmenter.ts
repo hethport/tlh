@@ -50,7 +50,8 @@ const boundary = /[-=]/g;
 
 function preprocessStem(stem: string): string {
   return stem.replaceAll(inParentheses, '')
-    .replaceAll('+', '');
+    .replaceAll('+', '')
+    .toLowerCase();
 }
 
 function preprocessSuffixChain(stem: string): string {
