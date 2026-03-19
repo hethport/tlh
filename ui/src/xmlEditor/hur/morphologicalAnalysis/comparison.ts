@@ -1,5 +1,6 @@
 import { MorphologicalAnalysis } from '../../../model/morphologicalAnalysis';
 import { getMorphTags } from './auxiliary';
+import { getNegatedFrequencyDifference } from '../concordance/concordance';
 import { compare, englishCompare, germanCompare, AlphabetizationOptions }
   from '../common/comparison';
 
@@ -15,6 +16,10 @@ function getJoinedMorphTags(analysis: MorphologicalAnalysis): string {
 }
 
 export function compareMorphologicalAnalyses(ma1: MorphologicalAnalysis, ma2: MorphologicalAnalysis): number {
+  const negatedFrequencyDifference = getNegatedFrequencyDifference(ma1, ma2);
+  if (negatedFrequencyDifference !== 0) {
+    return negatedFrequencyDifference;
+  }
   const segmLenDiff = ma1.referenceWord.length - ma2.referenceWord.length;
   if (segmLenDiff !== 0) {
     return segmLenDiff;
