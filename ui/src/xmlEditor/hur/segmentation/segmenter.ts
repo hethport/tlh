@@ -20,8 +20,8 @@ export class Analysis extends PartialAnalysis {
   pos: string;
 
   constructor(segmentation: string, translation: string, morphTags: string[], pos: string,
-              surfaceSuffixChain: string) {
-    super(segmentation, translation, morphTags, surfaceSuffixChain);
+              surfaceSuffixChain: string, suffixChainFrequency: number) {
+    super(segmentation, translation, morphTags, surfaceSuffixChain, suffixChainFrequency);
     this.pos = pos;
   }
 
@@ -55,6 +55,12 @@ export class Analysis extends PartialAnalysis {
   }
 }
 
+function compareAnalyses(analysis1: Analysis, analysis2: Analysis): number {
+  // We negate the frequency difference to get descending
+  // sorting by frequency.
+  return - (analysis1.suffixChainFrequency - analysis2.suffixChainFrequency);
+}
+
 export class Segmenter {
   segmenters = new Map<string, BasicSegmenter>();
 
@@ -77,7 +83,7 @@ export class Segmenter {
 
   segment(wordform: string): MorphologicalAnalysis[] {
     wordform = removeBrackets(wordform);
-    let result: MorphologicalAnalysis[] = [];
+    let result: Analysis[] = [];
     for (const [pos, segmenter] of this.segmenters) {
       const partialAnalyses = segmenter.segment(wordform);
       for (const partialAnalysis of partialAnalyses) {
@@ -86,9 +92,10 @@ export class Segmenter {
           partialAnalysis.translation,
           partialAnalysis.morphTags,
           pos,
-          partialAnalysis.surfaceSuffixChain
+          partialAnalysis.surfaceSuffixChain,
+          partialAnalysis.suffixChainFrequency
         );
-        result.push(analysis.toMorphologicalAnalysis());
+        result.push(analysis);
       }
     }
     if (result.length === 0) {
@@ -114,14 +121,16 @@ export class Segmenter {
               partialAnalysis.translation,
               partialAnalysis.morphTags,
               pos,
-              surfaceSuffixChain
+              surfaceSuffixChain,
+              partialAnalysis.suffixChainFrequency
             );
-            result.push(analysis.toMorphologicalAnalysis());
+            result.push(analysis);
           }
         }
       }
     }
-    return result;
+    return result.sort(compareAnalyses)
+      .map(analysis => analysis.toMorphologicalAnalysis());
   }
 }
 
