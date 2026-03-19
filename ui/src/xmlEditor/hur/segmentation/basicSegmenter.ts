@@ -7,7 +7,7 @@ const maximalDeletionCount = 1;
 const minimalFrequency = 1;
 const sep = '@';
 
-class Stem {
+export class Stem {
   form: string;
   translation: string;
 
