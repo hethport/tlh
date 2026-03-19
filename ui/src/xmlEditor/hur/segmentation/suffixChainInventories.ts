@@ -13,7 +13,7 @@ function getSuffixChainInverntory(basicSegmenter: BasicSegmenter): SuffixChainIn
   const { suffixChains } = basicSegmenter;
   const inventory: SuffixChainInventory = {};
   for (const [surfaceForm, suffixChainReprs] of suffixChains) {
-    const suffixChainObjects: SuffixChain[] = Array.from(suffixChainReprs).map(parseSuffixChain);
+    const suffixChainObjects: SuffixChain[] = Array.from(suffixChainReprs).sort().map(parseSuffixChain);
     inventory[surfaceForm] = suffixChainObjects;
   }
   return inventory;
@@ -22,9 +22,12 @@ function getSuffixChainInverntory(basicSegmenter: BasicSegmenter): SuffixChainIn
 export function getSuffixChainInventories(segmenter: Segmenter): SuffixChainInventories {
   const { segmenters } = segmenter;
   const inventories: SuffixChainInventories = {};
-  for (const [pos, basicSegmenter] of segmenters) {
-    const inventory = getSuffixChainInverntory(basicSegmenter);
-    inventories[pos] = inventory;
+  for (const pos of Array.from(segmenters.keys()).sort()) {
+    const basicSegmenter = segmenters.get(pos);
+    if (basicSegmenter !== undefined) {
+      const inventory = getSuffixChainInverntory(basicSegmenter);
+      inventories[pos] = inventory;
+    }
   }
   return inventories;
 }
