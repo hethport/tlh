@@ -22,6 +22,7 @@ import { LookupConfig, defaultLookupConfig } from '../../lookupConfig';
 import { simplifyTranscription } from '../transduction/simplifyTranscription';
 import { parseMorphologicalAnalyses } from './parseMorphologicalAnalyses';
 import { writeMorphologicalAnalysesToNode } from './writeMorphologicalAnalysesToNode';
+import { compareMorphologicalAnalyses } from '../morphologicalAnalysis/comparison';
 
 export type Dictionary = Map<string, Set<string>>;
 
@@ -145,14 +146,16 @@ export function annotateHurrianWord(node: XmlElementNode, lookupConfig: LookupCo
     const mrps: Map<string, string> = getMrps(node);
     if (mrps.size === 0) {
       const morphologicalAnalyses = parseMorphologicalAnalyses(possibilities)
-        .filter(morphologicalAnalysis => isAppropriateFor(morphologicalAnalysis, transcription));
+        .filter(morphologicalAnalysis => isAppropriateFor(morphologicalAnalysis, transcription))
+        .sort(compareMorphologicalAnalyses);
       writeMorphologicalAnalysesToNode(morphologicalAnalyses, node);
     }
   } else {
     const mrps: Map<string, string> = getMrps(node);
     if (mrps.size === 0) {
       const results: MorphologicalAnalysis[] = segmenter.segment(simplifiedTranscription)
-        .filter(ma => !isOnTheStopListFor(ma, transcription));
+        .filter(ma => !isOnTheStopListFor(ma, transcription))
+        .sort(compareMorphologicalAnalyses);
       if (results.length > 0) {
         writeMorphologicalAnalysesToNode(results, node);
       } else {
