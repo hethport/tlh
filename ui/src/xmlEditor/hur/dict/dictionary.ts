@@ -16,6 +16,8 @@ import { containsBrackets, removeBrackets } from '../common/brackets';
 import { SegmenterInfo, IStem } from '../segmentation/segmenterInfo';
 import { addMultiple, add } from '../common/utils';
 import { isOnTheStopListFor } from '../stopList/stopList';
+import { StemInventories, getStemInventories }
+  from '../segmentation/stemInventories';
 import { SuffixChainInventories, getSuffixChainInventories }
   from '../segmentation/suffixChainInventories';
 import { LookupConfig, defaultLookupConfig } from '../../lookupConfig';
@@ -249,6 +251,11 @@ export function setDictionary(obj: { [key: string]: string[] }): void {
 
 export function getStemVariants(stem: IStem): Set<string> {
   return segmenterInfo.getStemVariants(stem);
+}
+
+
+export function getStems(): StemInventories {
+  return getStemInventories(segmenter);
 }
 
 export function getSuffixChains(): SuffixChainInventories {
