@@ -68,13 +68,15 @@ export class PartialAnalysis {
   translation: string;
   morphTags: string[];
   surfaceSuffixChain: string;
+  suffixChainFrequency: number;
 
 
-  constructor(segmentation: string, translation: string, morphTags: string[], surfaceSuffixChain: string) {
+  constructor(segmentation: string, translation: string, morphTags: string[], surfaceSuffixChain: string, suffixChainFrequency: number) {
     this.segmentation = segmentation;
     this.translation = translation;
     this.morphTags = morphTags;
     this.surfaceSuffixChain = surfaceSuffixChain;
+    this.suffixChainFrequency = suffixChainFrequency;
   }
 }
 
@@ -122,6 +124,19 @@ export default class BasicSegmenter {
     }
   }
 
+  getSuffixChainFrequency(segmentedSuffixChain: string, morphTags: string[]): number {
+    let suffixChainFrequency = 0;
+    for (const morphTag of morphTags) {
+      const suffixChain = new SuffixChain(segmentedSuffixChain, morphTag);
+      const suffixChainRepr = suffixChain.toString();
+      const currentFrequency = this.frequencies.get(suffixChainRepr);
+      if (currentFrequency !== undefined) {
+        suffixChainFrequency += currentFrequency;
+      }
+    }
+    return suffixChainFrequency / morphTags.length;
+  }
+
   segment(wordform: string): PartialAnalysis[] {
     const segmentations: PartialAnalysis[] = [];
     const candidates: string[] = this.suffixTrie.getAllSuffixes(wordform);
@@ -155,8 +170,9 @@ export default class BasicSegmenter {
             for (const stem of stems) {
               const [underlyingStem, translation] = stem.split('@');
               const segmentation = joinStemAndSuffixChain(underlyingStem, segmentedSuffixChain);
+              const suffixChainFrequency = this.getSuffixChainFrequency(segmentedSuffixChain, morphTags);
               const result =
-                new PartialAnalysis(segmentation, translation, morphTags, suffixChain);
+                new PartialAnalysis(segmentation, translation, morphTags, suffixChain, suffixChainFrequency);
               segmentations.push(result);
             }
           }
@@ -187,8 +203,9 @@ export default class BasicSegmenter {
           const underlyingStem = surfaceStem; 
           const translation = '';
           const segmentation = joinStemAndSuffixChain(underlyingStem, segmentedSuffixChain);
+          const suffixChainFrequency = this.getSuffixChainFrequency(segmentedSuffixChain, morphTags);
           const result =
-            new PartialAnalysis(segmentation, translation, morphTags, suffixChain);
+            new PartialAnalysis(segmentation, translation, morphTags, suffixChain, suffixChainFrequency);
           segmentations.push(result);
         }
       }
