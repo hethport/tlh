@@ -35,7 +35,7 @@ export function TransliterationTextArea({xmlCreationValues, initialInput, onChan
         <label className="my-2 font-bold block text-center">{t('parseResult')}:</label>
 
         {parsed.length > 0
-          ? <ParseResultComponent xmlContent={xmlContent} showStatusLevel={true} lines={parsed}/>
+          ? <ParseResultComponent xmlContent={xmlContent} showStatusLevel={true} lines={parsed} mainIdentifier={xmlCreationValues.mainIdentifier}/>
           : <div className="p-2 italic text-cyan-500 text-center">{t('no_result_yet')}...</div>}
       </section>
     </div>

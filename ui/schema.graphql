@@ -58,6 +58,8 @@ input ManuscriptIdentifierInput {
 enum ManuscriptIdentifierType {
   CollectionNumber
   ExcavationNumber
+  InventoryNumber
+  PublicationNumber
   PublicationShortReference
 }
 

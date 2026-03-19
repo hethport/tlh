@@ -14,7 +14,9 @@ const defaultAoXmlAttributes: Attributes = {
 };
 
 const manuscriptIdentifierTag = (identifierType: ManuscriptIdentifierType): string => ({
-  [ManuscriptIdentifierType.CollectionNumber]: 'AO:InvNr',
+  [ManuscriptIdentifierType.InventoryNumber]: 'AO:InvNr',
+  [ManuscriptIdentifierType.PublicationNumber]: 'AO:TxtPubl',
+  [ManuscriptIdentifierType.CollectionNumber]: 'AO:TxtPubl',
   [ManuscriptIdentifierType.PublicationShortReference]: 'AO:TxtPubl',
   [ManuscriptIdentifierType.ExcavationNumber]: 'AO:ExcNr'
 }[identifierType]);

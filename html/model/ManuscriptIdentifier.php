@@ -8,7 +8,7 @@ use GraphQL\Type\Definition\{EnumType, InputObjectType, ObjectType, Type};
 
 $manuscriptIdentifierTypeGraphQLType = new EnumType([
   'name' => 'ManuscriptIdentifierType',
-  'values' => ['ExcavationNumber', 'CollectionNumber', 'PublicationShortReference']
+  'values' => ['InventoryNumber', 'PublicationNumber', 'ExcavationNumber', 'CollectionNumber', 'PublicationShortReference']
 ]);
 
 class ManuscriptIdentifier

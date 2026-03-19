@@ -78,9 +78,9 @@ export function AnonymousTransliterationInput(): ReactElement {
               onChange={(e) => updateMainIdentifierType(e.target.value as ManuscriptIdentifierType)}
               className={inputClasses(true, false)}
             >
-              <option value={ManuscriptIdentifierType.CollectionNumber}>Collection Number</option>
-              <option value={ManuscriptIdentifierType.ExcavationNumber}>Excavation Number</option>
-              <option value={ManuscriptIdentifierType.PublicationShortReference}>Publication Short Reference</option>
+              <option value={ManuscriptIdentifierType.InventoryNumber}>Inventory Number</option>
+              <option value={ManuscriptIdentifierType.PublicationNumber}>Publication Number</option>
+              {/*  <option value={ManuscriptIdentifierType.PublicationShortReference}>Publication Short Reference</option> */}
             </select>
           </div>
 

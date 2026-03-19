@@ -138,6 +138,8 @@ export type ManuscriptIdentifierInput = {
 export const enum ManuscriptIdentifierType {
   CollectionNumber = 'CollectionNumber',
   ExcavationNumber = 'ExcavationNumber',
+  InventoryNumber = 'InventoryNumber',
+  PublicationNumber = 'PublicationNumber',
   PublicationShortReference = 'PublicationShortReference'
 };
 

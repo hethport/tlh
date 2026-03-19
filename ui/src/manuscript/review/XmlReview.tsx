@@ -29,7 +29,7 @@ function InnerInner({mainIdentifier, rootNode, reviewType}: InnerInnerProps): Re
     }
   };
 
-  const onExportXml = (rootNode: XmlElementNode) => makeDownload(writeXml(rootNode), 'exported.xml');
+  const onExportXml = (rootNode: XmlElementNode) => makeDownload(writeXml(rootNode), mainIdentifier + '.xml');
 
   return data?.reviewerMutations?.submitXmlReview
     ? (

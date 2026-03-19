@@ -13,6 +13,7 @@ interface BaseProps {
 
 interface IProps extends BaseProps {
   xmlContent: string;
+  mainIdentifier: string;
 }
 
 export function TransliterationParseResultDisplay({lines, showStatusLevel}: BaseProps): ReactElement {
@@ -23,7 +24,7 @@ export function TransliterationParseResultDisplay({lines, showStatusLevel}: Base
   );
 }
 
-export function ParseResultComponent({lines, showStatusLevel, xmlContent}: IProps): ReactElement {
+export function ParseResultComponent({lines, showStatusLevel, xmlContent, mainIdentifier}: IProps): ReactElement {
 
   const {t} = useTranslation('common');
 
@@ -42,7 +43,7 @@ export function ParseResultComponent({lines, showStatusLevel, xmlContent}: IProp
             </div>
 
             <div className="text-center">
-              <button type="button" className={blueButtonClasses} onClick={() => makeDownload(xmlContent, 'exported.xml')}>{t('exportXml')}</button>
+              <button type="button" className={blueButtonClasses} onClick={() => makeDownload(xmlContent, mainIdentifier +'.xml')}>{t('exportXml')}</button>
             </div>
           </>
         )

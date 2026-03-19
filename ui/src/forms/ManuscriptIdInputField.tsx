@@ -33,8 +33,8 @@ export function ManuscriptIdInputField({mainId, deleteFunc, errors, touched}: IP
       : 'border-slate-500');
 
   const values: ManuscriptIdentifierOption[] = [
-    {type: ManuscriptIdentifierType.ExcavationNumber, name: t('Ausgrabungsnummer')},
-    {type: ManuscriptIdentifierType.CollectionNumber, name: t('Sammlungsnummer')},
+    {type: ManuscriptIdentifierType.InventoryNumber, name: t('InventoryNumber')},
+    {type: ManuscriptIdentifierType.PublicationNumber, name: t('PublicationNumber')},
     ...(deleteFunc ? [{type: ManuscriptIdentifierType.PublicationShortReference, name: t('Publikationsnummer')}] : [])
   ];
 
