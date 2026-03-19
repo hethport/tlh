@@ -3,6 +3,7 @@ import { getMorphTags } from './auxiliary';
 import { getNegatedFrequencyDifference } from '../concordance/concordance';
 import { compare, englishCompare, germanCompare, AlphabetizationOptions }
   from '../common/comparison';
+import { removeBrackets } from '../common/brackets';
 
 const alphabetizationOptions: AlphabetizationOptions = {
   alphabetizeIAsE: true,
@@ -20,7 +21,7 @@ export function compareMorphologicalAnalyses(ma1: MorphologicalAnalysis, ma2: Mo
   if (negatedFrequencyDifference !== 0) {
     return negatedFrequencyDifference;
   }
-  const segmLenDiff = ma1.referenceWord.length - ma2.referenceWord.length;
+  const segmLenDiff = removeBrackets(ma1.referenceWord).length - removeBrackets(ma2.referenceWord).length;
   if (segmLenDiff !== 0) {
     return segmLenDiff;
   }
