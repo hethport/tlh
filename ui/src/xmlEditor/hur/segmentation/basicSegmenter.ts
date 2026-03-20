@@ -165,6 +165,17 @@ export default class BasicSegmenter {
     return suffixChainFrequency / morphTags.length;
   }
 
+  getMorphTagComparer(surfaceSuffixChain: string, underlyingSuffixChain: string):
+    ((morphTag1: string, morphTag2: string) => number) {
+    const getFrequency = (morphTag: string) => {
+      const suffixChain = new SuffixChain(surfaceSuffixChain, underlyingSuffixChain, morphTag);
+      return this.frequencies.get(suffixChain.toString()) || 0;
+    };
+    return (morphTag1: string, morphTag2: string) => {
+      return - (getFrequency(morphTag1) - getFrequency(morphTag2));
+    };
+  }
+
   segment(wordform: string): PartialAnalysis[] {
     const segmentations: PartialAnalysis[] = [];
     const candidates: string[] = this.suffixTrie.getAllSuffixes(wordform);
@@ -192,7 +203,9 @@ export default class BasicSegmenter {
             (suffixChain: SuffixChain) => suffixChain.morphTag
           );
           for (const [segmentedSuffixChain, morphTagSet] of grouped) {
-            const morphTags = Array.from(morphTagSet).sort();
+            const morphTags = Array.from(morphTagSet).sort(
+              this.getMorphTagComparer.bind(this)(suffixChain, segmentedSuffixChain)
+            );
             for (const stem of stems) {
               const [underlyingStem, translation] = stem.split('@');
               const segmentation = joinStemAndSuffixChain(underlyingStem, segmentedSuffixChain);
@@ -224,7 +237,9 @@ export default class BasicSegmenter {
           (suffixChain: SuffixChain) => suffixChain.morphTag
         );
         for (const [segmentedSuffixChain, morphTagSet] of grouped) {
-          const morphTags = Array.from(morphTagSet).sort();
+          const morphTags = Array.from(morphTagSet).sort(
+            this.getMorphTagComparer.bind(this)(suffixChain, segmentedSuffixChain)
+          );
           const underlyingStem = detailedTranscription.substring(0, surfaceStem.length);
           const translation = '';
           const segmentation = joinStemAndSuffixChain(underlyingStem, segmentedSuffixChain);
