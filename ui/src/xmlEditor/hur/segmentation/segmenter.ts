@@ -81,7 +81,7 @@ export class Segmenter {
     }
   }
 
-  segment(wordform: string): MorphologicalAnalysis[] {
+  segment(wordform: string, detailedTranscription: string): MorphologicalAnalysis[] {
     wordform = removeBrackets(wordform);
     let result: Analysis[] = [];
     for (const [pos, segmenter] of this.segmenters) {
@@ -105,7 +105,7 @@ export class Segmenter {
         if (segmenter === undefined) {
           continue;
         }
-        const partialAnalyses = segmenter.segmentOov(wordform);
+        const partialAnalyses = segmenter.segmentOov(wordform, removeBrackets(detailedTranscription));
         for (const partialAnalysis of partialAnalyses) {
           const { segmentation, surfaceSuffixChain } = partialAnalysis;
           const stem = basicGetStem(segmentation);
