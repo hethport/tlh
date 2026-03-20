@@ -49,7 +49,7 @@ export function parseSuffixChain(repr: string): SuffixChain {
 }
 
 const inParentheses = /\(.*\)/g;
-const boundary = /[-=]/g;
+const boundary = /[-=+]/g;
 
 const initial = /(?<=^|\.)(\p{Lu})(?!\p{Lu}|$)/gu;
 function lowerCaseInitials(stem: string) {
