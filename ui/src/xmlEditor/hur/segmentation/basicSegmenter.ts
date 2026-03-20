@@ -198,7 +198,7 @@ export default class BasicSegmenter {
     return segmentations;
   }
   
-  segmentOov(wordform: string): PartialAnalysis[] {
+  segmentOov(wordform: string, detailedTranscription: string): PartialAnalysis[] {
     const segmentations: PartialAnalysis[] = [];
     const suffixChain: string | null = this.suffixTrie.getLongestSuffix(wordform);
     if (suffixChain !== null && suffixChain !== '') {
@@ -216,7 +216,7 @@ export default class BasicSegmenter {
         );
         for (const [segmentedSuffixChain, morphTagSet] of grouped) {
           const morphTags = Array.from(morphTagSet).sort();
-          const underlyingStem = surfaceStem; 
+          const underlyingStem = detailedTranscription.substring(0, surfaceStem.length);
           const translation = '';
           const segmentation = joinStemAndSuffixChain(underlyingStem, segmentedSuffixChain);
           const suffixChainFrequency = this.getSuffixChainFrequency(segmentedSuffixChain, morphTags);
