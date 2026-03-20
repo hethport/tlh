@@ -3,6 +3,8 @@ import { add, removeMacron, groupBy } from '../common/utils';
 import SuffixTrie from './suffixTrie';
 import { startsWithExceptForVowelLength, endsWithExceptForVowelLength } from '../common/stringUtils';
 import { apllyMedialVoicing } from '../transduction/transcribe';
+import { simplifyTranscription } from '../transduction/simplifyTranscription';
+import { LookupConfig } from '../../lookupConfig';
 
 const maximalDeletionCount = 1;
 const minimalFrequency = 1;
@@ -59,18 +61,25 @@ function removeDotsUnlessBetweenUppercase(stem: string): string {
   return apllyMedialVoicing(stem.replaceAll(dotNotBetweenUppercase, ''));
 }
 
-function preprocessStem(stem: string): string {
-  return removeDotsUnlessBetweenUppercase(
-    lowerCaseInitials(
-      stem
-      .replaceAll(inParentheses, '')
-      .replaceAll('+', '')
-    )
+function preprocessStem(stem: string, lookupConfig: LookupConfig): string {
+  return simplifyTranscription(
+    removeDotsUnlessBetweenUppercase(
+      lowerCaseInitials(
+        stem
+        .replaceAll(inParentheses, '')
+        .replaceAll('+', '')
+      )
+    ),
+    lookupConfig
   );
 }
 
-function preprocessSuffixChain(stem: string): string {
-  return stem.replaceAll(inParentheses, '').replaceAll(boundary, '');
+function preprocessSuffixChain(stem: string, lookupConfig: LookupConfig): string {
+  return simplifyTranscription(
+    stem.replaceAll(inParentheses, '')
+        .replaceAll(boundary, ''),
+    lookupConfig
+  );
 }
 
 function joinStemAndSuffixChain(stem: string, suffixChain: string): string {
@@ -108,12 +117,12 @@ export default class BasicSegmenter {
   }
 
   add(transcription: string, segmentation: string, translation: string, morphTags: string[],
-      frequency: number) {
+      frequency: number, lookupConfig: LookupConfig) {
     const [underlyingStem, underlyingSuffixChain] =
       getStemAndGrammaticalMorphemesWithBoundary(segmentation);
     if (underlyingStem !== '') {
-      const preprocessedStem = preprocessStem(underlyingStem);
-      const preprocessedSuffixChain = preprocessSuffixChain(underlyingSuffixChain);
+      const preprocessedStem = preprocessStem(underlyingStem, lookupConfig);
+      const preprocessedSuffixChain = preprocessSuffixChain(underlyingSuffixChain, lookupConfig);
       const surfaceStem = endsWithExceptForVowelLength(transcription, preprocessedSuffixChain) ?
         transcription.substring(0, transcription.length - preprocessedSuffixChain.length) :
         preprocessedStem;

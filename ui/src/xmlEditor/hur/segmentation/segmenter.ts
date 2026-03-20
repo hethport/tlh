@@ -9,6 +9,7 @@ import { isValid } from '../dict/morphologicalAnalysisValidator';
 import { readMorphAnalysisValue } from '../morphologicalAnalysis/auxiliary';
 import { removeBrackets } from '../common/brackets';
 import { quickGetAttestations } from '../concordance/concordance';
+import { LookupConfig } from '../../lookupConfig';
 
 const openClassPartsOfSpeech = ['noun', 'verb', 'NF', 'ADJ'];
 
@@ -64,7 +65,7 @@ function compareAnalyses(analysis1: Analysis, analysis2: Analysis): number {
 export class Segmenter {
   segmenters = new Map<string, BasicSegmenter>();
 
-  add(transcription: string, analysis: MorphologicalAnalysis) {
+  add(transcription: string, analysis: MorphologicalAnalysis, lookupConfig: LookupConfig) {
     const morphTags = getMorphTags(analysis);
     if (morphTags !== null) {
       const segmentation = analysis.referenceWord;
@@ -77,7 +78,7 @@ export class Segmenter {
         this.segmenters.set(pos, segmenter);
       }
       const frequency = getFrequency(analysis);
-      segmenter.add(transcription, segmentation, translation, morphTags, frequency);
+      segmenter.add(transcription, segmentation, translation, morphTags, frequency, lookupConfig);
     }
   }
 
@@ -134,7 +135,7 @@ export class Segmenter {
   }
 }
 
-export function createSegmenter(dict: Map<string, Set<string>>): Segmenter {
+export function createSegmenter(dict: Map<string, Set<string>>, lookupConfig: LookupConfig): Segmenter {
   const segmenter = new Segmenter();
   for (const [transcription, analyses] of dict.entries()) {
     if (!formIsFragment(transcription)) {
@@ -142,7 +143,7 @@ export function createSegmenter(dict: Map<string, Set<string>>): Segmenter {
         if (isValid(analysis)) {
           const morphologicalAnalysis = readMorphAnalysisValue(analysis);
           if (morphologicalAnalysis !== undefined) {
-            segmenter.add(transcription, morphologicalAnalysis);
+            segmenter.add(transcription, morphologicalAnalysis, lookupConfig);
           }
         }
       }
