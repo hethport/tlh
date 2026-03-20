@@ -9,7 +9,7 @@ import { convertDictionary } from '../common/utility';
 import { isValid, normalize, isValidFor } from './morphologicalAnalysisValidator';
 import { Segmenter, createSegmenter } from '../segmentation/segmenter';
 import { readMorphAnalysisValue } from '../morphologicalAnalysis/auxiliary';
-import { objectToSetValuedMap, updateSetValuedMapWithOverride, remove } from '../common/utils';
+import { objectToSetValuedMap, remove } from '../common/utils';
 import { locallyStoreSetValuedMap, loadFromLocalStorage } from '../dictLocalStorage/localStorageUtils';
 import { reserializeMorphologicalAnalysis } from '../morphologicalAnalysis/reserialization';
 import { containsBrackets, removeBrackets } from '../common/brackets';
@@ -55,7 +55,7 @@ function simplifyDictionary(dictionary: Dictionary, lookupConfig: LookupConfig):
 
 function rebuildSimplifiedDictionary(dictionary: Dictionary, lookupConfig: LookupConfig): void {
   simplifiedDictionary = simplifyDictionary(dictionary, lookupConfig);
-  segmenter = createSegmenter(simplifiedDictionary);
+  segmenter = createSegmenter(simplifiedDictionary, lookupConfig);
   segmenterInfo = new SegmenterInfo(segmenter);
 }
 
@@ -200,7 +200,7 @@ export function basicUpdateHurrianDictionary(
     add(simplifiedDictionary, simplifiedTranscription, normalized);
     const ma = readMorphologicalAnalysis(1, normalized, []);
     if (ma !== undefined) {
-      segmenter.add(transcription, ma);
+      segmenter.add(transcription, ma, lookupConfig);
     }
   }
 }
@@ -211,11 +211,6 @@ export function deleteAnalysisFromHurrianDictionary(transcription: string, analy
 
 export function getDictionary(): { [key: string]: string[] } {
   return convertDictionary(dictionary);
-}
-
-export function upgradeDictionary(object: { [key: string]: string[] }): void {
-  updateSetValuedMapWithOverride(dictionary, object);
-  segmenter = createSegmenter(dictionary);
 }
 
 export function cleanUpDictionary(object: { [key: string]: string[] }): { [key: string]: string[] } {
