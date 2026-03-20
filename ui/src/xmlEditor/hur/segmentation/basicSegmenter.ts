@@ -53,11 +53,18 @@ function lowerCaseInitials(stem: string) {
   return stem.replaceAll(initial, (letter: string) => letter.toLowerCase());
 }
 
+const dotNotBetweenUppercase = /(?<!\p{Lu})\.|\.(?!\p{Lu})/gu;
+function removeDotsUnlessBetweenUppercase(stem: string): string {
+  return stem.replaceAll(dotNotBetweenUppercase, '');
+}
+
 function preprocessStem(stem: string): string {
-  return lowerCaseInitials(
-    stem
-    .replaceAll(inParentheses, '')
-    .replaceAll('+', '')
+  return removeDotsUnlessBetweenUppercase(
+    lowerCaseInitials(
+      stem
+      .replaceAll(inParentheses, '')
+      .replaceAll('+', '')
+    )
   );
 }
 
