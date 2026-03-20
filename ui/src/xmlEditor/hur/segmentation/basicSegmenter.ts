@@ -2,6 +2,7 @@ import { getStemAndGrammaticalMorphemesWithBoundary } from '../common/splitter';
 import { add, removeMacron, groupBy } from '../common/utils';
 import SuffixTrie from './suffixTrie';
 import { startsWithExceptForVowelLength, endsWithExceptForVowelLength } from '../common/stringUtils';
+import { apllyMedialVoicing } from '../transduction/transcribe';
 
 const maximalDeletionCount = 1;
 const minimalFrequency = 1;
@@ -55,7 +56,7 @@ function lowerCaseInitials(stem: string) {
 
 const dotNotBetweenUppercase = /(?<!\p{Lu})\.|\.(?!\p{Lu})/gu;
 function removeDotsUnlessBetweenUppercase(stem: string): string {
-  return stem.replaceAll(dotNotBetweenUppercase, '');
+  return apllyMedialVoicing(stem.replaceAll(dotNotBetweenUppercase, ''));
 }
 
 function preprocessStem(stem: string): string {

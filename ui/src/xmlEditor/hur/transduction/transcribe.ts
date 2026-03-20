@@ -76,17 +76,21 @@ const voicedCorrelate: { [key: string]: string } = {
   š: 'ž',
   ḫ: 'ġ',
 };
+export function apllyMedialVoicing(word: string): string {
+  return word.replaceAll(
+    /(?<=[aeiouāēīōū][[\]]?)[ptkfsšḫ](?=[[\]]?[aeiouāēīōū])/g,
+    (voicelessConsonant: string) => voicedCorrelate[voicelessConsonant]
+  ).replaceAll(/(?<=[rlmn][[\]]?)[ptkfsšḫ]/g, (voicelessConsonant: string) => voicedCorrelate[voicelessConsonant])
+   .replaceAll(/[ptkfsšḫ](?=[[\]]?[rlmn])/g, (voicelessConsonant: string) => voicedCorrelate[voicelessConsonant]);
+}
 function processConsonants(word: string): string {
-  word = word
+  word = apllyMedialVoicing(word
     .replaceAll('s', 'c')
     .replaceAll('b', 'p')
     .replaceAll('d', 't')
     .replaceAll('g', 'k')
     .replaceAll('w', 'f')
-    .replaceAll('z', 's')
-    .replaceAll(/(?<=[aeiouāēīōū][[\]]?)[ptkfsšḫ](?=[[\]]?[aeiouāēīōū])/g, (voicelessConsonant: string) => voicedCorrelate[voicelessConsonant])
-    .replaceAll(/(?<=[rlmn][[\]]?)[ptkfsšḫ]/g, (voicelessConsonant: string) => voicedCorrelate[voicelessConsonant])
-    .replaceAll(/[ptkfsšḫ](?=[[\]]?[rlmn])/g, (voicelessConsonant: string) => voicedCorrelate[voicelessConsonant])
+    .replaceAll('z', 's'))
     .replaceAll(/[ptkfsšḫ](?=[[\]]?$)/g, (voicelessConsonant: string) => voicedCorrelate[voicelessConsonant])
     .replaceAll(wEscape, 'w')
     .replaceAll(/(?<=[uū][[\]]?)v/g, 'w')
