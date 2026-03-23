@@ -1,8 +1,16 @@
 import BasicSegmenter, { SuffixChain, parseSuffixChain } from './basicSegmenter';
 import { Segmenter } from './segmenter';
 
+class ExtendedSuffixChain extends SuffixChain {
+  sources: string[];
+  constructor(surfaceForm: string, segmentation: string, morphTag: string, sources: string[]) {
+    super(surfaceForm, segmentation, morphTag);
+    this.sources = sources;
+  }
+}
+
 type SuffixChainInventory = {
-  [surfaceForm: string]: SuffixChain[];
+  [surfaceForm: string]: ExtendedSuffixChain[];
 };
 
 export type SuffixChainInventories = {
@@ -13,7 +21,13 @@ function getSuffixChainInverntory(basicSegmenter: BasicSegmenter): SuffixChainIn
   const { suffixChains } = basicSegmenter;
   const inventory: SuffixChainInventory = {};
   for (const [surfaceForm, suffixChainReprs] of suffixChains) {
-    const suffixChainObjects: SuffixChain[] = Array.from(suffixChainReprs).sort().map(parseSuffixChain);
+    const suffixChainObjects: ExtendedSuffixChain[] = Array.from(suffixChainReprs).sort().map(parseSuffixChain)
+      .map((suffixChain: SuffixChain) => {
+        const { surfaceForm, segmentation, morphTag } = suffixChain;
+        return new ExtendedSuffixChain(
+          surfaceForm, segmentation, morphTag, basicSegmenter.getSources(suffixChain)
+        );
+      });
     inventory[surfaceForm] = suffixChainObjects;
   }
   return inventory;
