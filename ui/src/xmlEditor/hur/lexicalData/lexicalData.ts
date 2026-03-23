@@ -8,6 +8,7 @@ import { EnglishTranslationsObject, getEnglishTranslations, updateEnglishTransla
 import { SuffixChainInventories } from '../segmentation/suffixChainInventories';
 
 export type LexicalData = {
+  exportDate?: string;
   dictionary: DictionaryObject;
   glosses: GlossaryObject;
   concordance: ConcordanceObject;
@@ -18,6 +19,8 @@ export type LexicalData = {
 }
 
 export function getLexicalData(): LexicalData {
+  const now = new Date();
+  const exportDate = now.toString();
   const dictionary = getDictionary();
   const glosses = getGlosses();
   const partsOfSpeech = getPartsOfSpeech();
@@ -25,7 +28,7 @@ export function getLexicalData(): LexicalData {
   const corpus = getCorpus();
   const englishTranslations = getEnglishTranslations();
   const suffixChains = getSuffixChains();
-  const lexicalData: LexicalData = {partsOfSpeech, dictionary, glosses, concordance,
+  const lexicalData: LexicalData = {exportDate, partsOfSpeech, dictionary, glosses, concordance,
     corpus, englishTranslations, suffixChains};
   return lexicalData;
 }
