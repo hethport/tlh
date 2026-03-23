@@ -112,6 +112,7 @@ export default class BasicSegmenter {
   suffixChains = new Map<string, Set<string>>();
   suffixTrie = new SuffixTrie();
   frequencies = new Map<string, number>();
+  sources = new Map<string, Set<string>>();
 
   isFrequentEnough(suffixChain: SuffixChain): boolean {
     const frequency = this.frequencies.get(suffixChain.toString());
@@ -146,6 +147,7 @@ export default class BasicSegmenter {
         }
         suffixChainFrequency += frequency;
         this.frequencies.set(suffixChainRepr, suffixChainFrequency);
+        add(this.sources, suffixChainRepr, transcription + ' @ ' + segmentation);
       }
       this.suffixTrie.add(surfaceSuffixChain);
     }
