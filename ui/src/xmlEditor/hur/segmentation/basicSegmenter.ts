@@ -119,6 +119,15 @@ export default class BasicSegmenter {
     return frequency !== undefined && frequency >= minimalFrequency;
   }
 
+  getSources(suffixChain: SuffixChain): string[] {
+    const sources = this.sources.get(suffixChain.toString());
+    if (sources === undefined) {
+      return [];
+    } else {
+      return Array.from(sources).sort();
+    }
+  }
+
   add(transcription: string, segmentation: string, translation: string, morphTags: string[],
       frequency: number, lookupConfig: LookupConfig) {
     const [underlyingStem, underlyingSuffixChain] =
@@ -147,7 +156,8 @@ export default class BasicSegmenter {
         }
         suffixChainFrequency += frequency;
         this.frequencies.set(suffixChainRepr, suffixChainFrequency);
-        add(this.sources, suffixChainRepr, transcription + ' @ ' + segmentation);
+        const source = transcription + ' @ ' + segmentation + ' @ ' + translation;
+        add(this.sources, suffixChainRepr, source);
       }
       this.suffixTrie.add(surfaceSuffixChain);
     }
