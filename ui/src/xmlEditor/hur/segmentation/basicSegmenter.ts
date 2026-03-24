@@ -129,7 +129,7 @@ export default class BasicSegmenter {
   }
 
   add(transcription: string, segmentation: string, translation: string, morphTags: string[],
-      frequency: number, lookupConfig: LookupConfig) {
+      frequency: number, lookupConfig: LookupConfig, detailedTranscription: string) {
     const [underlyingStem, underlyingSuffixChain] =
       getStemAndGrammaticalMorphemesWithBoundary(segmentation);
     if (underlyingStem !== '') {
@@ -156,7 +156,7 @@ export default class BasicSegmenter {
         }
         suffixChainFrequency += frequency;
         this.frequencies.set(suffixChainRepr, suffixChainFrequency);
-        const source = transcription + ' @ ' + segmentation + ' @ ' + translation;
+        const source = detailedTranscription + ' @ ' + segmentation + ' @ ' + translation;
         add(this.sources, suffixChainRepr, source);
       }
       this.suffixTrie.add(surfaceSuffixChain);

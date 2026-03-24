@@ -55,7 +55,7 @@ function simplifyDictionary(dictionary: Dictionary, lookupConfig: LookupConfig):
 
 function rebuildSimplifiedDictionary(dictionary: Dictionary, lookupConfig: LookupConfig): void {
   simplifiedDictionary = simplifyDictionary(dictionary, lookupConfig);
-  segmenter = createSegmenter(simplifiedDictionary, lookupConfig);
+  segmenter = createSegmenter(dictionary, lookupConfig);
   segmenterInfo = new SegmenterInfo(segmenter);
 }
 
@@ -200,7 +200,7 @@ export function basicUpdateHurrianDictionary(
     add(simplifiedDictionary, simplifiedTranscription, normalized);
     const ma = readMorphologicalAnalysis(1, normalized, []);
     if (ma !== undefined) {
-      segmenter.add(transcription, ma, lookupConfig);
+      segmenter.add(simplifiedTranscription, ma, lookupConfig, transcription);
     }
   }
 }

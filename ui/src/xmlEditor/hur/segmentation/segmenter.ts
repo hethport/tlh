@@ -10,6 +10,7 @@ import { readMorphAnalysisValue } from '../morphologicalAnalysis/auxiliary';
 import { removeBrackets } from '../common/brackets';
 import { quickGetAttestations } from '../concordance/concordance';
 import { LookupConfig } from '../../lookupConfig';
+import { simplifyTranscription } from '../transduction/simplifyTranscription';
 
 const openClassPartsOfSpeech = ['noun', 'verb', 'NF', 'ADJ'];
 
@@ -65,7 +66,8 @@ function compareAnalyses(analysis1: Analysis, analysis2: Analysis): number {
 export class Segmenter {
   segmenters = new Map<string, BasicSegmenter>();
 
-  add(transcription: string, analysis: MorphologicalAnalysis, lookupConfig: LookupConfig) {
+  add(transcription: string, analysis: MorphologicalAnalysis, lookupConfig: LookupConfig,
+      detailedTranscription: string) {
     const morphTags = getMorphTags(analysis);
     if (morphTags !== null) {
       const segmentation = analysis.referenceWord;
@@ -78,7 +80,8 @@ export class Segmenter {
         this.segmenters.set(pos, segmenter);
       }
       const frequency = getFrequency(analysis);
-      segmenter.add(transcription, segmentation, translation, morphTags, frequency, lookupConfig);
+      segmenter.add(transcription, segmentation, translation, morphTags, frequency, lookupConfig,
+                    detailedTranscription);
     }
   }
 
@@ -143,7 +146,8 @@ export function createSegmenter(dict: Map<string, Set<string>>, lookupConfig: Lo
         if (isValid(analysis)) {
           const morphologicalAnalysis = readMorphAnalysisValue(analysis);
           if (morphologicalAnalysis !== undefined) {
-            segmenter.add(transcription, morphologicalAnalysis, lookupConfig);
+            const simplifiedTranscription = simplifyTranscription(transcription, lookupConfig);
+            segmenter.add(simplifiedTranscription, morphologicalAnalysis, lookupConfig, transcription);
           }
         }
       }
