@@ -84,6 +84,19 @@ mutation ReleaseTransliteration($mainIdentifier: String!) {
   }
 }
 
+mutation UpdateManuscriptIdentifiers(
+  $mainIdentifier: String!
+  $newMainIdentifier: ManuscriptIdentifierInput!
+  $newOtherIdentifiers: [ManuscriptIdentifierInput!]!
+) {
+  manuscript(mainIdentifier: $mainIdentifier) {
+    updateIdentifiers(
+      newMainIdentifier: $newMainIdentifier
+      newOtherIdentifiers: $newOtherIdentifiers
+    )
+  }
+}
+
 # /manuscripts/:id/uploadPictures
 
 fragment ManuscriptIdentWithCreator on ManuscriptMetaData {

@@ -264,5 +264,13 @@
   "mainIdentifierType": "Identifikatortyp",
   "anonymousNote": "Notiz",
   "anonymousTransliterationInfo": "Dies ist ein anonymer Parser. Sie können das Parse-Ergebnis anzeigen und als XML exportieren, aber nicht in der Datenbank speichern.",
-  "guidelines": "Richtlinien"
+  "guidelines": "Guidelines",
+  "editIdentifiers": "Identifikatoren editieren",
+  "identifier": "Identifikator",
+  "identifierType": "Identifikatortyp",
+  "add": "Hinzufügen",
+  "save": "Speichern",
+  "saving": "Speichern",
+  "mainIdentifierCannotBeEmpty": "Hauptidentifikator kann nicht leer sein",
+  "errorUpdatingIdentifiers": "Fehler beim Aktualisieren der Identifikatoren"
 }

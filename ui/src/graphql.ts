@@ -196,12 +196,19 @@ export type ManuscriptMutations = {
   __typename?: 'ManuscriptMutations';
   deletePicture: Scalars['Boolean']['output'];
   releaseTransliteration: Scalars['String']['output'];
+  updateIdentifiers: Scalars['String']['output'];
   updateTransliteration: Scalars['Boolean']['output'];
 };
 
 
 export type ManuscriptMutationsDeletePictureArgs = {
   pictureName: Scalars['String']['input'];
+};
+
+
+export type ManuscriptMutationsUpdateIdentifiersArgs = {
+  newMainIdentifier: ManuscriptIdentifierInput;
+  newOtherIdentifiers: Array<ManuscriptIdentifierInput>;
 };
 
 
@@ -394,6 +401,15 @@ export type ReleaseTransliterationMutationVariables = Exact<{
 
 
 export type ReleaseTransliterationMutation = { __typename?: 'Mutation', manuscript?: { __typename?: 'ManuscriptMutations', releaseTransliteration: string } | null };
+
+export type UpdateManuscriptIdentifiersMutationVariables = Exact<{
+  mainIdentifier: Scalars['String']['input'];
+  newMainIdentifier: ManuscriptIdentifierInput;
+  newOtherIdentifiers: Array<ManuscriptIdentifierInput> | ManuscriptIdentifierInput;
+}>;
+
+
+export type UpdateManuscriptIdentifiersMutation = { __typename?: 'Mutation', manuscript?: { __typename?: 'ManuscriptMutations', updateIdentifiers: string } | null };
 
 export type ManuscriptIdentWithCreatorFragment = { __typename?: 'ManuscriptMetaData', pictureUrls: Array<string>, creatorUsername: string, mainIdentifier: { __typename?: 'ManuscriptIdentifier', identifierType: ManuscriptIdentifierType, identifier: string } };
 
@@ -875,6 +891,44 @@ export function useReleaseTransliterationMutation(baseOptions?: Apollo.MutationH
 export type ReleaseTransliterationMutationHookResult = ReturnType<typeof useReleaseTransliterationMutation>;
 export type ReleaseTransliterationMutationResult = Apollo.MutationResult<ReleaseTransliterationMutation>;
 export type ReleaseTransliterationMutationOptions = Apollo.BaseMutationOptions<ReleaseTransliterationMutation, ReleaseTransliterationMutationVariables>;
+export const UpdateManuscriptIdentifiersDocument = gql`
+    mutation UpdateManuscriptIdentifiers($mainIdentifier: String!, $newMainIdentifier: ManuscriptIdentifierInput!, $newOtherIdentifiers: [ManuscriptIdentifierInput!]!) {
+  manuscript(mainIdentifier: $mainIdentifier) {
+    updateIdentifiers(
+      newMainIdentifier: $newMainIdentifier
+      newOtherIdentifiers: $newOtherIdentifiers
+    )
+  }
+}
+    `;
+export type UpdateManuscriptIdentifiersMutationFn = Apollo.MutationFunction<UpdateManuscriptIdentifiersMutation, UpdateManuscriptIdentifiersMutationVariables>;
+
+/**
+ * __useUpdateManuscriptIdentifiersMutation__
+ *
+ * To run a mutation, you first call `useUpdateManuscriptIdentifiersMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateManuscriptIdentifiersMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateManuscriptIdentifiersMutation, { data, loading, error }] = useUpdateManuscriptIdentifiersMutation({
+ *   variables: {
+ *      mainIdentifier: // value for 'mainIdentifier'
+ *      newMainIdentifier: // value for 'newMainIdentifier'
+ *      newOtherIdentifiers: // value for 'newOtherIdentifiers'
+ *   },
+ * });
+ */
+export function useUpdateManuscriptIdentifiersMutation(baseOptions?: Apollo.MutationHookOptions<UpdateManuscriptIdentifiersMutation, UpdateManuscriptIdentifiersMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateManuscriptIdentifiersMutation, UpdateManuscriptIdentifiersMutationVariables>(UpdateManuscriptIdentifiersDocument, options);
+      }
+export type UpdateManuscriptIdentifiersMutationHookResult = ReturnType<typeof useUpdateManuscriptIdentifiersMutation>;
+export type UpdateManuscriptIdentifiersMutationResult = Apollo.MutationResult<UpdateManuscriptIdentifiersMutation>;
+export type UpdateManuscriptIdentifiersMutationOptions = Apollo.BaseMutationOptions<UpdateManuscriptIdentifiersMutation, UpdateManuscriptIdentifiersMutationVariables>;
 export const UploadPicturesDocument = gql`
     query UploadPictures($mainIdentifier: String!) {
   manuscript(mainIdentifier: $mainIdentifier) {

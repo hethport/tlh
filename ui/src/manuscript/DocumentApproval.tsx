@@ -8,6 +8,7 @@ import {XmlDocumentEditor} from '../xmlEditor/XmlDocumentEditor';
 import {MyLeft, parseNewXml, XmlElementNode} from 'simple_xml';
 import {writeXml} from '../xmlEditor/StandAloneOXTED';
 import {tlhXmlEditorConfig} from '../xmlEditor/tlhXmlEditorConfig';
+import {makeDownload} from "../downloadHelper";
 
 interface IProps {
   mainIdentifier: string;
@@ -27,6 +28,7 @@ function Inner({mainIdentifier, initialXml}: IProps): JSX.Element {
 
   const onExport = async (rootNode: XmlElementNode): Promise<void | undefined> => {
     try {
+      makeDownload(writeXml(rootNode), mainIdentifier + '.xml');
       await submitApproval({variables: {mainIdentifier, input: writeXml(rootNode)}});
     } catch (error) {
       console.error(error);

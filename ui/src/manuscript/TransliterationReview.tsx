@@ -8,6 +8,7 @@ import { ReactElement, useState } from 'react';
 import { blueButtonClasses } from '../defaultDesign';
 import { SuccessMessage } from '../designElements/Messages';
 import { XmlCreationValues } from './xmlConversion/createCompleteDocument';
+import { EditIdentifiersButton } from '../EditIdentifiersButton';
 
 interface IProps {
   mainIdentifier: string;
@@ -65,7 +66,10 @@ export function TransliterationReview(): ReactElement {
 
   return (
     <div className="container mx-auto">
-      <h2 className="font-bold text-xl text-center">{t('reviewTransliteration')}</h2>
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="font-bold text-xl">{t('reviewTransliteration')}</h2>
+        <EditIdentifiersButton mainIdentifier={mainIdentifier} />
+      </div>
 
       <WithQuery query={reviewQuery}>
         {({ manuscript }) =>

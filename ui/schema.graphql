@@ -109,6 +109,7 @@ input ManuscriptMetaDataInput {
 type ManuscriptMutations {
   deletePicture(pictureName: String!): Boolean!
   releaseTransliteration: String!
+  updateIdentifiers(newMainIdentifier: ManuscriptIdentifierInput!, newOtherIdentifiers: [ManuscriptIdentifierInput!]!): String!
   updateTransliteration(input: String!): Boolean!
 }
 

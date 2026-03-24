@@ -8,6 +8,7 @@ export const amberButtonClasses = coloredButtonClasses('amber');
 export const blueButtonClasses = coloredButtonClasses('blue');
 export const greenButtonClasses = coloredButtonClasses('green');
 export const redButtonClasses = coloredButtonClasses('red');
+export const greyButtonClasses = 'my-2 px-4 py-2 rounded border border-slate-400 bg-slate-400 text-white disabled:opacity-50';
 export const whiteButtonClasses = 'my-2 px-4 py-2 rounded border border-slate-500 bg-white disabled:opacity-50';
 
 // Inputs
