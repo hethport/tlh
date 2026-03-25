@@ -6,6 +6,7 @@ import { apllyMedialVoicing } from '../transduction/transcribe';
 import { simplifyTranscription } from '../transduction/simplifyTranscription';
 import { LookupConfig } from '../../lookupConfig';
 import { getPrefixWithNonBracketSymbolCount } from '../common/brackets';
+import { allomorphyIsValid } from './allomorphyValidation';
 
 const maximalDeletionCount = 1;
 const minimalFrequency = 1;
@@ -223,12 +224,15 @@ export default class BasicSegmenter {
             );
             for (const stem of stems) {
               const [underlyingStem, translation] = stem.split('@');
-              const segmentation = joinStemAndSuffixChain(underlyingStem, segmentedSuffixChain);
-              const suffixChainFrequency = this.getSuffixChainFrequency(suffixChain,
-                                                                        segmentedSuffixChain, morphTags);
-              const result =
-                new PartialAnalysis(segmentation, translation, morphTags, suffixChain, suffixChainFrequency);
-              segmentations.push(result);
+              if (allomorphyIsValid(surfaceStem, underlyingStem, suffixChain)) {
+                const segmentation = joinStemAndSuffixChain(underlyingStem, segmentedSuffixChain);
+                const suffixChainFrequency = this.getSuffixChainFrequency(suffixChain,
+                                                                          segmentedSuffixChain,
+                                                                          morphTags);
+                const result = new PartialAnalysis(segmentation, translation, morphTags,
+                                                   suffixChain, suffixChainFrequency);
+                segmentations.push(result);
+              }
             }
           }
         }
