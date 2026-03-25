@@ -5,6 +5,7 @@ import { startsWithExceptForVowelLength, endsWithExceptForVowelLength } from '..
 import { apllyMedialVoicing } from '../transduction/transcribe';
 import { simplifyTranscription } from '../transduction/simplifyTranscription';
 import { LookupConfig } from '../../lookupConfig';
+import { getPrefixWithNonBracketSymbolCount } from '../common/brackets';
 
 const maximalDeletionCount = 1;
 const minimalFrequency = 1;
@@ -252,7 +253,8 @@ export default class BasicSegmenter {
           const morphTags = Array.from(morphTagSet).sort(
             this.getMorphTagComparer.bind(this)(suffixChain, segmentedSuffixChain)
           );
-          const underlyingStem = detailedTranscription.substring(0, surfaceStem.length);
+          const underlyingStem = getPrefixWithNonBracketSymbolCount(detailedTranscription,
+                                                                    surfaceStem.length);
           const translation = '';
           const segmentation = joinStemAndSuffixChain(underlyingStem, segmentedSuffixChain);
           const suffixChainFrequency = this.getSuffixChainFrequency(suffixChain,
