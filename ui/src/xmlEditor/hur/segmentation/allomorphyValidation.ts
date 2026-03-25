@@ -1,6 +1,6 @@
 // Do not add the g or y flags to avoid changing
 // the lastIndex property on the RegExp objects.
-const finalVowelNotAfterCoronalSonorant = /(?<![lnr])[aeiouāēīōū]$/;
+const finalVowelNotAfterCoronalSonorant = /(?<![lnrġḫ])[aeiouāēīōū]$/;
 const finalVowel = /[aeiouāēīōū]$/;
 const initialVowel = /^[-=]?[aeiouāēīōū]/;
 const sumerogram = /^(\p{Lu}|[-.])+$/u;
