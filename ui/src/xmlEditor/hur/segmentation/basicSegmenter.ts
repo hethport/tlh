@@ -142,8 +142,10 @@ export default class BasicSegmenter {
       const surfaceSuffixChain = startsWithExceptForVowelLength(transcription, preprocessedStem) ?
         transcription.substring(preprocessedStem.length) :
         preprocessedSuffixChain;
-      const stem = new Stem(underlyingStem, translation);
-      add(this.stems, surfaceStem, stem.toString());
+      if (surfaceStem.length > 0) {
+        const stem = new Stem(underlyingStem, translation);
+        add(this.stems, surfaceStem, stem.toString());
+      }
       if (preprocessedSuffixChain.length - surfaceSuffixChain.length > maximalDeletionCount) {
         return;
       }
