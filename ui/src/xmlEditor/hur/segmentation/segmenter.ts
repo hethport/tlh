@@ -109,7 +109,7 @@ export class Segmenter {
         if (segmenter === undefined) {
           continue;
         }
-        const partialAnalyses = segmenter.segmentOov(wordform, removeBrackets(detailedTranscription));
+        const partialAnalyses = segmenter.segmentOov(wordform, detailedTranscription);
         for (const partialAnalysis of partialAnalyses) {
           const { segmentation, surfaceSuffixChain } = partialAnalysis;
           const stem = basicGetStem(segmentation);
