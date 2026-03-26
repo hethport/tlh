@@ -6,7 +6,7 @@ import { apllyMedialVoicing } from '../transduction/transcribe';
 import { simplifyTranscription } from '../transduction/simplifyTranscription';
 import { LookupConfig } from '../../lookupConfig';
 import { getPrefixWithNonBracketSymbolCount } from '../common/brackets';
-import { allomorphyIsValid } from './allomorphyValidation';
+import { allomorphyIsValid, suffixChainAllomorphyIsValidInSomeContext } from './allomorphyValidation';
 
 const maximalDeletionCount = 1;
 const minimalFrequency = 1;
@@ -148,6 +148,9 @@ export default class BasicSegmenter {
         add(this.stems, surfaceStem, stem.toString());
       }
       if (preprocessedSuffixChain.length - surfaceSuffixChain.length > maximalDeletionCount) {
+        return;
+      }
+      if (!suffixChainAllomorphyIsValidInSomeContext(surfaceSuffixChain, underlyingSuffixChain)) {
         return;
       }
       for (const morphTag of morphTags) {

@@ -39,3 +39,11 @@ export function allomorphyIsValid(surfaceStem: string, underlyingStem: string,
                                   surfaceSuffixChain: string): boolean {
   return stemAllomorphyIsValid(surfaceStem, underlyingStem, surfaceSuffixChain);
 }
+
+export function suffixChainAllomorphyIsValidInSomeContext(surfaceSuffixChain: string,
+                                                          underlyingSuffixChain: string) {
+  if (startsWithVowel(underlyingSuffixChain) && !startsWithVowel(surfaceSuffixChain)) {
+    return false;
+  }
+  return true;
+}
