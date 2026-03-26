@@ -7,6 +7,7 @@ import { simplifyTranscription } from '../transduction/simplifyTranscription';
 import { LookupConfig } from '../../lookupConfig';
 import { getPrefixWithNonBracketSymbolCount } from '../common/brackets';
 import { allomorphyIsValid, suffixChainAllomorphyIsValidInSomeContext } from './allomorphyValidation';
+import { removeBrackets } from '../common/brackets';
 
 const maximalDeletionCount = 1;
 const minimalFrequency = 1;
@@ -195,7 +196,8 @@ export default class BasicSegmenter {
     };
   }
 
-  segment(wordform: string): PartialAnalysis[] {
+  segment(originalWordform: string): PartialAnalysis[] {
+    const wordform = removeBrackets(originalWordform);
     const segmentations: PartialAnalysis[] = [];
     const candidates: string[] = this.suffixTrie.getAllSuffixes(wordform);
     const simplified = removeMacron(wordform);
@@ -244,7 +246,8 @@ export default class BasicSegmenter {
     return segmentations;
   }
   
-  segmentOov(wordform: string, detailedTranscription: string): PartialAnalysis[] {
+  segmentOov(originalWordform: string, detailedTranscription: string): PartialAnalysis[] {
+    const wordform = removeBrackets(originalWordform);
     const segmentations: PartialAnalysis[] = [];
     const suffixChain: string | null = this.suffixTrie.getLongestSuffix(wordform);
     if (suffixChain !== null && suffixChain !== '') {
