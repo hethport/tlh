@@ -16,7 +16,7 @@ function endsInUnopenedBracket(stem: string): boolean {
 }
 
 function stemIsFragmentary(stem: string) {
-  return stem === '' || stem === '[' || stem.startsWith(']') ||
+  return stem === '[' || stem.startsWith(']') ||
     endsInUnopenedBracket(stem) ||
     containsEmbracketedFragmentarySigns(stem);
 }
