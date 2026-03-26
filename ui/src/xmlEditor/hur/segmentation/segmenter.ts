@@ -7,7 +7,6 @@ import { makeAnalysisOptions, getMorphTags, formIsFragment } from '../common/uti
 import { basicGetStem } from '../common/splitter';
 import { isValid } from '../dict/morphologicalAnalysisValidator';
 import { readMorphAnalysisValue } from '../morphologicalAnalysis/auxiliary';
-import { removeBrackets } from '../common/brackets';
 import { quickGetAttestations } from '../concordance/concordance';
 import { LookupConfig } from '../../lookupConfig';
 import { simplifyTranscription } from '../transduction/simplifyTranscription';
@@ -86,7 +85,6 @@ export class Segmenter {
   }
 
   segment(wordform: string, detailedTranscription: string): MorphologicalAnalysis[] {
-    wordform = removeBrackets(wordform);
     let result: Analysis[] = [];
     for (const [pos, segmenter] of this.segmenters) {
       const partialAnalyses = segmenter.segment(wordform);
