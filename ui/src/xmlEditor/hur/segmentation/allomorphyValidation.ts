@@ -1,12 +1,12 @@
 // Do not add the g or y flags to avoid changing
 // the lastIndex property on the RegExp objects.
-const finalVowelNotAfterCoronalSonorant = /(?<![lnrġḫ])[aeiouāēīōū]$/;
+const finalVowelAfterCoronalSonorantOrDorsalFricative = /(?<=[lnrġḫ])[aeiouāēīōū]$/;
 const finalVowel = /[aeiouāēīōū]$/;
 const initialVowel = /^[-=]?[aeiouāēīōū]/;
 const sumerogram = /^(\p{Lu}|[-.])+$/u;
 
-function endsWithVowelNotAfterCoronalSonorant(stem: string): boolean {
-  return finalVowelNotAfterCoronalSonorant.test(stem);
+function endsWithVowelNotAfterCoronalSonorantOrDorsalFricative(stem: string): boolean {
+  return finalVowelAfterCoronalSonorantOrDorsalFricative.test(stem);
 }
 
 function endsWithVowel(stem: string): boolean {
@@ -21,6 +21,10 @@ function isSumerogram(stem: string): boolean {
   return sumerogram.test(stem);
 }
 
+function finalVowelWadDeleted(underlyingForm: string, surfaceForm: string): boolean {
+  return endsWithVowel(underlyingForm) && !endsWithVowel(surfaceForm);
+}
+
 function stemAllomorphyIsValid(surfaceStem: string, underlyingStem: string,
                                surfaceSuffixChain: string): boolean {
   if (isSumerogram(surfaceStem) && !isSumerogram(underlyingStem)) {
@@ -28,9 +32,14 @@ function stemAllomorphyIsValid(surfaceStem: string, underlyingStem: string,
     // and their Hurrian readings.
     return true;
   }
-  if (endsWithVowelNotAfterCoronalSonorant(underlyingStem) && !endsWithVowel(surfaceStem)) {
-    // The final vowel of the stem was deleted, and it is not after l, n or r.
-    return startsWithVowel(surfaceSuffixChain);
+  if (finalVowelWadDeleted(underlyingStem, surfaceStem)) {
+    if (startsWithVowel(surfaceSuffixChain)) {
+      return true;
+    } else if (endsWithVowelNotAfterCoronalSonorantOrDorsalFricative(underlyingStem)) {
+      return true;
+    } else {
+      return false;
+    }
   }
   return true;
 }
