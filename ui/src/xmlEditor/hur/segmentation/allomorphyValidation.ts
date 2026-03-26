@@ -3,6 +3,7 @@
 const finalVowelAfterCoronalSonorantOrDorsalFricative = /(?<=[lnrġḫ])[aeiouāēīōū]$/;
 const finalVowel = /[aeiouāēīōū]$/;
 const initialVowel = /^[-=]?[aeiouāēīōū]/;
+const initialCoronalSonorantBeforeVowel = /^[-=]?[lnr][-=]?[aeiouāēīōū]/;
 const sumerogram = /^(\p{Lu}|[-.])+$/u;
 
 function endsWithVowelNotAfterCoronalSonorantOrDorsalFricative(stem: string): boolean {
@@ -15,6 +16,10 @@ function endsWithVowel(stem: string): boolean {
 
 function startsWithVowel(ending: string): boolean {
   return initialVowel.test(ending);
+}
+
+function startsWithCoronalSonorantBeforeVowel(suffixChain: string): boolean {
+  return initialCoronalSonorantBeforeVowel.test(suffixChain);
 }
 
 function isSumerogram(stem: string): boolean {
@@ -36,7 +41,7 @@ function stemAllomorphyIsValid(surfaceStem: string, underlyingStem: string,
     if (startsWithVowel(surfaceSuffixChain)) {
       return true;
     } else if (endsWithVowelNotAfterCoronalSonorantOrDorsalFricative(underlyingStem)) {
-      return true;
+      return startsWithCoronalSonorantBeforeVowel(surfaceSuffixChain);
     } else {
       return false;
     }
