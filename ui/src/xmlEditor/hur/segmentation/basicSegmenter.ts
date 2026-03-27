@@ -267,13 +267,15 @@ export default class BasicSegmenter {
           );
           const underlyingStem = getPrefixWithNonBracketSymbolCount(detailedTranscription,
                                                                     surfaceStem.length);
-          const translation = '';
-          const segmentation = joinStemAndSuffixChain(underlyingStem, segmentedSuffixChain);
-          const suffixChainFrequency = this.getSuffixChainFrequency(suffixChain,
-                                                                    segmentedSuffixChain, morphTags);
-          const result =
-            new PartialAnalysis(segmentation, translation, morphTags, suffixChain, suffixChainFrequency);
-          segmentations.push(result);
+          if (allomorphyIsValid(surfaceStem, underlyingStem, suffixChain)) {
+            const translation = '';
+            const segmentation = joinStemAndSuffixChain(underlyingStem, segmentedSuffixChain);
+            const suffixChainFrequency = this.getSuffixChainFrequency(suffixChain,
+                                                                      segmentedSuffixChain, morphTags);
+            const result =
+              new PartialAnalysis(segmentation, translation, morphTags, suffixChain, suffixChainFrequency);
+            segmentations.push(result);
+          }
         }
       }
     }
