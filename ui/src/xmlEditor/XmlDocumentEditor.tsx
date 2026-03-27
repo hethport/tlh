@@ -301,7 +301,8 @@ export function XmlDocumentEditor({
 
     return (
       <NodeEditorRightSide key={path.join('.')} rootNode={state.rootNode as XmlElementNode} originalNode={node} changed={changed}
-                           deleteNode={() => deleteNode(path)} applyUpdates={() => applyUpdates()}
+                           deleteNode={() => deleteNode(path)} applyUpdates={() => { applyUpdates();
+                                                                setState((state) => update(state, {editorState: {$set: defaultRightSideState}})); }}
                            cancelSelection={() => setState((state) => update(state, {editorState: {$set: defaultRightSideState}}))}
                            jumpElement={(forward) => jumpEditableNodes(node.tagName, forward)} fontSizeSelectorProps={fontSizeSelectorProps}
                            globalUpdateButtonRef={globalUpdateButtonRef}>
