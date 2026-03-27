@@ -212,6 +212,7 @@
   "All": "All",
   "previousTag": "Go to previous tag",
   "cancelSelection": "Cancel selection",
+  "applySelection": "Apply selection",
   "nextTag": "Go to next tag",
   "exportData": "Export data",
   "editor": "Editor",
