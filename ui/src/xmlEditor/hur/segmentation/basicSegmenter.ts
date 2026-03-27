@@ -250,7 +250,7 @@ export default class BasicSegmenter {
     const wordform = removeBrackets(originalWordform);
     const segmentations: PartialAnalysis[] = [];
     const suffixChain: string | null = this.suffixTrie.getLongestSuffix(wordform);
-    if (suffixChain !== null && suffixChain !== '') {
+    if (suffixChain !== null) {
       const options = this.suffixChains.get(suffixChain);
       if (options !== undefined) {
         const surfaceStem = wordform.substring(0, wordform.length - suffixChain.length);
@@ -262,9 +262,12 @@ export default class BasicSegmenter {
           (suffixChain: SuffixChain) => suffixChain.morphTag
         );
         for (const [segmentedSuffixChain, morphTagSet] of grouped) {
-          const morphTags = Array.from(morphTagSet).sort(
+          let morphTags = Array.from(morphTagSet).sort(
             this.getMorphTagComparer.bind(this)(suffixChain, segmentedSuffixChain)
           );
+          if (morphTags.length > 1) {
+            morphTags = morphTags.filter((morphTag: string) => morphTag !== '');
+          }
           const underlyingStem = getPrefixWithNonBracketSymbolCount(detailedTranscription,
                                                                     surfaceStem.length);
           if (allomorphyIsValid(surfaceStem, underlyingStem, suffixChain)) {
