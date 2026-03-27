@@ -26,8 +26,12 @@ function isSumerogram(stem: string): boolean {
   return sumerogram.test(stem);
 }
 
-function finalVowelWadDeleted(underlyingForm: string, surfaceForm: string): boolean {
+function finalVowelWasDeleted(underlyingForm: string, surfaceForm: string): boolean {
   return endsWithVowel(underlyingForm) && !endsWithVowel(surfaceForm);
+}
+
+function initialVowelWasDeleted(underlyingForm: string, surfaceForm: string): boolean {
+  return startsWithVowel(underlyingForm) && !startsWithVowel(surfaceForm);
 }
 
 function stemAllomorphyIsValid(surfaceStem: string, underlyingStem: string,
@@ -37,7 +41,7 @@ function stemAllomorphyIsValid(surfaceStem: string, underlyingStem: string,
     // and their Hurrian readings.
     return true;
   }
-  if (finalVowelWadDeleted(underlyingStem, surfaceStem)) {
+  if (finalVowelWasDeleted(underlyingStem, surfaceStem)) {
     if (startsWithVowel(surfaceSuffixChain)) {
       return true;
     } else if (endsWithVowelNotAfterCoronalSonorantOrDorsalFricative(underlyingStem)) {
@@ -56,7 +60,7 @@ export function allomorphyIsValid(surfaceStem: string, underlyingStem: string,
 
 export function suffixChainAllomorphyIsValidInSomeContext(surfaceSuffixChain: string,
                                                           underlyingSuffixChain: string) {
-  if (startsWithVowel(underlyingSuffixChain) && !startsWithVowel(surfaceSuffixChain)) {
+  if (initialVowelWasDeleted(underlyingSuffixChain, surfaceSuffixChain)) {
     return false;
   }
   return true;
