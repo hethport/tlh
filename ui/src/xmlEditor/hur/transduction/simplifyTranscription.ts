@@ -6,8 +6,7 @@ function convertLabialFricativesToStops(word: string): string {
 }
 
 function convertMidVowelsToHigh(word: string): string {
-  return word.replaceAll('e', 'i').replaceAll('o', 'u')
-             .replaceAll('ii', 'i');
+  return word.replaceAll('e', 'i').replaceAll('o', 'u');
 }
 
 function convertVoicedConsonantsToVoiceless(word: string): string {
