@@ -4,6 +4,9 @@ const finalVowelAfterCoronalSonorantOrDorsalFricative = /(?<=[lnrġḫ])[aeiouā
 const finalVowel = /[aeiouāēīōū]$/;
 const initialVowel = /^[-=]?[aeiouāēīōū]/;
 const initialCoronalSonorantOrDorsalFricativeBeforeVowel = /^[-=]?[lnrġḫ][-=]?[aeiouāēīōū]/;
+const initialVowelBeforeIntervocalicLateral = /^[-=]?[aeiouāēīōū][-=]?l[-=]?[aeiouāēīōū]/u;
+const initialPrevocalicCoronalSonorant = /^[-=]?[lnr][-=]?[aeiouāēīōū]/u;
+const finalCoronalSonorant = /[lnr]$/u;
 const sumerogram = /^(\p{Lu}|[-.])+$/u;
 
 function endsWithVowelNotAfterCoronalSonorantOrDorsalFricative(stem: string): boolean {
@@ -20,6 +23,18 @@ function startsWithVowel(ending: string): boolean {
 
 function startsWithCoronalSonorantOrDorsalFricativeBeforeVowel(suffixChain: string): boolean {
   return initialCoronalSonorantOrDorsalFricativeBeforeVowel.test(suffixChain);
+}
+
+function startsWithVowelBeforeIntervocalicLateral(suffixChain: string): boolean {
+  return initialVowelBeforeIntervocalicLateral.test(suffixChain);
+}
+
+function endsWithCoronalSonorant(form: string): boolean {
+  return finalCoronalSonorant.test(form);
+}
+
+function startsWithPrevocalicCoronalSonorant(form: string): boolean {
+  return initialPrevocalicCoronalSonorant.test(form);
 }
 
 function isSumerogram(stem: string): boolean {
@@ -53,15 +68,27 @@ function stemAllomorphyIsValid(surfaceStem: string, underlyingStem: string,
   return true;
 }
 
+function suffixChainAllomorphyIsValid(surfaceSuffixChain: string,
+                                      underlyingSuffixChain: string,
+                                      surfaceStem: string,
+                                      underlyingStem: string): boolean {
+  if (initialVowelWasDeleted(underlyingSuffixChain, surfaceSuffixChain)) {
+    return endsWithCoronalSonorant(surfaceStem) && endsWithCoronalSonorant(underlyingStem);
+  }
+  return true;
+}
+
 export function allomorphyIsValid(surfaceStem: string, underlyingStem: string,
-                                  surfaceSuffixChain: string): boolean {
-  return stemAllomorphyIsValid(surfaceStem, underlyingStem, surfaceSuffixChain);
+                                  surfaceSuffixChain: string, underlyingSuffixChain: string): boolean {
+  return stemAllomorphyIsValid(surfaceStem, underlyingStem, surfaceSuffixChain) &&
+         suffixChainAllomorphyIsValid(surfaceSuffixChain, underlyingSuffixChain, surfaceStem, underlyingStem);
 }
 
 export function suffixChainAllomorphyIsValidInSomeContext(surfaceSuffixChain: string,
                                                           underlyingSuffixChain: string) {
   if (initialVowelWasDeleted(underlyingSuffixChain, surfaceSuffixChain)) {
-    return false;
+    return startsWithVowelBeforeIntervocalicLateral(underlyingSuffixChain) &&
+           startsWithPrevocalicCoronalSonorant(surfaceSuffixChain);
   }
   return true;
 }
