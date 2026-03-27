@@ -229,7 +229,7 @@ export default class BasicSegmenter {
             );
             for (const stem of stems) {
               const [underlyingStem, translation] = stem.split('@');
-              if (allomorphyIsValid(surfaceStem, underlyingStem, suffixChain)) {
+              if (allomorphyIsValid(surfaceStem, underlyingStem, suffixChain, segmentedSuffixChain)) {
                 const segmentation = joinStemAndSuffixChain(underlyingStem, segmentedSuffixChain);
                 const suffixChainFrequency = this.getSuffixChainFrequency(suffixChain,
                                                                           segmentedSuffixChain,
