@@ -49,6 +49,10 @@ function initialVowelWasDeleted(underlyingForm: string, surfaceForm: string): bo
   return startsWithVowel(underlyingForm) && !startsWithVowel(surfaceForm);
 }
 
+function initialVowelWasInserted(underlyingForm: string, surfaceForm: string): boolean {
+  return !startsWithVowel(underlyingForm) && startsWithVowel(surfaceForm);
+}
+
 function stemAllomorphyIsValid(surfaceStem: string, underlyingStem: string,
                                surfaceSuffixChain: string): boolean {
   if (isSumerogram(surfaceStem) && !isSumerogram(underlyingStem)) {
@@ -86,6 +90,9 @@ export function allomorphyIsValid(surfaceStem: string, underlyingStem: string,
 
 export function suffixChainAllomorphyIsValidInSomeContext(surfaceSuffixChain: string,
                                                           underlyingSuffixChain: string) {
+  if (initialVowelWasInserted(underlyingSuffixChain, surfaceSuffixChain)) {
+    return false;
+  }
   if (initialVowelWasDeleted(underlyingSuffixChain, surfaceSuffixChain)) {
     return startsWithVowelBeforeIntervocalicLateral(underlyingSuffixChain) &&
            startsWithPrevocalicCoronalSonorant(surfaceSuffixChain);
