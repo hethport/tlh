@@ -112,10 +112,11 @@ export class Segmenter {
           const { segmentation, surfaceSuffixChain } = partialAnalysis;
           const stem = basicGetStem(segmentation);
           if (stem.length >= 2) {
-            if (surfaceSuffixChain.length > maxLength) {
-              maxLength = surfaceSuffixChain.length;
+            const length = surfaceSuffixChain.length === 0 ? 1 : surfaceSuffixChain.length;
+            if (length > maxLength) {
+              maxLength = length;
               result = [];
-            } else if (surfaceSuffixChain.length < maxLength) {
+            } else if (length < maxLength) {
               continue;
             }
             const analysis = new Analysis(
