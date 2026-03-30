@@ -250,7 +250,14 @@ export default class BasicSegmenter {
     const wordform = removeBrackets(originalWordform);
     const segmentations: PartialAnalysis[] = [];
     const suffixChain: string | null = this.suffixTrie.getLongestSuffix(wordform);
+    const candidates: string[] = [];
     if (suffixChain !== null) {
+      candidates.push(suffixChain);
+      if (suffixChain.length === 1 && this.suffixChains.has('')) {
+        candidates.push('');
+      }
+    }
+    for (const suffixChain of candidates) {
       const options = this.suffixChains.get(suffixChain);
       if (options !== undefined) {
         const surfaceStem = wordform.substring(0, wordform.length - suffixChain.length);
