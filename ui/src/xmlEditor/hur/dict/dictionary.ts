@@ -25,6 +25,7 @@ import { simplifyTranscription } from '../transduction/simplifyTranscription';
 import { parseMorphologicalAnalyses } from './parseMorphologicalAnalyses';
 import { writeMorphologicalAnalysesToNode } from './writeMorphologicalAnalysesToNode';
 import { getNegatedFrequencyDifference } from '../concordance/concordance';
+import { shouldBeAnnotated } from './shouldBeAnnotated';
 
 export type Dictionary = Map<string, Set<string>>;
 
@@ -153,6 +154,9 @@ export function annotateHurrianWord(node: XmlElementNode, lookupConfig: LookupCo
       writeMorphologicalAnalysesToNode(morphologicalAnalyses, node);
     }
   } else {
+    if (!shouldBeAnnotated(transcription)) {
+      return;
+    }
     const mrps: Map<string, string> = getMrps(node);
     if (mrps.size === 0) {
       const results: MorphologicalAnalysis[] = segmenter.segment(
