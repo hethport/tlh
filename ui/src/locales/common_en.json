@@ -302,6 +302,8 @@
   "deleteMorphologicalAnalysisAndAddItToTheStopList": "Delete morphological analysis and add it to the stop list",
   "removeFromTheList": "Remove from the list",
   "showFormsWithUnknownMeaningAndUnclearPos": "Show forms with unknown meaning and unclear part of speech in the dictionary",
+  "alphabetizeFAsP": "Alphabetize ⟨f⟩ as ⟨p⟩",
+  "alphabetizeVAsB": "Alphabetize ⟨v⟩ as ⟨b⟩",
   "alphabetizeIAsE": "Alphabetize ⟨i⟩ as ⟨e⟩",
   "alphabetizeOAsU": "Alphabetize ⟨o⟩ as ⟨u⟩",
   "alphabetizeVoicedConsonantsAsVoiceless": "Alphabetize voiced consonants as voiced",
