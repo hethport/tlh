@@ -160,7 +160,7 @@ export function annotateHurrianWord(node: XmlElementNode, lookupConfig: LookupCo
     const mrps: Map<string, string> = getMrps(node);
     if (mrps.size === 0) {
       const results: MorphologicalAnalysis[] = segmenter.segment(
-        simplifiedTranscription, transcription
+        simplifiedTranscription, transcription, lookupConfig
       ).filter(ma => !isOnTheStopListFor(ma, transcription));
       if (results.length > 0) {
         writeMorphologicalAnalysesToNode(results, node);

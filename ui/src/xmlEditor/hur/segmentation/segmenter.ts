@@ -84,10 +84,10 @@ export class Segmenter {
     }
   }
 
-  segment(wordform: string, detailedTranscription: string): MorphologicalAnalysis[] {
+  segment(wordform: string, detailedTranscription: string, lookupConfig: LookupConfig): MorphologicalAnalysis[] {
     let result: Analysis[] = [];
     for (const [pos, segmenter] of this.segmenters) {
-      const partialAnalyses = segmenter.segment(wordform);
+      const partialAnalyses = segmenter.segment(wordform, lookupConfig);
       for (const partialAnalysis of partialAnalyses) {
         const analysis = new Analysis(
           partialAnalysis.segmentation,
@@ -107,7 +107,7 @@ export class Segmenter {
         if (segmenter === undefined) {
           continue;
         }
-        const partialAnalyses = segmenter.segmentOov(wordform, detailedTranscription);
+        const partialAnalyses = segmenter.segmentOov(wordform, detailedTranscription, lookupConfig);
         for (const partialAnalysis of partialAnalyses) {
           const { segmentation, surfaceSuffixChain } = partialAnalysis;
           const stem = basicGetStem(segmentation);
