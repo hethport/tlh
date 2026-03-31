@@ -2,11 +2,19 @@ import { removeMacron } from './utils';
 import { removeBrackets } from './brackets';
 import { AlphabetizationConfig } from '../../alphabetizationConfig';
 
-function preprocessString(s: string, {alphabetizeIAsE, alphabetizeOAsU,
-    alphabetizeVoicedConsonantsAsVoiceless}: AlphabetizationConfig): string {
+function preprocessString(s: string,
+  { alphabetizeFAsP, alphabetizeVAsB,
+    alphabetizeIAsE, alphabetizeOAsU,
+    alphabetizeVoicedConsonantsAsVoiceless }: AlphabetizationConfig): string {
   s = removeBrackets(removeMacron(s))
     .toLowerCase()
     .replaceAll('+', '');
+  if (alphabetizeFAsP) {
+    s = s.replaceAll('f', 'p');
+  }
+  if (alphabetizeVAsB) {
+    s = s.replaceAll('v', 'b');
+  }
   if (alphabetizeIAsE) {
     s = s.replaceAll('i', 'e');
   }
