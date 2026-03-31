@@ -9,7 +9,7 @@ function convertMidVowelsToHigh(word: string): string {
   return word.replaceAll('e', 'i').replaceAll('o', 'u');
 }
 
-function convertVoicedConsonantsToVoiceless(word: string): string {
+export function convertVoicedConsonantsToVoiceless(word: string): string {
   return word.replaceAll('b', 'p')
              .replaceAll('d', 't')
              .replaceAll('g', 'k')

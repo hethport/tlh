@@ -1,6 +1,7 @@
 import { removeMacron } from './utils';
 import { removeBrackets } from './brackets';
 import { AlphabetizationConfig } from '../../alphabetizationConfig';
+import { convertVoicedConsonantsToVoiceless } from '../transduction/simplifyTranscription';
 
 function preprocessString(s: string,
   { alphabetizeFAsP, alphabetizeVAsB,
@@ -22,9 +23,7 @@ function preprocessString(s: string,
     s = s.replaceAll('o', 'u');
   }
   if (alphabetizeVoicedConsonantsAsVoiceless) {
-    s = s.replaceAll('b', 'p')
-      .replaceAll('d', 't')
-      .replaceAll('g', 'k');
+    s = convertVoicedConsonantsToVoiceless(s);
   }
   return s;
 }
