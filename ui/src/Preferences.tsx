@@ -23,6 +23,8 @@ interface FormValues {
   submitKeys: string;
   fragmInSuffixDict: boolean;
   showUnclearForms: boolean;
+  alphabetizeFAsP: boolean;
+  alphabetizeVAsB: boolean;
   alphabetizeIAsE: boolean;
   alphabetizeOAsU: boolean;
   alphabetizeVoicedConsonantsAsVoiceless: boolean;
@@ -66,7 +68,8 @@ export function Preferences(): JSX.Element {
 
   function onSubmit(newConfig: FormValues): void {
     const {updateAndNextNodeKeys, nextNodeKeys, updateAndPrevNodeKeys, prevNodeKeys, submitKeys,
-           fragmInSuffixDict, showUnclearForms, alphabetizeIAsE, alphabetizeOAsU,
+           fragmInSuffixDict, showUnclearForms,
+           alphabetizeFAsP, alphabetizeVAsB, alphabetizeIAsE, alphabetizeOAsU,
            alphabetizeVoicedConsonantsAsVoiceless,
            ignorePlene, mergeLabials,mergeMidAndHighVowels, ignoreVoice,} = newConfig;
 
@@ -109,6 +112,8 @@ export function Preferences(): JSX.Element {
 
     dispatch(
       updateAlphabetizationPreferences({
+        alphabetizeFAsP,
+        alphabetizeVAsB,
         alphabetizeIAsE,
         alphabetizeOAsU,
         alphabetizeVoicedConsonantsAsVoiceless
