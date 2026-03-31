@@ -1,14 +1,9 @@
 import { removeMacron } from './utils';
 import { removeBrackets } from './brackets';
-
-export type AlphabetizationOptions = {
-  alphabetizeIAsE: boolean;
-  alphabetizeOAsU: boolean;
-  alphabetizeVoicedConsonantsAsVoiceless: boolean;
-}
+import { AlphabetizationConfig } from '../../alphabetizationConfig';
 
 function preprocessString(s: string, {alphabetizeIAsE, alphabetizeOAsU,
-    alphabetizeVoicedConsonantsAsVoiceless}: AlphabetizationOptions): string {
+    alphabetizeVoicedConsonantsAsVoiceless}: AlphabetizationConfig): string {
   s = removeBrackets(removeMacron(s))
     .toLowerCase()
     .replaceAll('+', '');
@@ -41,7 +36,7 @@ function compareLetter(a: string, b: string): number {
 export const englishCompare = new Intl.Collator('en').compare;
 export const germanCompare = new Intl.Collator('de').compare;
 
-export function compare(a: string, b: string, options: AlphabetizationOptions): number {
+export function compare(a: string, b: string, options: AlphabetizationConfig): number {
   a = preprocessString(a, options);
   b = preprocessString(b, options);
   for (let i = 0; i < Math.min(a.length, b.length); i++) {

@@ -1,12 +1,12 @@
 import { MorphologicalAnalysis } from '../../../model/morphologicalAnalysis';
 import { getMorphTags } from './auxiliary';
 import { getNegatedFrequencyDifference } from '../concordance/concordance';
-import { compare, englishCompare, germanCompare, AlphabetizationOptions }
-  from '../common/comparison';
+import { compare, englishCompare, germanCompare } from '../common/comparison';
 import { removeBrackets } from '../common/brackets';
 import { comparePartsOfSpeech } from '../partsOfSpeech/comparison';
+import { AlphabetizationConfig } from '../../alphabetizationConfig';
 
-const alphabetizationOptions: AlphabetizationOptions = {
+const alphabetizationOptions: AlphabetizationConfig = {
   alphabetizeIAsE: true,
   alphabetizeOAsU: true,
   alphabetizeVoicedConsonantsAsVoiceless: true,

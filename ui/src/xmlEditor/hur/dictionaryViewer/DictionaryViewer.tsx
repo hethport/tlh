@@ -7,7 +7,7 @@ import { DictionaryDownloader } from '../dict/files/DictionaryDownloader';
 import { ChangesDownloader } from '../changes/ChangesDownloader';
 import { writeMorphAnalysisValue } from '../../../model/morphologicalAnalysis';
 import { SetDictionary, getGlobalDictionary } from '../dict/dictionary';
-import { compare, AlphabetizationOptions } from '../common/comparison';
+import { compare } from '../common/comparison';
 import { blueButtonClasses } from '../../../defaultDesign';
 import { useTranslation } from 'react-i18next';
 import { getEnglishTranslationKey, EnglishTranslations, setGlobalEnglishTranslations,
@@ -19,7 +19,7 @@ import { DictionaryUploader } from '../dict/files/DictionaryUploader';
 import { EnglishTranslationsUploader } from '../translations/files/EnglishTranslationsUploader';
 import { rootMayBeOnlyPartiallyPreserved, shouldBeShownInTheDictionary } from './dictionaryFilter';
 import { DictionaryConfig } from '../../dictionaryConfig';
-import { dictionaryConfigSelector } from '../../../newStore';
+import { dictionaryConfigSelector, alphabetizationConfigSelector } from '../../../newStore';
 import { useSelector } from 'react-redux';
 
 interface IProps {
@@ -57,11 +57,9 @@ export function DictionaryViewer({entries, setDictionary, initialEnglishTranslat
   }, [englishTranslations]);
 
   const currentDictionaryConfig: DictionaryConfig = useSelector(dictionaryConfigSelector);
-  const { showUnclearForms, alphabetizeIAsE, alphabetizeOAsU,
-    alphabetizeVoicedConsonantsAsVoiceless } = currentDictionaryConfig;
-  const alphabetizationOptions: AlphabetizationOptions = { alphabetizeIAsE, alphabetizeOAsU,
-    alphabetizeVoicedConsonantsAsVoiceless };
-  const compareWithOptions = (a: string, b: string) => compare(a, b, alphabetizationOptions);
+  const { showUnclearForms } = currentDictionaryConfig;
+  const alphabetizationConfig = useSelector(alphabetizationConfigSelector);
+  const compareWithOptions = (a: string, b: string) => compare(a, b, alphabetizationConfig);
 
   const filteredEntries = entries.filter(entry => {
     const { morphologicalAnalysis } = entry;

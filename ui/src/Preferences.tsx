@@ -3,17 +3,17 @@ import {useTranslation} from 'react-i18next';
 import {useDispatch, useSelector} from 'react-redux';
 import {editorKeyConfigSelector, updatePreferences,
   dictionaryConfigSelector, updateDictionaryPreferences,
+  alphabetizationConfigSelector, updateAlphabetizationPreferences,
   lookupConfigSelector, updateLookupPreferences}
   from './newStore';
 import {JSX, useState} from 'react';
 import {EditorKeyConfig} from './xmlEditor/editorKeyConfig';
 import {DictionaryConfig} from './xmlEditor/dictionaryConfig';
+import {AlphabetizationConfig, alphabetizationConfigKeys} from './xmlEditor/alphabetizationConfig';
 import {LookupConfig, lookupConfigKeys} from './xmlEditor/lookupConfig';
 import {rebuildSimplifiedDictionaryWithNewConfig} from './xmlEditor/hur/dict/dictionary';
 
 const splitKey = ',';
-
-const dictionaryConfigKeys = ['alphabetizeIAsE', 'alphabetizeOAsU', 'alphabetizeVoicedConsonantsAsVoiceless'];
 
 interface FormValues {
   updateAndNextNodeKeys: string;
@@ -48,6 +48,7 @@ export function Preferences(): JSX.Element {
   const dispatch = useDispatch();
   const currentEditorConfig: EditorKeyConfig = useSelector(editorKeyConfigSelector);
   const currentDictionaryConfig: DictionaryConfig = useSelector(dictionaryConfigSelector);
+  const currentAlphabetizationConfig: AlphabetizationConfig = useSelector(alphabetizationConfigSelector);
   const currentLookupConfig: LookupConfig = useSelector(lookupConfigSelector);
   const [updated, setUpdated] = useState(false);
 
@@ -59,9 +60,7 @@ export function Preferences(): JSX.Element {
     submitKeys: currentEditorConfig.submitChangeKeys.join(splitKey),
     fragmInSuffixDict: currentDictionaryConfig.fragmInSuffixDict,
     showUnclearForms: currentDictionaryConfig.showUnclearForms,
-    alphabetizeIAsE: currentDictionaryConfig.alphabetizeIAsE,
-    alphabetizeOAsU: currentDictionaryConfig.alphabetizeOAsU,
-    alphabetizeVoicedConsonantsAsVoiceless: currentDictionaryConfig.alphabetizeVoicedConsonantsAsVoiceless,
+    ...currentAlphabetizationConfig,
     ...currentLookupConfig,
   };
 
@@ -109,12 +108,17 @@ export function Preferences(): JSX.Element {
     );
 
     dispatch(
-      updateDictionaryPreferences({
-        fragmInSuffixDict,
-        showUnclearForms,
+      updateAlphabetizationPreferences({
         alphabetizeIAsE,
         alphabetizeOAsU,
         alphabetizeVoicedConsonantsAsVoiceless
+      })
+    );
+
+    dispatch(
+      updateDictionaryPreferences({
+        fragmInSuffixDict,
+        showUnclearForms,
       })
     );
 
@@ -183,7 +187,7 @@ export function Preferences(): JSX.Element {
           </div>
 
           <>
-            {dictionaryConfigKeys.map((key: string) => (
+            {alphabetizationConfigKeys.map((key: string) => (
               <div className="mt-4" key={key}>
                 <label htmlFor={key} className="font-bold checkbox-label">{t(key)}</label>
                 <Field type="checkbox" id={key} name={key} className="rounded border border-slate-500"/>
