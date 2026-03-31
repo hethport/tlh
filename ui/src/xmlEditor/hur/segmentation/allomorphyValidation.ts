@@ -1,3 +1,6 @@
+import { LookupConfig } from '../../lookupConfig';
+import { simplifyTranscription } from '../transduction/simplifyTranscription';
+
 // Do not add the g or y flags to avoid changing
 // the lastIndex property on the RegExp objects.
 const finalVowelAfterCoronalSonorantOrDorsalFricative = /(?<=[lnrġḫ])[aeiouāēīōū]$/;
@@ -7,7 +10,7 @@ const initialCoronalSonorantOrDorsalFricativeBeforeVowel = /^[-=]?[lnrġḫ][-=]
 const initialVowelBeforeIntervocalicLateral = /^[-=]?[aeiouāēīōū][-=]?l[-=]?[aeiouāēīōū]/u;
 const initialPrevocalicCoronalSonorant = /^[-=]?[lnr][-=]?[aeiouāēīōū]/u;
 const finalCoronalSonorant = /[lnr]$/u;
-const initialConsonant = /^[-=]?[ptkbdgfsšḫvzžġmnlrwW]/;
+const initialConsonant = /^[-=]?([ptkbdgfsšḫvzžġmnlrwW])/;
 const sumerogram = /^(\p{Lu}|[-.])+$/u;
 
 function endsWithVowelNotAfterCoronalSonorantOrDorsalFricative(stem: string): boolean {
@@ -42,6 +45,14 @@ function startsWithConsonant(form: string): boolean {
   return initialConsonant.test(form);
 }
 
+function getInitialConsonant(form: string): string | null {
+  const match = form.match(initialConsonant);
+  if (match !== null) {
+    return match[1];
+  }
+  return null;
+}
+
 function isSumerogram(stem: string): boolean {
   return sumerogram.test(stem);
 }
@@ -60,6 +71,17 @@ function initialVowelWasInserted(underlyingForm: string, surfaceForm: string): b
 
 function initialConsonantWasDeleted(underlyingForm: string, surfaceForm: string): boolean {
   return startsWithConsonant(underlyingForm) && !startsWithConsonant(surfaceForm);
+}
+
+function preprocessTranscription(form: string): string {
+  return form.replaceAll('w', 'v').replaceAll('m', 'b')
+    .replaceAll('W', 'v');
+}
+
+function areEqualInSimplifiedTranscription(a: string, b: string, lookupConfig: LookupConfig) {
+  const newLookupConfig: LookupConfig = { ...lookupConfig, ignoreVoice: true };
+  return simplifyTranscription(preprocessTranscription(a), newLookupConfig) ===
+    simplifyTranscription(preprocessTranscription(b), newLookupConfig);
 }
 
 function stemAllomorphyIsValid(surfaceStem: string, underlyingStem: string,
@@ -84,17 +106,32 @@ function stemAllomorphyIsValid(surfaceStem: string, underlyingStem: string,
 function suffixChainAllomorphyIsValid(surfaceSuffixChain: string,
                                       underlyingSuffixChain: string,
                                       surfaceStem: string,
-                                      underlyingStem: string): boolean {
+                                      underlyingStem: string,
+                                      lookupConfig: LookupConfig): boolean {
   if (initialVowelWasDeleted(underlyingSuffixChain, surfaceSuffixChain)) {
     return endsWithCoronalSonorant(surfaceStem) && endsWithCoronalSonorant(underlyingStem);
+  }
+  const surfaceSuffixChainInitialConsonant = getInitialConsonant(surfaceSuffixChain);
+  const underlyingSuffixChainInitialConsonant = getInitialConsonant(underlyingSuffixChain
+                                                                    .replaceAll('ž=l', 'l'));
+  if (surfaceSuffixChainInitialConsonant !== null &&
+    underlyingSuffixChainInitialConsonant !== null &&
+    !areEqualInSimplifiedTranscription(surfaceSuffixChainInitialConsonant,
+                                       underlyingSuffixChainInitialConsonant,
+                                       lookupConfig)) {
+    return isSumerogram(surfaceStem) || surfaceStem.length > 0 && areEqualInSimplifiedTranscription(
+      surfaceStem[surfaceStem.length - 1], surfaceSuffixChainInitialConsonant, lookupConfig
+    );
   }
   return true;
 }
 
 export function allomorphyIsValid(surfaceStem: string, underlyingStem: string,
-                                  surfaceSuffixChain: string, underlyingSuffixChain: string): boolean {
+                                  surfaceSuffixChain: string, underlyingSuffixChain: string,
+                                  lookupConfig: LookupConfig): boolean {
   return stemAllomorphyIsValid(surfaceStem, underlyingStem, surfaceSuffixChain) &&
-         suffixChainAllomorphyIsValid(surfaceSuffixChain, underlyingSuffixChain, surfaceStem, underlyingStem);
+         suffixChainAllomorphyIsValid(surfaceSuffixChain, underlyingSuffixChain, surfaceStem, underlyingStem,
+                                      lookupConfig);
 }
 
 export function suffixChainAllomorphyIsValidInSomeContext(surfaceSuffixChain: string,

@@ -196,7 +196,7 @@ export default class BasicSegmenter {
     };
   }
 
-  segment(originalWordform: string): PartialAnalysis[] {
+  segment(originalWordform: string, lookupConfig: LookupConfig): PartialAnalysis[] {
     const wordform = removeBrackets(originalWordform);
     const segmentations: PartialAnalysis[] = [];
     const candidates: string[] = this.suffixTrie.getAllSuffixes(wordform);
@@ -229,7 +229,7 @@ export default class BasicSegmenter {
             );
             for (const stem of stems) {
               const [underlyingStem, translation] = stem.split('@');
-              if (allomorphyIsValid(surfaceStem, underlyingStem, suffixChain, segmentedSuffixChain)) {
+              if (allomorphyIsValid(surfaceStem, underlyingStem, suffixChain, segmentedSuffixChain, lookupConfig)) {
                 const segmentation = joinStemAndSuffixChain(underlyingStem, segmentedSuffixChain);
                 const suffixChainFrequency = this.getSuffixChainFrequency(suffixChain,
                                                                           segmentedSuffixChain,
@@ -246,7 +246,7 @@ export default class BasicSegmenter {
     return segmentations;
   }
   
-  segmentOov(originalWordform: string, detailedTranscription: string): PartialAnalysis[] {
+  segmentOov(originalWordform: string, detailedTranscription: string, lookupConfig: LookupConfig): PartialAnalysis[] {
     const wordform = removeBrackets(originalWordform);
     const segmentations: PartialAnalysis[] = [];
     const suffixChain: string | null = this.suffixTrie.getLongestSuffix(wordform);
@@ -277,7 +277,7 @@ export default class BasicSegmenter {
           }
           const underlyingStem = getPrefixWithNonBracketSymbolCount(detailedTranscription,
                                                                     surfaceStem.length);
-          if (allomorphyIsValid(surfaceStem, underlyingStem, suffixChain)) {
+          if (allomorphyIsValid(surfaceStem, underlyingStem, suffixChain, segmentedSuffixChain, lookupConfig)) {
             const translation = '';
             const segmentation = joinStemAndSuffixChain(underlyingStem, segmentedSuffixChain);
             const suffixChainFrequency = this.getSuffixChainFrequency(suffixChain,
