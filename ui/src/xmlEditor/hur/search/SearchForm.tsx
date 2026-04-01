@@ -19,7 +19,7 @@ export function SearchForm<F extends string>({ initialQuery, onSubmit }: IProps<
           <input name={field.name} value={field.value}
                  onChange={event => setQuery(update(query, { [index]: { value: {$set: event.target.value }} }))}/>
           <select onChange={event => setQuery(update(query, { [index]: { mode: {$set: event.target.value as SearchMode }} }))}>
-            {searchModes.map(searchMode => <option value={searchMode}>{searchMode}</option>)}
+            {searchModes.map(searchMode => <option key={searchMode} value={searchMode}>{searchMode}</option>)}
           </select>
         </div>);
       })}
