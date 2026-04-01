@@ -3,23 +3,19 @@ import { SearchQuery, selectMatching } from './searchQuery';
 
 const stems: IStem[] = [
   {
-    index: '1',
     form: 'nāli',
     translation: 'Rehbock',
     pos: 'noun'
   },
   {
-    index: '2',
     form: 'ide',
     translation: 'Körper; Bezug',
     pos: 'noun'},
   {
-    index: '3',
     form: 'paba+ni',
     translation: 'Berg',
     pos: 'noun'},
   {
-    index: '4',
     form: 'mel+aḫḫ',
     translation: 'vertreiben',
     pos: 'verb'
