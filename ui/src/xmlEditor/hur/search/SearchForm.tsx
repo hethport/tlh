@@ -4,14 +4,12 @@ import { SearchQueryField, searchModes, SearchMode } from './searchQueryField';
 import update from 'immutability-helper';
 
 interface IProps<F extends string> {
-  fields: F[];
+  initialQuery: SearchQuery<F>;
   onSubmit: (query: SearchQuery<F>) => void;
 }
 
-export function SearchForm<F extends string>({ fields, onSubmit }: IProps<F>): JSX.Element {
-  const [query, setQuery] = useState<SearchQuery<F>>(fields.map(field => {
-    return { name: field, value: '', mode: 'substring' };
-  }));
+export function SearchForm<F extends string>({ initialQuery, onSubmit }: IProps<F>): JSX.Element {
+  const [query, setQuery] = useState<SearchQuery<F>>(initialQuery);
 
   return (<div>
     <div>
