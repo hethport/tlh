@@ -1,4 +1,4 @@
-type SearchMode = 'substring' | 'whole word' | 'pattern';
+export type SearchMode = 'substring' | 'whole word' | 'pattern';
 
 export type SearchQueryField<F extends string> = {
   name: F;
