@@ -9,6 +9,9 @@ export type SearchQueryField<F extends string> = {
 export const searchModes = ['substring', 'whole word', 'pattern'];
 
 export function matchesField<F extends string>(obj: { [key in F]: string }, field: SearchQueryField<F>): boolean {
+  if (field.value === '') {
+    return true;
+  }
   switch (field.mode) {
     case 'substring': {
       return obj[field.name] === field.value;

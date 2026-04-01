@@ -26,6 +26,6 @@ export function SearchForm<F extends string>({ fields, onSubmit }: IProps<F>): J
         </div>);
       })}
     </div>
-    <button onClick={() => onSubmit(query.filter(field => field.value !== ''))}>Submit</button>
+    <button onClick={() => onSubmit(query)}>Submit</button>
   </div>);
 }
