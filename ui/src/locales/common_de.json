@@ -286,5 +286,10 @@
   "ignorePlene": "Langvokale von Kurzvokalen nicht unterscheiden",
   "mergeLabials": "⟨f⟩ von ⟨p⟩, ⟨v⟩ von ⟨b⟩ nicht unterscheiden",
   "mergeMidAndHighVowels": "⟨e⟩ von ⟨i⟩, ⟨o⟩ von ⟨u⟩ nicht unterscheiden",
-  "ignoreVoice": "Stimmhafte Konsonanten vom stimmlosen nicht unterscheiden"
+  "ignoreVoice": "Stimmhafte Konsonanten vom stimmlosen nicht unterscheiden",
+  "stemSearch": "Nach Stämmen suchen",
+  "form": "Form",
+  "translation": "Übersetzung",
+  "pos": "Wortart",
+  "submitSeachQuery": "Suchen"
 }

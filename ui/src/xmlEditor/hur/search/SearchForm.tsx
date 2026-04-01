@@ -3,6 +3,7 @@ import { JSX, useState } from 'react';
 import { SearchQueryField, searchModes, SearchMode } from './searchQueryField';
 import update from 'immutability-helper';
 import { whiteButtonClasses } from '../../../defaultDesign';
+import { useTranslation } from 'react-i18next';
 
 interface IProps<F extends string> {
   initialQuery: SearchQuery<F>;
@@ -10,6 +11,7 @@ interface IProps<F extends string> {
 }
 
 export function SearchForm<F extends string>({ initialQuery, onSubmit }: IProps<F>): JSX.Element {
+  const {t} = useTranslation('common');
   const [query, setQuery] = useState<SearchQuery<F>>(initialQuery);
 
   return (<div>
@@ -17,7 +19,7 @@ export function SearchForm<F extends string>({ initialQuery, onSubmit }: IProps<
       {query.map((field: SearchQueryField<F>, index: number) => {
         return (<div key={field.name} className="table-row">
           <label className="table-cell p-2 border-y border-r border-slate-500"
-                 htmlFor={field.name}>{field.name}</label>
+                 htmlFor={field.name}>{t(field.name)}</label>
           <input className="table-cell p-2 border-y border-r border-slate-500"
                  name={field.name} value={field.value}
                  onChange={event => setQuery(update(query, { [index]: { value: {$set: event.target.value }} }))}/>
@@ -29,7 +31,7 @@ export function SearchForm<F extends string>({ initialQuery, onSubmit }: IProps<
       })}
     </div>
     <button className={whiteButtonClasses} onClick={() => onSubmit(query)}>
-      Submit
+      {t('submitSeachQuery')}
     </button>
   </div>);
 }

@@ -286,5 +286,10 @@
   "ignorePlene": "Do not distinguish long and short vowels",
   "mergeLabials": "Do not distinguish ⟨f⟩ from ⟨p⟩ and ⟨v⟩ from ⟨b⟩",
   "mergeMidAndHighVowels": "Do not distinguish ⟨e⟩ from ⟨i⟩ and ⟨o⟩ from ⟨u⟩",
-  "ignoreVoice": "Do not distinguish voiced and voiceless consonants"
+  "ignoreVoice": "Do not distinguish voiced and voiceless consonants",
+  "stemSearch": "Search for stems",
+  "form": "Form",
+  "translation": "German translation",
+  "pos": "Part of speech",
+  "submitSeachQuery": "Search"
 }
