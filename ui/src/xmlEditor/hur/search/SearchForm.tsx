@@ -2,6 +2,7 @@ import { SearchQuery } from './searchQuery';
 import { JSX, useState } from 'react';
 import { SearchQueryField, searchModes, SearchMode } from './searchQueryField';
 import update from 'immutability-helper';
+import { whiteButtonClasses } from '../../../defaultDesign';
 
 interface IProps<F extends string> {
   initialQuery: SearchQuery<F>;
@@ -14,16 +15,21 @@ export function SearchForm<F extends string>({ initialQuery, onSubmit }: IProps<
   return (<div>
     <div>
       {query.map((field: SearchQueryField<F>, index: number) => {
-        return (<div key={field.name}>
-          <label htmlFor={field.name}>{field.name}</label>
-          <input name={field.name} value={field.value}
+        return (<div key={field.name} className="table-row">
+          <label className="table-cell p-2 border-y border-r border-slate-500"
+                 htmlFor={field.name}>{field.name}</label>
+          <input className="table-cell p-2 border-y border-r border-slate-500"
+                 name={field.name} value={field.value}
                  onChange={event => setQuery(update(query, { [index]: { value: {$set: event.target.value }} }))}/>
-          <select onChange={event => setQuery(update(query, { [index]: { mode: {$set: event.target.value as SearchMode }} }))}>
+          <select className="table-cell p-2 border-y border-r border-slate-500"
+                  onChange={event => setQuery(update(query, { [index]: { mode: {$set: event.target.value as SearchMode }} }))}>
             {searchModes.map(searchMode => <option key={searchMode} value={searchMode}>{searchMode}</option>)}
           </select>
         </div>);
       })}
     </div>
-    <button onClick={() => onSubmit(query)}>Submit</button>
+    <button className={whiteButtonClasses} onClick={() => onSubmit(query)}>
+      Submit
+    </button>
   </div>);
 }
