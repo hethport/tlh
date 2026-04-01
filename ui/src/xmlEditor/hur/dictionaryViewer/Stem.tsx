@@ -2,7 +2,7 @@ import { JSX } from 'react';
 import { PartOfSpeechSelector } from '../partsOfSpeech/PartOfSpeechSelector';
 
 interface IProps {
-  index: string;
+  index: number;
   form: string;
   translation: string;
   englishTranslation: string;
@@ -27,7 +27,7 @@ export function StemElement({index, form, translation, englishTranslation, pos,
     <div className="flex flex-row">
       <button onClick={handleClick}
               className="p-2 border-y border-l border-r border-slate-500">
-        {index}
+        {index.toString() + '.'}
       </button>
       <input type="text" value={form}
              className="p-2 border-y border-r border-slate-500"

@@ -44,26 +44,25 @@ export function applySideEffectsMulti(origin: string, targets: Target[]): void {
 }
 
 export interface IStem {
-  index: string;
   form: string;
   translation: string;
   pos: string;
 }
 
 export class Stem {
-  index: string;
   form: string;
   translation: string;
   pos: string;
   constructor(repr: string) {
-    [this.index, this.form, this.translation, this.pos] = repr.split('@');
+    [this.form, this.translation, this.pos] = repr.split('@');
   }
   toString(): string {
-    return [this.index, this.form, this.translation, this.pos].join('@');
+    return [this.form, this.translation, this.pos].join('@');
   }
 }
     
 interface IProps {
+  index: number;
   stem: IStem;
   initialEntries: Entry[];
   setDictionary: SetDictionary;
@@ -286,7 +285,7 @@ type StemViewerState = {
   entries: Entry[];
 }
 
-export function StemViewer({stem, initialEntries, setDictionary, initialUnfolded,
+export function StemViewer({index, stem, initialEntries, setDictionary, initialUnfolded,
                             allUnfolded, englishTranslation,
                             onEnglishTranslationBlur,
                             updateEnglishTranslationKey }: IProps): JSX.Element {
@@ -315,7 +314,7 @@ export function StemViewer({stem, initialEntries, setDictionary, initialUnfolded
     <div className="flex flex-row">
       <div>
         <StemElement
-          index={stem.index}
+          index={index}
           form={stemForm} 
           translation={translation}
           pos={partOfSpeech}

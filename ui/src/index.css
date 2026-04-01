@@ -311,6 +311,10 @@ code {
   height: 4rem;
 }
 
+.search-form-header {
+  margin-bottom: 1rem;
+}
+
 /*
 .leftList, rightList {
   display: inline;

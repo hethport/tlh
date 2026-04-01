@@ -1,7 +1,7 @@
 import { JSX, useState, useEffect } from 'react';
 import { getStemWithoutFinalOpeningBracket, getStem, openingBracket } from '../common/splitter';
 import { groupBy } from '../common/utils';
-import { StemViewer, Stem } from './StemViewer';
+import { StemViewer, Stem, IStem } from './StemViewer';
 import { Entry } from './Wordform';
 import { DictionaryDownloader } from '../dict/files/DictionaryDownloader';
 import { ChangesDownloader } from '../changes/ChangesDownloader';
@@ -21,7 +21,7 @@ import { rootMayBeOnlyPartiallyPreserved, shouldBeShownInTheDictionary } from '.
 import { DictionaryConfig } from '../../dictionaryConfig';
 import { dictionaryConfigSelector, alphabetizationConfigSelector } from '../../../newStore';
 import { useSelector } from 'react-redux';
-import { SearchQuery } from '../search/searchQuery';
+import { SearchQuery, selectMatching } from '../search/searchQuery';
 import { SearchForm } from '../search/SearchForm';
 
 interface IProps {
@@ -58,6 +58,26 @@ export function DictionaryViewer({entries, setDictionary, initialEnglishTranslat
     setGlobalEnglishTranslations(englishTranslations);
   }, [englishTranslations]);
 
+  type StemQuery = SearchQuery<keyof IStem>;
+  const initialStemQuery: StemQuery = [
+    {
+      name: 'form',
+      value: '',
+      mode: 'substring',
+    },
+    {
+      name: 'translation',
+      value: '',
+      mode: 'substring',
+    },
+    {
+      name: 'pos',
+      value: '',
+      mode: 'substring',
+    },
+  ];
+  const [stemQuery, setStemQuery] = useState<StemQuery>(initialStemQuery);
+
   const currentDictionaryConfig: DictionaryConfig = useSelector(dictionaryConfigSelector);
   const { showUnclearForms } = currentDictionaryConfig;
   const alphabetizationConfig = useSelector(alphabetizationConfigSelector);
@@ -80,17 +100,22 @@ export function DictionaryViewer({entries, setDictionary, initialEnglishTranslat
       return !rootMayBeOnlyPartiallyPreserved(stem, translation, Array.from(entries));
     })
     .sort(compareWithOptions);
+
+  const stemObjects = stems.map(repr => new Stem(repr));
+
+  const matchingStems = selectMatching(stemObjects, stemQuery);
   
   return (
     <div className="grid grid-cols-2 gap-2 my-2 uneven-columns">
       <div className="mt-2">
+        <h2 className="search-form-header text-xl">{t('stemSearch')}</h2>
+        <SearchForm initialQuery={stemQuery} onSubmit={(query: StemQuery) => setStemQuery(query)} />
         Click on the button &quot;&#8744;&quot; or a stem&apos;s number to see its derivatives and inflected forms. <br /> 
         Click on a similar button next to a word to see its attestations. <br />
         <br />
-        {stems.map((stem: string, index: number) => {
-          const group = grouped.get(stem);
+        {matchingStems.map((stemObject: Stem, index: number) => {
+          const group = grouped.get(stemObject.toString());
           const entries: Entry[] = group === undefined ? [] : Array.from(group);
-          const stemObject = new Stem((index + 1).toString() + '.@' + stem);
           const englishTranslationKey = getEnglishTranslationKey(stemObject.form,
                                                                  stemObject.pos,
                                                                  stemObject.translation);
@@ -125,8 +150,8 @@ export function DictionaryViewer({entries, setDictionary, initialEnglishTranslat
           const form = isFragmentary ? stemObject.form + '[' : stemObject.form;
           return (
             <StemViewer
+              index={index + 1}
               stem={{
-                index: stemObject.index,
                 form,
                 translation: stemObject.translation,
                 pos: stemObject.pos
