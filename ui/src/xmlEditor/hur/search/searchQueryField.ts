@@ -14,7 +14,7 @@ export function matchesField<F extends string>(obj: { [key in F]: string }, fiel
   }
   switch (field.mode) {
     case 'substring': {
-      return obj[field.name] === field.value;
+      return obj[field.name].includes(field.value);
     }
     case 'whole word': {
       return obj[field.name] === field.value;
