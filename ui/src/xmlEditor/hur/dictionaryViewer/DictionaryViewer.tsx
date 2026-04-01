@@ -19,7 +19,8 @@ import { DictionaryUploader } from '../dict/files/DictionaryUploader';
 import { EnglishTranslationsUploader } from '../translations/files/EnglishTranslationsUploader';
 import { rootMayBeOnlyPartiallyPreserved, shouldBeShownInTheDictionary } from './dictionaryFilter';
 import { DictionaryConfig } from '../../dictionaryConfig';
-import { dictionaryConfigSelector, alphabetizationConfigSelector } from '../../../newStore';
+import { LookupConfig } from '../../lookupConfig';
+import { dictionaryConfigSelector, alphabetizationConfigSelector, lookupConfigSelector } from '../../../newStore';
 import { useSelector } from 'react-redux';
 import { SearchQuery, selectMatching } from '../search/searchQuery';
 import { SearchForm } from '../search/SearchForm';
@@ -64,16 +65,19 @@ export function DictionaryViewer({entries, setDictionary, initialEnglishTranslat
       name: 'form',
       value: '',
       mode: 'substring',
+      fuzzy: true,
     },
     {
       name: 'translation',
       value: '',
       mode: 'substring',
+      fuzzy: false,
     },
     {
       name: 'pos',
       value: '',
       mode: 'substring',
+      fuzzy: false,
     },
   ];
   const [stemQuery, setStemQuery] = useState<StemQuery>(initialStemQuery);
@@ -82,6 +86,8 @@ export function DictionaryViewer({entries, setDictionary, initialEnglishTranslat
   const { showUnclearForms } = currentDictionaryConfig;
   const alphabetizationConfig = useSelector(alphabetizationConfigSelector);
   const compareWithOptions = (a: string, b: string) => compare(a, b, alphabetizationConfig);
+
+  const currentLookupConfig: LookupConfig = useSelector(lookupConfigSelector);
 
   const filteredEntries = entries.filter(entry => {
     const { morphologicalAnalysis } = entry;
@@ -103,7 +109,7 @@ export function DictionaryViewer({entries, setDictionary, initialEnglishTranslat
 
   const stemObjects = stems.map(repr => new Stem(repr));
 
-  const matchingStems = selectMatching(stemObjects, stemQuery);
+  const matchingStems = selectMatching(stemObjects, stemQuery, currentLookupConfig);
   
   return (
     <div className="grid grid-cols-2 gap-2 my-2 uneven-columns">
