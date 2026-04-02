@@ -2,13 +2,15 @@ import { JSX } from 'react';
 import { Attestation } from '../concordance/concordance';
 import { Line } from '../corpus/lineType';
 import { AttestationViewer } from './AttestationViewer';
+import { MorphologicalAnalysis } from '../../../model/morphologicalAnalysis';
 
 interface IProps {
   attestations: Attestation[];
   getLine: (attestation: Attestation) => Line;
+  highlightedMa?: MorphologicalAnalysis;
 }
 
-export function ConcordanceEntryViewer({attestations, getLine}: IProps): JSX.Element {
+export function ConcordanceEntryViewer({attestations, getLine, highlightedMa}: IProps): JSX.Element {
   return (
     <div className="display: table">
       {attestations.map((attestation: Attestation) => {
@@ -16,7 +18,8 @@ export function ConcordanceEntryViewer({attestations, getLine}: IProps): JSX.Ele
         return (
           <AttestationViewer key={attestation.toString()}
                              attestation={attestation}
-                             words={line} />
+                             words={line}
+                             highlightedMa={highlightedMa} />
         );
       })}
     </div>
