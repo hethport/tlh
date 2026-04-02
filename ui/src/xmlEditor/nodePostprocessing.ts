@@ -2,7 +2,6 @@ import { XmlElementNode } from 'simple_xml';
 import { readSelectedMorphology, SelectedMorphAnalysis } from '../model/selectedMorphologicalAnalysis';
 import { readMorphologiesFromNode, MorphologicalAnalysis } from '../model/morphologicalAnalysis';
 import update, { Spec } from 'immutability-helper';
-import { determineWordNodeLanguage } from './nodeLanguage';
 import { postprocessNodeMorphologies } from './morphologyPostprocessing';
 
 function isSelected(morphologicalAnalysis: MorphologicalAnalysis): boolean {
@@ -38,14 +37,6 @@ function deleteNotSelectedMorphologies(node: XmlElementNode): XmlElementNode {
   return update(node, spec);
 }
 
-export function postprocessNode(node: XmlElementNode,
-                                path: number[],
-                                rootNode: XmlElementNode): XmlElementNode {
-  const language = determineWordNodeLanguage(node, path, rootNode);
-  const isHurrian: boolean = (language === 'Hur');
-  if (isHurrian) {
-    return postprocessNodeMorphologies(deleteNotSelectedMorphologies(node));
-  } else {
-    return node;
-  }
+export function postprocessNode(node: XmlElementNode): XmlElementNode {
+  return postprocessNodeMorphologies(deleteNotSelectedMorphologies(node));
 }

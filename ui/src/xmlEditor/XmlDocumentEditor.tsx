@@ -205,8 +205,7 @@ export function XmlDocumentEditor({
         : undefined;
 
       const editedNode = state.editorState.node;
-      const resultingNode = postprocessNode(editedNode, state.editorState.path,
-                                            state.rootNode as XmlElementNode);
+      const resultingNode = postprocessNode(editedNode);
 
       return update(state, {
         rootNode: buildSpec(state.editorState.path, {$set: resultingNode}),
