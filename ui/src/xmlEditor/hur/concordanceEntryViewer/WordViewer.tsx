@@ -17,11 +17,13 @@ export function WordViewer({ word, highlightedMa }: IProps): JSX.Element {
   const shouldBeHighlighted = highlightedMa !== undefined &&
                               word.segmentation === highlightedMa.referenceWord &&
                               getTranslationAndMorphTag(word.gloss)[0] === highlightedMa.translation;
-  const cssClass =  shouldBeHighlighted ? 'corpus-word font-bold' : 'corpus-word';
+  const transliterationCssClass =  shouldBeHighlighted
+    ? 'corpus-word-field font-bold'
+    : 'corpus-word-field';
   
   return (
-    <div className={cssClass}>
-      <div className="corpus-word-field">
+    <div className="corpus-word">
+      <div className={transliterationCssClass}>
         {parseResult instanceof MyLeft ? <>{transliteration}</>
         : <NodeDisplay node={parseResult.value as XmlElementNode}
                        isLeftSide={true} />}
