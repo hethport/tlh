@@ -231,10 +231,11 @@ mutation SubmitApproval($mainIdentifier: String!, $input: String!) {
 fragment DocumentInPipeline on DocumentInPipeline {
   manuscriptIdentifier
   author
+  creationDate
   appointedTransliterationReviewer
   transliterationReviewDateString
   appointedXmlConverter
-  xmlConversionDateString,
+  xmlConversionDateString
   appointedFirstXmlReviewer
   firstXmlReviewDateString
   appointedSecondXmlReviewer
@@ -243,12 +244,28 @@ fragment DocumentInPipeline on DocumentInPipeline {
 
 fragment PipelineOverview on ExecutiveEditor {
   allReviewers
-  documentsInPipeline(page: $page) {
+  allCreators
+  documentsInPipelineCount(filterByStep: $filterByStep, filterByCreator: $filterByCreator)
+  documentsInPipeline(
+    page: $page
+    pageSize: $pageSize
+    sortBy: $sortBy
+    sortDirection: $sortDirection
+    filterByStep: $filterByStep
+    filterByCreator: $filterByCreator
+  ) {
     ...DocumentInPipeline
   }
 }
 
-query PipelineOverview($page: Int) {
+query PipelineOverview(
+  $page: Int
+  $pageSize: Int
+  $sortBy: String
+  $sortDirection: String
+  $filterByStep: String
+  $filterByCreator: String
+) {
   executiveEditorQueries {
     ...PipelineOverview
   }

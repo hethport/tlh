@@ -273,5 +273,21 @@
   "save": "Speichern",
   "saving": "Speichern",
   "mainIdentifierCannotBeEmpty": "Hauptidentifikator kann nicht leer sein",
-  "errorUpdatingIdentifiers": "Fehler beim Aktualisieren der Identifikatoren"
+  "errorUpdatingIdentifiers": "Fehler beim Aktualisieren der Identifikatoren",
+  "rowsPerPage": "Manuskripte pro Seite",
+  "filterByStep": "Filtern nach Schritt",
+  "filterByCreator": "Filter nach Ersteller",
+  "allSteps": "Alle Schritte",
+  "transliterationReview": "Transliteration Review",
+  "firstXmlReview": "Erstes XML Review",
+  "secondXmlReview": "Zweites XML Review",
+  "pending": "Ausstehend",
+  "completed": "Fertig",
+  "allCreators": "Alle Ersteller",
+  "sortBy": "Sortieren nach",
+  "creationDate": "Erstellungsdatum",
+  "transliterationReviewDate": "Transliteration Review Datum",
+  "xmlConversionDate": "XML Konvertierungsdatum",
+  "firstXmlReviewDate": "Erstes XML Konvertierungsdatum",
+  "secondXmlReviewDate": "Zweites XML Konvertierungsdatum"
 }
