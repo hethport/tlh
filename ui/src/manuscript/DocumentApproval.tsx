@@ -8,7 +8,7 @@ import {XmlDocumentEditor} from '../xmlEditor/XmlDocumentEditor';
 import {MyLeft, parseNewXml, XmlElementNode} from 'simple_xml';
 import {writeXml} from '../xmlEditor/StandAloneOXTED';
 import {tlhXmlEditorConfig} from '../xmlEditor/tlhXmlEditorConfig';
-import {makeDownload} from "../downloadHelper";
+import {makeDownload} from '../downloadHelper';
 
 interface IProps {
   mainIdentifier: string;
