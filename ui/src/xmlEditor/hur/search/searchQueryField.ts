@@ -11,6 +11,7 @@ export type SearchQueryField<F extends string> = {
 }
 
 export const searchModes = ['substring', 'whole word', 'pattern'];
+export const regExpFlags = 'iu';
 
 export function matchesField<F extends string>(obj: { [key in F]: string }, field: SearchQueryField<F>,
                                                lookupConfig: LookupConfig): boolean {
@@ -31,7 +32,7 @@ export function matchesField<F extends string>(obj: { [key in F]: string }, fiel
       return inputObjectValue === searchedValue;
     }
     case 'pattern': {
-      const regExp = new RegExp(searchedValue, 'iu');
+      const regExp = new RegExp(searchedValue, regExpFlags);
       return regExp.test(inputObjectValue);
     }
   }

@@ -1,6 +1,6 @@
 import { SearchQuery } from './searchQuery';
 import { JSX, useState } from 'react';
-import { SearchQueryField, searchModes, SearchMode } from './searchQueryField';
+import { SearchQueryField, searchModes, SearchMode, regExpFlags } from './searchQueryField';
 import update from 'immutability-helper';
 import { whiteButtonClasses } from '../../../defaultDesign';
 import { useTranslation } from 'react-i18next';
@@ -13,6 +13,24 @@ interface IProps<F extends string> {
 export function SearchForm<F extends string>({ initialQuery, onSubmit }: IProps<F>): JSX.Element {
   const {t} = useTranslation('common');
   const [query, setQuery] = useState<SearchQuery<F>>(initialQuery);
+  const validateAndSumbit = (query: SearchQuery<F>) => {
+    for (const field of query) {
+      const { name, value, mode } = field;
+      if (mode === 'pattern') {
+        try {
+          new RegExp(value, regExpFlags);
+        } catch (error) {
+          let message = `An incorrect pattern "${value}" encountered in the field "${t(name)}"`;
+          if (error instanceof Error) {
+            message += ':\n' + error.message;
+          }
+          alert(message);
+          return;
+        }
+      }
+    }
+    onSubmit(query);
+  };
 
   return (<div>
     <div>
@@ -30,7 +48,7 @@ export function SearchForm<F extends string>({ initialQuery, onSubmit }: IProps<
         </div>);
       })}
     </div>
-    <button className={whiteButtonClasses} onClick={() => onSubmit(query)}>
+    <button className={whiteButtonClasses} onClick={() => validateAndSumbit(query)}>
       {t('submitSeachQuery')}
     </button>
   </div>);
