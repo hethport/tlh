@@ -12,6 +12,18 @@ export function objectToMap<TValue>(object: {[key: string]: TValue}): Map<string
   return map;
 }
 
+export function objectToArrayMap<TValue>(object: {[key: string]: TValue | TValue[]}): Map<string, TValue[]> {
+  const map = new Map<string, TValue[]>();
+  for (const [key, value] of Object.entries(object)) {
+    if (value instanceof Array) {
+      map.set(key, value);
+    } else {
+      map.set(key, [value]);
+    }
+  }
+  return map;
+}
+
 export function objectToSetValuedMap<TValue>(object: {[key: string]: TValue[]}): Map<string, Set<TValue>> {
   const map = new Map<string, Set<TValue>>();
   for (const [key, values] of Object.entries(object)) {
@@ -20,6 +32,19 @@ export function objectToSetValuedMap<TValue>(object: {[key: string]: TValue[]}):
       collection.add(value);
     }
     map.set(key, collection);
+  }
+  return map;
+}
+
+export function updateMapWithoutOverride<TKey, TValue>(oldMap: Map<TKey, TValue>, newMap: Map<TKey, TValue>): Map<TKey, TValue> {
+  const map = new Map<TKey, TValue>();
+  for (const [key, value] of oldMap) {
+    map.set(key, value);
+  }
+  for (const [key, value] of newMap) {
+    if (!map.has(key)) {
+      map.set(key, value);
+    }
   }
   return map;
 }
@@ -59,10 +84,19 @@ export function remove<TKey, TValue>(map: Map<TKey, Set<TValue>>, key: TKey, val
   }
 }
 
-export function addMultiple<TKey, TValue>(map: Map<TKey, Set<TValue>>, key: TKey, values: TValue[]) {
+export function addMultiple<TKey, TValue>(map: Map<TKey, Set<TValue>>, key: TKey, values: Iterable<TValue>) {
   const current = getValueSet(map, key);
   for (const value of values) {
     current.add(value);
+  }
+}
+
+export function has<TKey, TValue>(map: Map<TKey, Set<TValue>>, key: TKey, value: TValue): boolean {
+  const values = map.get(key);
+  if (values === undefined) {
+    return false;
+  } else {
+    return values.has(value);
   }
 }
 
@@ -77,6 +111,24 @@ export function replaceKey<TKey, TValue>(map: Map<TKey, Set<TValue>>, oldKey: TK
     } else {
       for (const value of values) {
         oldValues.add(value);
+      }
+    }
+  }
+}
+
+export function replaceKeyWithMultiple<TKey, TValue>(map: Map<TKey, Set<TValue>>, oldKey: TKey, newKeys: TKey[]): void {
+  const values = map.get(oldKey);
+  if (values !== undefined) {
+    map.delete(oldKey);
+    for (const newKey of newKeys) {
+      const oldValues = map.get(newKey);
+      if (oldValues === undefined) {
+        // If no value is assigned to the new key
+        map.set(newKey, values);
+      } else {
+        for (const value of values) {
+          oldValues.add(value);
+        }
       }
     }
   }
@@ -122,6 +174,18 @@ export function groupBy<TSource, TKey, TValue>(array: TSource[], getKey: (elem: 
     const key = getKey(element);
     const value = getValue(element);
     add(map, key, value);
+  }
+  return map;
+}
+
+export function groupByMany<TSource, TKey, TValue>(array: TSource[], getKeys: (elem: TSource) => TKey[], getValue: (elem: TSource) => TValue): Map<TKey, Set<TValue>> {
+  const map = new Map<TKey, Set<TValue>>();
+  for (const element of array) {
+    const keys = getKeys(element);
+    for (const key of keys) {
+      const value = getValue(element);
+      add(map, key, value);
+    }
   }
   return map;
 }

@@ -26,7 +26,7 @@ export function setGlosses(node: XmlElementNode): void
 		if (ma.translation === '')
 		{
 			const stem = getStem(ma.referenceWord);
-			const pos = getPos(ma.paradigmClass);
+			const pos = ma.paradigmClass;
 			const glosses = retrieveGloss(stem, pos);
 			if (glosses != null)
 			{

@@ -4,5 +4,5 @@ export type Replacement = {
   text: string;
   line: string;
   source: MorphologicalAnalysis;
-  target: MorphologicalAnalysis;
+  targets: Array<MorphologicalAnalysis | string>;
 }

@@ -12,7 +12,9 @@ import {
   userManagementUrl,
   xmlComparatorUrl,
   dictionaryViewerUrl,
-  macroeditorUrl
+  macroeditorUrl,
+  suffixDictionaryUrl,
+  stopListViewerUrl,
 } from './urls';
 import {useTranslation} from 'react-i18next';
 import {useDispatch, useSelector} from 'react-redux';
@@ -53,9 +55,11 @@ export function NavBar(): JSX.Element {
       <NavLink className={buttonClasses} to={documentMergerUrl}>{t('documentMerger')}</NavLink>
       <NavLink className={buttonClasses} to={dictionaryViewerUrl}>{t('dictionaryViewer')}</NavLink>
       <NavLink className={buttonClasses} to={macroeditorUrl}>{t('macroeditor')}</NavLink>
+      <NavLink className={buttonClasses} to={suffixDictionaryUrl}>{t('suffixDictionary')}</NavLink>
+      <NavLink className={buttonClasses} to={stopListViewerUrl}>{t('stopList')}</NavLink>
       
       <div className="flex-grow"/>
-
+      <div className="py-4 px-2"><a href="https://www.hethport3.uni-wuerzburg.de/SIMTEX_Guidelines/" target="_blank" rel="noopener noreferrer">SIMTEX {t('guidelines')}</a></div>
       <NavLink className={buttonClasses} to={preferencesUrl}>{t('preferences')}</NavLink>
 
       <div className="py-4 px-2">{t('language')}:</div>

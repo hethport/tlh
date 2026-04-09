@@ -9,6 +9,7 @@ import {useTranslation} from 'react-i18next';
 import {writeXml} from '../../xmlEditor/StandAloneOXTED';
 import {makeDownload} from '../../downloadHelper';
 import {XmlValidityChecker} from '../../xmlEditor/XmlValidityChecker';
+import {EditIdentifiersButton} from '../../EditIdentifiersButton';
 
 interface InnerInnerProps {
   mainIdentifier: string;
@@ -29,7 +30,7 @@ function InnerInner({mainIdentifier, rootNode, reviewType}: InnerInnerProps): Re
     }
   };
 
-  const onExportXml = (rootNode: XmlElementNode) => makeDownload(writeXml(rootNode), 'exported.xml');
+  const onExportXml = (rootNode: XmlElementNode) => makeDownload(writeXml(rootNode), mainIdentifier + '.xml');
 
   return data?.reviewerMutations?.submitXmlReview
     ? (
@@ -42,12 +43,22 @@ function InnerInner({mainIdentifier, rootNode, reviewType}: InnerInnerProps): Re
       </div>
     )
     : (
-      <XmlDocumentEditor node={rootNode} filename={mainIdentifier} onExportXml={onExportXml}
-      onExportDict={() => {
-        // do nothing
-      }}
-      exportDisabled={loading}
-                         otherButtonConfig={{title: t('submitReview'), color: 'green', onClick: onSubmit}}/>
+      <>
+        <div className="container mx-auto mb-4">
+          <div className="flex justify-between items-center">
+            <h2 className="font-bold text-xl">
+              {reviewType === XmlReviewType.FirstXmlReview ? t('firstXmlReview') : t('secondXmlReview')}
+            </h2>
+            <EditIdentifiersButton mainIdentifier={mainIdentifier} />
+          </div>
+        </div>
+        <XmlDocumentEditor node={rootNode} filename={mainIdentifier} onExportXml={onExportXml}
+                           onExportDict={() => {
+                             // do nothing
+                           }}
+                           exportDisabled={loading}
+                           otherButtonConfig={{title: t('submitReview'), color: 'green', onClick: onSubmit}}/>
+      </>
     );
 }
 

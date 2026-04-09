@@ -221,6 +221,183 @@ class Manuscript extends AbstractManuscript
     );
   }
 
+  /**
+   * Update manuscript identifiers
+   * @param ManuscriptIdentifier $newMainIdentifier
+   * @param ManuscriptIdentifier[] $newOtherIdentifiers
+   * @return string The new main identifier
+   * @throws MySafeGraphQLException
+   */
+  function updateIdentifiers(ManuscriptIdentifier $newMainIdentifier, array $newOtherIdentifiers): string
+  {
+    $oldMainIdentifier = $this->mainIdentifier->identifier;
+    $newMainIdentifierValue = $newMainIdentifier->identifier;
+    $newMainIdentifierType = $newMainIdentifier->identifierType;
+
+    // Validate new main identifier is not empty
+    if (empty(trim($newMainIdentifierValue))) {
+      throw new MySafeGraphQLException("Main identifier cannot be empty!");
+    }
+
+    // Validate identifier length (database column is varchar(20))
+    if (strlen($newMainIdentifierValue) > 20) {
+      throw new MySafeGraphQLException("Main identifier is too long! Maximum 20 characters, got " . strlen($newMainIdentifierValue));
+    }
+
+    // Validate other identifiers length
+    foreach ($newOtherIdentifiers as $otherIdentifier) {
+      if (strlen($otherIdentifier->identifier) > 20) {
+        throw new MySafeGraphQLException("Other identifier '" . $otherIdentifier->identifier . "' is too long! Maximum 20 characters, got " . strlen($otherIdentifier->identifier));
+      }
+    }
+
+    // If identifier changed, check if new identifier already exists
+    if ($oldMainIdentifier !== $newMainIdentifierValue) {
+      $existingManuscript = Manuscript::selectManuscriptById($newMainIdentifierValue);
+      if (!is_null($existingManuscript)) {
+        throw new MySafeGraphQLException("Manuscript with identifier '$newMainIdentifierValue' already exists!");
+      }
+    }
+
+    try {
+      return SqlHelpers::executeQueriesInTransactions(
+        function ($conn) use ($oldMainIdentifier, $newMainIdentifierValue, $newMainIdentifierType, $newOtherIdentifiers): string {
+
+          if ($oldMainIdentifier !== $newMainIdentifierValue) {
+            // Temporarily disable foreign key checks to handle circular dependencies
+            // tlh_dig_manuscripts <-> tlh_dig_released_transliterations <-> appointments <-> reviews
+            mysqli_query($conn, "SET FOREIGN_KEY_CHECKS = 0");
+
+            try {
+              // Update all tables - order doesn't matter now
+
+              // Released transliterations
+              SqlHelpers::executeSingleChangeQuery(
+                "update tlh_dig_released_transliterations set main_identifier = ? where main_identifier = ?;",
+                fn(mysqli_stmt $stmt): bool => $stmt->bind_param('ss', $newMainIdentifierValue, $oldMainIdentifier),
+                $conn
+              );
+
+              // Provisional transliterations
+              SqlHelpers::executeSingleChangeQuery(
+                "update tlh_dig_provisional_transliterations set main_identifier = ? where main_identifier = ?;",
+                fn(mysqli_stmt $stmt): bool => $stmt->bind_param('ss', $newMainIdentifierValue, $oldMainIdentifier),
+                $conn
+              );
+
+              // Other identifiers
+              SqlHelpers::executeSingleChangeQuery(
+                "update tlh_dig_manuscript_other_identifiers set main_identifier = ? where main_identifier = ?;",
+                fn(mysqli_stmt $stmt): bool => $stmt->bind_param('ss', $newMainIdentifierValue, $oldMainIdentifier),
+                $conn
+              );
+
+              // Appointments
+              SqlHelpers::executeSingleChangeQuery(
+                "update tlh_dig_transliteration_review_appointments set main_identifier = ? where main_identifier = ?;",
+                fn(mysqli_stmt $stmt): bool => $stmt->bind_param('ss', $newMainIdentifierValue, $oldMainIdentifier),
+                $conn
+              );
+
+              SqlHelpers::executeSingleChangeQuery(
+                "update tlh_dig_xml_conversion_appointments set main_identifier = ? where main_identifier = ?;",
+                fn(mysqli_stmt $stmt): bool => $stmt->bind_param('ss', $newMainIdentifierValue, $oldMainIdentifier),
+                $conn
+              );
+
+              SqlHelpers::executeSingleChangeQuery(
+                "update tlh_dig_first_xml_review_appointments set main_identifier = ? where main_identifier = ?;",
+                fn(mysqli_stmt $stmt): bool => $stmt->bind_param('ss', $newMainIdentifierValue, $oldMainIdentifier),
+                $conn
+              );
+
+              SqlHelpers::executeSingleChangeQuery(
+                "update tlh_dig_second_xml_review_appointments set main_identifier = ? where main_identifier = ?;",
+                fn(mysqli_stmt $stmt): bool => $stmt->bind_param('ss', $newMainIdentifierValue, $oldMainIdentifier),
+                $conn
+              );
+
+              // Reviews
+              SqlHelpers::executeSingleChangeQuery(
+                "update tlh_dig_transliteration_reviews set main_identifier = ? where main_identifier = ?;",
+                fn(mysqli_stmt $stmt): bool => $stmt->bind_param('ss', $newMainIdentifierValue, $oldMainIdentifier),
+                $conn
+              );
+
+              SqlHelpers::executeSingleChangeQuery(
+                "update tlh_dig_xml_conversions set main_identifier = ? where main_identifier = ?;",
+                fn(mysqli_stmt $stmt): bool => $stmt->bind_param('ss', $newMainIdentifierValue, $oldMainIdentifier),
+                $conn
+              );
+
+              SqlHelpers::executeSingleChangeQuery(
+                "update tlh_dig_first_xml_reviews set main_identifier = ? where main_identifier = ?;",
+                fn(mysqli_stmt $stmt): bool => $stmt->bind_param('ss', $newMainIdentifierValue, $oldMainIdentifier),
+                $conn
+              );
+
+              SqlHelpers::executeSingleChangeQuery(
+                "update tlh_dig_second_xml_reviews set main_identifier = ? where main_identifier = ?;",
+                fn(mysqli_stmt $stmt): bool => $stmt->bind_param('ss', $newMainIdentifierValue, $oldMainIdentifier),
+                $conn
+              );
+
+              // Main manuscripts table
+              SqlHelpers::executeSingleChangeQuery(
+                "update tlh_dig_manuscripts set main_identifier = ?, main_identifier_type = ? where main_identifier = ?;",
+                fn(mysqli_stmt $stmt): bool => $stmt->bind_param('sss', $newMainIdentifierValue, $newMainIdentifierType, $oldMainIdentifier),
+                $conn
+              );
+
+              // Rename picture folder
+              $oldFolder = __DIR__ . "/../uploads/$oldMainIdentifier/";
+              $newFolder = __DIR__ . "/../uploads/$newMainIdentifierValue/";
+              if (file_exists($oldFolder) && is_dir($oldFolder)) {
+                if (!rename($oldFolder, $newFolder)) {
+                  throw new MySafeGraphQLException("Failed to rename picture folder!");
+                }
+              }
+
+            } finally {
+              // ALWAYS re-enable foreign key checks
+              mysqli_query($conn, "SET FOREIGN_KEY_CHECKS = 1");
+            }
+          } else {
+            // Only updating identifier type, not the identifier itself
+            SqlHelpers::executeSingleChangeQuery(
+              "update tlh_dig_manuscripts set main_identifier_type = ? where main_identifier = ?;",
+              fn(mysqli_stmt $stmt): bool => $stmt->bind_param('ss', $newMainIdentifierType, $oldMainIdentifier),
+              $conn
+            );
+          }
+
+          // Delete old other identifiers
+          SqlHelpers::executeSingleChangeQuery(
+            "delete from tlh_dig_manuscript_other_identifiers where main_identifier = ?;",
+            fn(mysqli_stmt $stmt): bool => $stmt->bind_param('s', $newMainIdentifierValue),
+            $conn
+          );
+
+          // Insert new other identifiers
+          foreach ($newOtherIdentifiers as $otherIdentifier) {
+            if (!empty(trim($otherIdentifier->identifier))) {
+              SqlHelpers::executeSingleChangeQuery(
+                "insert into tlh_dig_manuscript_other_identifiers (main_identifier, identifier_type, identifier) values (?, ?, ?);",
+                fn(mysqli_stmt $stmt): bool => $stmt->bind_param('sss', $newMainIdentifierValue, $otherIdentifier->identifierType, $otherIdentifier->identifier),
+                $conn
+              );
+            }
+          }
+
+          return $newMainIdentifierValue;
+        }
+      );
+    } catch (Exception $exception) {
+      error_log($exception);
+      throw new MySafeGraphQLException("Could not update identifiers for manuscript $oldMainIdentifier: " . $exception->getMessage());
+    }
+  }
+
   function delete(): bool
   {
     return SqlHelpers::executeSingleChangeQuery(
@@ -395,6 +572,69 @@ Manuscript::$graphQLMutationsType = new ObjectType([
         $pictureName = $args['pictureName'];
 
         return unlink("./uploads/$mainIdentifier/$pictureName");
+      }
+    ],
+    'updateIdentifiers' => [
+      'type' => Type::nonNull(Type::string()),
+      'args' => [
+        'newMainIdentifier' => Type::nonNull(ManuscriptIdentifier::$graphQLInputObjectType),
+        'newOtherIdentifiers' => Type::nonNull(Type::listOf(Type::nonNull(ManuscriptIdentifier::$graphQLInputObjectType)))
+      ],
+      'resolve' => function (Manuscript $manuscript, array $args, ?User $user): string {
+        if (is_null($user)) {
+          throw new MySafeGraphQLException('User is not logged in!');
+        }
+
+        // Check permissions: author, assigned reviewer, or executive editor
+        $isAuthor = $manuscript->creatorUsername === $user->username;
+        $isExecutiveEditor = $user->rights === Rights::ExecutiveEditor;
+
+        // Check if user is a reviewer appointed to this manuscript (for any task)
+        $isAssignedReviewer = false;
+        if ($user->rights === Rights::Reviewer) {
+          $mainIdentifier = $manuscript->mainIdentifier->identifier;
+          $username = $user->username;
+
+          // Check all possible appointment tables
+          $isAssignedReviewer =
+            !is_null(SqlHelpers::executeSingleReturnRowQuery(
+              "select 1 from tlh_dig_transliteration_review_appointments where main_identifier = ? and username = ?;",
+              fn(mysqli_stmt $stmt): bool => $stmt->bind_param('ss', $mainIdentifier, $username),
+              fn(array $row): int => 1
+            )) ||
+            !is_null(SqlHelpers::executeSingleReturnRowQuery(
+              "select 1 from tlh_dig_xml_conversion_appointments where main_identifier = ? and username = ?;",
+              fn(mysqli_stmt $stmt): bool => $stmt->bind_param('ss', $mainIdentifier, $username),
+              fn(array $row): int => 1
+            )) ||
+            !is_null(SqlHelpers::executeSingleReturnRowQuery(
+              "select 1 from tlh_dig_first_xml_review_appointments where main_identifier = ? and username = ?;",
+              fn(mysqli_stmt $stmt): bool => $stmt->bind_param('ss', $mainIdentifier, $username),
+              fn(array $row): int => 1
+            )) ||
+            !is_null(SqlHelpers::executeSingleReturnRowQuery(
+              "select 1 from tlh_dig_second_xml_review_appointments where main_identifier = ? and username = ?;",
+              fn(mysqli_stmt $stmt): bool => $stmt->bind_param('ss', $mainIdentifier, $username),
+              fn(array $row): int => 1
+            ));
+        }
+
+        if (!$isAuthor && !$isAssignedReviewer && !$isExecutiveEditor) {
+          if ($user->rights === Rights::Reviewer) {
+            throw new MySafeGraphQLException('You must be assigned as a reviewer for this manuscript to edit its identifiers!');
+          } else {
+            throw new MySafeGraphQLException('Insufficient permissions to edit identifiers!');
+          }
+        }
+
+        // Convert input arrays to ManuscriptIdentifier objects
+        $newMainIdentifier = ManuscriptIdentifier::fromGraphQLInput($args['newMainIdentifier']);
+        $newOtherIdentifiers = array_map(
+          fn(array $input): ManuscriptIdentifier => ManuscriptIdentifier::fromGraphQLInput($input),
+          $args['newOtherIdentifiers']
+        );
+
+        return $manuscript->updateIdentifiers($newMainIdentifier, $newOtherIdentifiers);
       }
     ]
   ]

@@ -18,6 +18,7 @@ type DocumentInPipeline {
   appointedXmlConverter: String
   approvalDateString: String
   author: String!
+  creationDate: String!
   firstXmlReviewDateString: String
   manuscriptIdentifier: String!
   secondXmlReviewDateString: String
@@ -26,11 +27,12 @@ type DocumentInPipeline {
 }
 
 type ExecutiveEditor {
+  allCreators: [String!]!
   allReviewers: [String!]!
   documentAwaitingApproval(mainIdentifier: String!): String
   documentsAwaitingApproval: [String!]!
-  documentsInPipeline(page: Int): [DocumentInPipeline!]!
-  documentsInPipelineCount: Int!
+  documentsInPipeline(filterByCreator: String, filterByStep: String, page: Int, pageSize: Int, sortBy: String, sortDirection: String): [DocumentInPipeline!]!
+  documentsInPipelineCount(filterByCreator: String, filterByStep: String): Int!
   userCount: Int!
   users(page: Int!): [User!]!
 }
@@ -58,6 +60,8 @@ input ManuscriptIdentifierInput {
 enum ManuscriptIdentifierType {
   CollectionNumber
   ExcavationNumber
+  InventoryNumber
+  PublicationNumber
   PublicationShortReference
 }
 
@@ -107,6 +111,7 @@ input ManuscriptMetaDataInput {
 type ManuscriptMutations {
   deletePicture(pictureName: String!): Boolean!
   releaseTransliteration: String!
+  updateIdentifiers(newMainIdentifier: ManuscriptIdentifierInput!, newOtherIdentifiers: [ManuscriptIdentifierInput!]!): String!
   updateTransliteration(input: String!): Boolean!
 }
 

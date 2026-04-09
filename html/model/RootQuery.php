@@ -42,7 +42,7 @@ RootQuery::$queryType = new ObjectType([
       'args' => [
         'mainIdentifier' => Type::nonNull(Type::string())
       ],
-      'resolve' => fn(?int $_rootValue, array $args): ?Manuscript => Manuscript::selectManuscriptById($args['mainIdentifier'])
+      'resolve' => fn(?int $_rootValue, array $args, ?User $user): ?Manuscript => Manuscript::selectManuscriptById($args['mainIdentifier'])
     ],
     'reviewerQueries' => [
       'type' => Reviewer::$queryType,

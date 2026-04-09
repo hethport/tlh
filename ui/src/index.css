@@ -224,6 +224,37 @@ code {
 .dict-entry {
   display: grid;
   margin-left: 2rem;
+  width: 45rem;
+}
+
+.changes-viewer {
+  display: table;
+  padding-bottom: 5rem;
+}
+
+.morphological-analysis-viewer {
+  display: grid;
+  margin-left: 2rem;
+  margin-right: 2rem;
+  margin-bottom: 2rem;
+  width: fitcontent;
+}
+
+.first {
+  min-width: 30%
+}
+
+.clear-changes-button {
+  width: 25%;
+  float: right;
+  margin-top: 1rem;
+  margin-bottom: 2rem;
+}
+
+.stem-variants {
+  display: grid;
+  margin-left: 1rem;
+  margin-bottom: 1rem;
   width: 25rem;
 }
 
@@ -259,3 +290,39 @@ code {
 .error-mark {
   font-size: 30px;
 }
+
+.fragment-mark {
+  font-size: 20px;
+}
+
+.no-line-break {
+  white-space: nowrap;
+}
+
+.checkbox-label {
+  margin-right: 1rem;
+}
+
+.wordform-element {
+  margin-bottom: 1rem;
+}
+
+.remove-button {
+  height: 4rem;
+}
+
+.search-form-header {
+  margin-bottom: 1rem;
+}
+
+/*
+.leftList, rightList {
+  display: inline;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.mergeList {
+  display: inline-block;
+  width: 50%;
+}*/

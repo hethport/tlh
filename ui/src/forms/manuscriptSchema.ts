@@ -10,6 +10,8 @@ import {palaeographicClassifications} from './PalaeographicField';
 import {manuscriptLanguageAbbreviations} from './manuscriptLanguageAbbreviations';
 
 export const manuscriptIdentifierTypes: ManuscriptIdentifierType[] = [
+  ManuscriptIdentifierType.PublicationNumber,
+  ManuscriptIdentifierType.InventoryNumber,
   ManuscriptIdentifierType.CollectionNumber,
   ManuscriptIdentifierType.ExcavationNumber,
   ManuscriptIdentifierType.PublicationShortReference,

@@ -70,7 +70,7 @@ export function NodeEditorRightSide({
                   title={t('cancelSelection') || 'cancelSelection'}>
             &#x2715;
           </button>
-          <button type="button" className="ml-2 px-2 rounded border border-slate-500 bg-green-500" onClick={cancelSelection}
+          <button type="button" className="ml-2 px-2 rounded border border-slate-500 bg-green-500" onClick={applyUpdates}
                   title={t('applySelection') || 'applySelection'}>
             &#x2714;
           </button>

@@ -39,6 +39,7 @@ export type DocumentInPipeline = {
   appointedXmlConverter?: Maybe<Scalars['String']['output']>;
   approvalDateString?: Maybe<Scalars['String']['output']>;
   author: Scalars['String']['output'];
+  creationDate: Scalars['String']['output'];
   firstXmlReviewDateString?: Maybe<Scalars['String']['output']>;
   manuscriptIdentifier: Scalars['String']['output'];
   secondXmlReviewDateString?: Maybe<Scalars['String']['output']>;
@@ -48,6 +49,7 @@ export type DocumentInPipeline = {
 
 export type ExecutiveEditor = {
   __typename?: 'ExecutiveEditor';
+  allCreators: Array<Scalars['String']['output']>;
   allReviewers: Array<Scalars['String']['output']>;
   documentAwaitingApproval?: Maybe<Scalars['String']['output']>;
   documentsAwaitingApproval: Array<Scalars['String']['output']>;
@@ -64,7 +66,18 @@ export type ExecutiveEditorDocumentAwaitingApprovalArgs = {
 
 
 export type ExecutiveEditorDocumentsInPipelineArgs = {
+  filterByCreator?: InputMaybe<Scalars['String']['input']>;
+  filterByStep?: InputMaybe<Scalars['String']['input']>;
   page?: InputMaybe<Scalars['Int']['input']>;
+  pageSize?: InputMaybe<Scalars['Int']['input']>;
+  sortBy?: InputMaybe<Scalars['String']['input']>;
+  sortDirection?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type ExecutiveEditorDocumentsInPipelineCountArgs = {
+  filterByCreator?: InputMaybe<Scalars['String']['input']>;
+  filterByStep?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -138,6 +151,8 @@ export type ManuscriptIdentifierInput = {
 export const enum ManuscriptIdentifierType {
   CollectionNumber = 'CollectionNumber',
   ExcavationNumber = 'ExcavationNumber',
+  InventoryNumber = 'InventoryNumber',
+  PublicationNumber = 'PublicationNumber',
   PublicationShortReference = 'PublicationShortReference'
 };
 
@@ -194,12 +209,19 @@ export type ManuscriptMutations = {
   __typename?: 'ManuscriptMutations';
   deletePicture: Scalars['Boolean']['output'];
   releaseTransliteration: Scalars['String']['output'];
+  updateIdentifiers: Scalars['String']['output'];
   updateTransliteration: Scalars['Boolean']['output'];
 };
 
 
 export type ManuscriptMutationsDeletePictureArgs = {
   pictureName: Scalars['String']['input'];
+};
+
+
+export type ManuscriptMutationsUpdateIdentifiersArgs = {
+  newMainIdentifier: ManuscriptIdentifierInput;
+  newOtherIdentifiers: Array<ManuscriptIdentifierInput>;
 };
 
 
@@ -393,6 +415,15 @@ export type ReleaseTransliterationMutationVariables = Exact<{
 
 export type ReleaseTransliterationMutation = { __typename?: 'Mutation', manuscript?: { __typename?: 'ManuscriptMutations', releaseTransliteration: string } | null };
 
+export type UpdateManuscriptIdentifiersMutationVariables = Exact<{
+  mainIdentifier: Scalars['String']['input'];
+  newMainIdentifier: ManuscriptIdentifierInput;
+  newOtherIdentifiers: Array<ManuscriptIdentifierInput> | ManuscriptIdentifierInput;
+}>;
+
+
+export type UpdateManuscriptIdentifiersMutation = { __typename?: 'Mutation', manuscript?: { __typename?: 'ManuscriptMutations', updateIdentifiers: string } | null };
+
 export type ManuscriptIdentWithCreatorFragment = { __typename?: 'ManuscriptMetaData', pictureUrls: Array<string>, creatorUsername: string, mainIdentifier: { __typename?: 'ManuscriptIdentifier', identifierType: ManuscriptIdentifierType, identifier: string } };
 
 export type UploadPicturesQueryVariables = Exact<{
@@ -493,16 +524,21 @@ export type SubmitApprovalMutationVariables = Exact<{
 
 export type SubmitApprovalMutation = { __typename?: 'Mutation', executiveEditor?: { __typename?: 'ExecutiveEditorMutations', submitApproval: boolean } | null };
 
-export type DocumentInPipelineFragment = { __typename?: 'DocumentInPipeline', manuscriptIdentifier: string, author: string, appointedTransliterationReviewer?: string | null, transliterationReviewDateString?: string | null, appointedXmlConverter?: string | null, xmlConversionDateString?: string | null, appointedFirstXmlReviewer?: string | null, firstXmlReviewDateString?: string | null, appointedSecondXmlReviewer?: string | null, secondXmlReviewDateString?: string | null };
+export type DocumentInPipelineFragment = { __typename?: 'DocumentInPipeline', manuscriptIdentifier: string, author: string, creationDate: string, appointedTransliterationReviewer?: string | null, transliterationReviewDateString?: string | null, appointedXmlConverter?: string | null, xmlConversionDateString?: string | null, appointedFirstXmlReviewer?: string | null, firstXmlReviewDateString?: string | null, appointedSecondXmlReviewer?: string | null, secondXmlReviewDateString?: string | null };
 
-export type PipelineOverviewFragment = { __typename?: 'ExecutiveEditor', allReviewers: Array<string>, documentsInPipeline: Array<{ __typename?: 'DocumentInPipeline', manuscriptIdentifier: string, author: string, appointedTransliterationReviewer?: string | null, transliterationReviewDateString?: string | null, appointedXmlConverter?: string | null, xmlConversionDateString?: string | null, appointedFirstXmlReviewer?: string | null, firstXmlReviewDateString?: string | null, appointedSecondXmlReviewer?: string | null, secondXmlReviewDateString?: string | null }> };
+export type PipelineOverviewFragment = { __typename?: 'ExecutiveEditor', allReviewers: Array<string>, allCreators: Array<string>, documentsInPipelineCount: number, documentsInPipeline: Array<{ __typename?: 'DocumentInPipeline', manuscriptIdentifier: string, author: string, creationDate: string, appointedTransliterationReviewer?: string | null, transliterationReviewDateString?: string | null, appointedXmlConverter?: string | null, xmlConversionDateString?: string | null, appointedFirstXmlReviewer?: string | null, firstXmlReviewDateString?: string | null, appointedSecondXmlReviewer?: string | null, secondXmlReviewDateString?: string | null }> };
 
 export type PipelineOverviewQueryVariables = Exact<{
   page?: InputMaybe<Scalars['Int']['input']>;
+  pageSize?: InputMaybe<Scalars['Int']['input']>;
+  sortBy?: InputMaybe<Scalars['String']['input']>;
+  sortDirection?: InputMaybe<Scalars['String']['input']>;
+  filterByStep?: InputMaybe<Scalars['String']['input']>;
+  filterByCreator?: InputMaybe<Scalars['String']['input']>;
 }>;
 
 
-export type PipelineOverviewQuery = { __typename?: 'Query', executiveEditorQueries?: { __typename?: 'ExecutiveEditor', allReviewers: Array<string>, documentsInPipeline: Array<{ __typename?: 'DocumentInPipeline', manuscriptIdentifier: string, author: string, appointedTransliterationReviewer?: string | null, transliterationReviewDateString?: string | null, appointedXmlConverter?: string | null, xmlConversionDateString?: string | null, appointedFirstXmlReviewer?: string | null, firstXmlReviewDateString?: string | null, appointedSecondXmlReviewer?: string | null, secondXmlReviewDateString?: string | null }> } | null };
+export type PipelineOverviewQuery = { __typename?: 'Query', executiveEditorQueries?: { __typename?: 'ExecutiveEditor', allReviewers: Array<string>, allCreators: Array<string>, documentsInPipelineCount: number, documentsInPipeline: Array<{ __typename?: 'DocumentInPipeline', manuscriptIdentifier: string, author: string, creationDate: string, appointedTransliterationReviewer?: string | null, transliterationReviewDateString?: string | null, appointedXmlConverter?: string | null, xmlConversionDateString?: string | null, appointedFirstXmlReviewer?: string | null, firstXmlReviewDateString?: string | null, appointedSecondXmlReviewer?: string | null, secondXmlReviewDateString?: string | null }> } | null };
 
 export type AppointTransliterationReviewerMutationVariables = Exact<{
   manuscriptIdentifier: Scalars['String']['input'];
@@ -692,6 +728,7 @@ export const DocumentInPipelineFragmentDoc = gql`
     fragment DocumentInPipeline on DocumentInPipeline {
   manuscriptIdentifier
   author
+  creationDate
   appointedTransliterationReviewer
   transliterationReviewDateString
   appointedXmlConverter
@@ -705,7 +742,19 @@ export const DocumentInPipelineFragmentDoc = gql`
 export const PipelineOverviewFragmentDoc = gql`
     fragment PipelineOverview on ExecutiveEditor {
   allReviewers
-  documentsInPipeline(page: $page) {
+  allCreators
+  documentsInPipelineCount(
+    filterByStep: $filterByStep
+    filterByCreator: $filterByCreator
+  )
+  documentsInPipeline(
+    page: $page
+    pageSize: $pageSize
+    sortBy: $sortBy
+    sortDirection: $sortDirection
+    filterByStep: $filterByStep
+    filterByCreator: $filterByCreator
+  ) {
     ...DocumentInPipeline
   }
 }
@@ -873,6 +922,44 @@ export function useReleaseTransliterationMutation(baseOptions?: Apollo.MutationH
 export type ReleaseTransliterationMutationHookResult = ReturnType<typeof useReleaseTransliterationMutation>;
 export type ReleaseTransliterationMutationResult = Apollo.MutationResult<ReleaseTransliterationMutation>;
 export type ReleaseTransliterationMutationOptions = Apollo.BaseMutationOptions<ReleaseTransliterationMutation, ReleaseTransliterationMutationVariables>;
+export const UpdateManuscriptIdentifiersDocument = gql`
+    mutation UpdateManuscriptIdentifiers($mainIdentifier: String!, $newMainIdentifier: ManuscriptIdentifierInput!, $newOtherIdentifiers: [ManuscriptIdentifierInput!]!) {
+  manuscript(mainIdentifier: $mainIdentifier) {
+    updateIdentifiers(
+      newMainIdentifier: $newMainIdentifier
+      newOtherIdentifiers: $newOtherIdentifiers
+    )
+  }
+}
+    `;
+export type UpdateManuscriptIdentifiersMutationFn = Apollo.MutationFunction<UpdateManuscriptIdentifiersMutation, UpdateManuscriptIdentifiersMutationVariables>;
+
+/**
+ * __useUpdateManuscriptIdentifiersMutation__
+ *
+ * To run a mutation, you first call `useUpdateManuscriptIdentifiersMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateManuscriptIdentifiersMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateManuscriptIdentifiersMutation, { data, loading, error }] = useUpdateManuscriptIdentifiersMutation({
+ *   variables: {
+ *      mainIdentifier: // value for 'mainIdentifier'
+ *      newMainIdentifier: // value for 'newMainIdentifier'
+ *      newOtherIdentifiers: // value for 'newOtherIdentifiers'
+ *   },
+ * });
+ */
+export function useUpdateManuscriptIdentifiersMutation(baseOptions?: Apollo.MutationHookOptions<UpdateManuscriptIdentifiersMutation, UpdateManuscriptIdentifiersMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateManuscriptIdentifiersMutation, UpdateManuscriptIdentifiersMutationVariables>(UpdateManuscriptIdentifiersDocument, options);
+      }
+export type UpdateManuscriptIdentifiersMutationHookResult = ReturnType<typeof useUpdateManuscriptIdentifiersMutation>;
+export type UpdateManuscriptIdentifiersMutationResult = Apollo.MutationResult<UpdateManuscriptIdentifiersMutation>;
+export type UpdateManuscriptIdentifiersMutationOptions = Apollo.BaseMutationOptions<UpdateManuscriptIdentifiersMutation, UpdateManuscriptIdentifiersMutationVariables>;
 export const UploadPicturesDocument = gql`
     query UploadPictures($mainIdentifier: String!) {
   manuscript(mainIdentifier: $mainIdentifier) {
@@ -1329,7 +1416,7 @@ export type SubmitApprovalMutationHookResult = ReturnType<typeof useSubmitApprov
 export type SubmitApprovalMutationResult = Apollo.MutationResult<SubmitApprovalMutation>;
 export type SubmitApprovalMutationOptions = Apollo.BaseMutationOptions<SubmitApprovalMutation, SubmitApprovalMutationVariables>;
 export const PipelineOverviewDocument = gql`
-    query PipelineOverview($page: Int) {
+    query PipelineOverview($page: Int, $pageSize: Int, $sortBy: String, $sortDirection: String, $filterByStep: String, $filterByCreator: String) {
   executiveEditorQueries {
     ...PipelineOverview
   }
@@ -1349,6 +1436,11 @@ export const PipelineOverviewDocument = gql`
  * const { data, loading, error } = usePipelineOverviewQuery({
  *   variables: {
  *      page: // value for 'page'
+ *      pageSize: // value for 'pageSize'
+ *      sortBy: // value for 'sortBy'
+ *      sortDirection: // value for 'sortDirection'
+ *      filterByStep: // value for 'filterByStep'
+ *      filterByCreator: // value for 'filterByCreator'
  *   },
  * });
  */

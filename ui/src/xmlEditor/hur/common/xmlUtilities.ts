@@ -1,4 +1,5 @@
 import { isXmlTextNode, XmlTextNode, XmlElementNode } from 'simple_xml';
+import { removePotentiallyImproperPrefix, removePotentiallyImproperSuffix } from '../common/auxiliary';
 
 const mrpRegex = /^mrp(\d+)$/;
 
@@ -43,12 +44,15 @@ export function basicGetText(node: XmlElementNode): string {
 
 export function getText(node: XmlElementNode): string {
   const parts: string[] = [];
+  let removeInitialHyphen = false;
 
   for (const child of node.children) {
+    let newPart: string | null = null;
+    let nextRemoveInitialHyphen = false;
     if (isXmlTextNode(child)) {
       const textChild: XmlTextNode = child as XmlTextNode;
       if (textChild.textContent !== undefined) {
-        parts.push(textChild.textContent);
+        newPart = textChild.textContent;
       }
     } else {
       const elementChild: XmlElementNode = child as XmlElementNode;
@@ -62,20 +66,43 @@ export function getText(node: XmlElementNode): string {
           }
           break;
         case 'aGr':
-          parts.push(getText(elementChild) + '-');
+          newPart = getText(elementChild);
           break;
         case 'sGr':
-          parts.push(getText(elementChild) + '-');
+          newPart = getText(elementChild);
           break;
         case 'del_in':
-          parts.push('[');
+          newPart = '[';
           break;
         case 'del_fin':
-          parts.push(']');
+          newPart = ']';
+          break;
+        case 'c':
+          if (elementChild.attributes.type === 'sign') {
+            if (parts.length > 0) {
+              const previous = parts[parts.length - 1];
+              parts[parts.length - 1] = removePotentiallyImproperSuffix(previous, '-');
+            }
+            nextRemoveInitialHyphen = true;
+            newPart = getText(elementChild);
+          }
+          break;
+        case 'num':
+          newPart = getText(elementChild);
           break;
       }
     }
+    if (newPart !== null) {
+      if (removeInitialHyphen) {
+        newPart = removePotentiallyImproperPrefix(newPart, '-');
+      }
+      parts.push(newPart);
+      // If the element we are processing is ignored,
+      // that is, newPart is null,
+      // removeInitialHyphen should keep its value.
+      removeInitialHyphen = nextRemoveInitialHyphen;
+    }
   }
-  const result: string = parts.join('').replace(/-$/, '');
+  const result: string = parts.join('');
   return result;
 }

@@ -11,6 +11,7 @@ const errorSymbol = <>&#9876;</>;
 export interface Entry {
   transcriptions: string[];
   morphologicalAnalysis: MorphologicalAnalysis;
+  initialMorphologicalAnalysis: MorphologicalAnalysis;
 }
 
 interface IProps {
@@ -20,16 +21,15 @@ interface IProps {
   handleAnalysisInput: (value: string, optionIndex: number) => void;
   handleAnalysisBlur: (value: string, optionIndex: number) => void;
   initialShowAttestations: boolean;
-  initialMorphologicalAnalysis: MorphologicalAnalysis;
 }
 
 export function WordformElement({ entry, handleSegmentationInput,
   handleSegmentationBlur, handleAnalysisInput, handleAnalysisBlur,
-  initialShowAttestations, initialMorphologicalAnalysis }: IProps): JSX.Element {
+  initialShowAttestations }: IProps): JSX.Element {
   
   const [showAttestations, setShowAttestations] = useState(initialShowAttestations);
   
-  const { transcriptions, morphologicalAnalysis } = entry;
+  const { transcriptions, morphologicalAnalysis, initialMorphologicalAnalysis } = entry;
   const segmentation = morphologicalAnalysis.referenceWord;
   const { translation } = morphologicalAnalysis;
   const morphTags = getMorphTags(morphologicalAnalysis) || [];
@@ -41,7 +41,7 @@ export function WordformElement({ entry, handleSegmentationInput,
   });
   
   return (
-    <div>
+    <div className="wordform-element">
       <div className="flex flex-row">
         <pre className="dict-entry">
           <input value={segmentation}
@@ -70,7 +70,8 @@ export function WordformElement({ entry, handleSegmentationInput,
         }
       </div>
       {showAttestations &&
-        <ConcordanceEntryViewer attestations={attestations} getLine={getLine} />}
+        <ConcordanceEntryViewer attestations={attestations} getLine={getLine}
+                                highlightedMa={morphologicalAnalysis} />}
     </div>
   );
 }

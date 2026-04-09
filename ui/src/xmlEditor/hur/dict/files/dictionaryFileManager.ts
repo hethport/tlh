@@ -1,36 +1,16 @@
-import { getDictionary, upgradeDictionary, cleanUpDictionary } from '../dictionary';
-import { getGlosses, upgradeGlosses } from '../../translations/glossProvider';
-import { getPartsOfSpeech, setPartsOfSpeech } from '../../partsOfSpeech/partsOfSpeech';
-import { getConcordance, updateConcordance } from '../../concordance/concordance';
-import { getCorpus, updateCorpus } from '../../corpus/corpus';
+import { LexicalData, getLexicalData, setLexicalData } from '../../lexicalData/lexicalData';
 import { makeDownload } from '../../../../downloadHelper';
 
-export function downloadDictionary() {
-  const dictionary = getDictionary();
-  const glosses = getGlosses();
-  const partsOfSpeech = getPartsOfSpeech();
-  const concordance = getConcordance();
-  const corpus = getCorpus();
-  const obj = {partsOfSpeech, dictionary, glosses, concordance, corpus};
-  const jsonText = JSON.stringify(obj, undefined, '\t');
-  makeDownload(jsonText, 'Dictionary.json');
+export const lexicalDataFileName = 'Dictionary.json';
+
+export function downloadDictionary(): void {
+  const lexicalData = getLexicalData();
+  const lexicalDataString = JSON.stringify(lexicalData, undefined, '\t');
+  makeDownload(lexicalDataString, lexicalDataFileName);
 }
 
-export async function readDict(file: File) {
-  const source = await file.text();
-  const parsed = JSON.parse(source);
-  let {dictionary} = parsed;
-  const {glosses} = parsed;
-  if ('partsOfSpeech' in parsed) {
-    setPartsOfSpeech(parsed.partsOfSpeech);
-  }
-  if ('concordance' in parsed) {
-    updateConcordance(parsed.concordance);
-    dictionary = cleanUpDictionary(dictionary);
-  }
-  upgradeDictionary(dictionary);
-  upgradeGlosses(glosses);
-  if ('corpus' in parsed) {
-    updateCorpus(parsed.corpus);
-  }
+export async function readDict(file: File): Promise<void> {
+  const lexicalDataString = await file.text();
+  const lexicalData: LexicalData = JSON.parse(lexicalDataString);
+  setLexicalData(lexicalData);
 }

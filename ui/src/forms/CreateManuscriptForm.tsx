@@ -22,7 +22,7 @@ import {allKnownProvenances} from '../provenances';
 function newManuscriptIdentifier(): ManuscriptIdentifierInput {
   return {
     identifier: '',
-    identifierType: ManuscriptIdentifierType.CollectionNumber
+    identifierType: ManuscriptIdentifierType.InventoryNumber
   };
 }
 

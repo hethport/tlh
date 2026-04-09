@@ -10,6 +10,7 @@ import { SuccessMessage } from '../../designElements/Messages';
 import { XmlCreationValues } from './createCompleteDocument';
 import { TLHParser } from 'simtex';
 import { exportXmlFromParser } from '../exportFromParser';
+import { EditIdentifiersButton } from '../../EditIdentifiersButton';
 
 interface IProps extends XmlCreationValues {
   initialInput: string;
@@ -79,7 +80,10 @@ export function XmlConversion(): ReactElement {
 
   return (
     <div className="container mx-auto">
-      <h2 className="font-bold text-xl text-center">{t('xmlConversion')}</h2>
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="font-bold text-xl">{t('xmlConversion')}</h2>
+        {mainIdentifier && <EditIdentifiersButton mainIdentifier={mainIdentifier} />}
+      </div>
 
       <WithQuery query={xmlConversionQuery}>
         {({ manuscript }) => {

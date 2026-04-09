@@ -1,5 +1,5 @@
 import {ReactElement, useEffect, useState, useRef} from 'react';
-import {isXmlElementNode, XmlElementNode, XmlNode, xmlTextNode} from 'simple_xml';
+import {isXmlElementNode, isXmlTextNode, XmlElementNode, XmlNode, xmlTextNode} from 'simple_xml';
 import {XmlEditorConfig, XmlSingleEditableNodeConfig} from './editorConfig';
 import {useTranslation} from 'react-i18next';
 import {useSelector} from 'react-redux';
@@ -18,6 +18,7 @@ import {fetchCuneiform} from './elementEditors/LineBreakEditor';
 import {getPriorSiblingPath} from '../nodeIterators';
 import {coloredButtonClasses} from '../defaultDesign';
 import {condenseXmlEvents} from './HeaderEditor';
+import {postprocessNode} from './nodePostprocessing';
 
 export function buildActionSpec(innerAction: Spec<XmlNode>, path: number[]): Spec<XmlNode> {
   return path.reduceRight(
@@ -203,9 +204,14 @@ export function XmlDocumentEditor({
         ? editNodeEditorState(findElement(state.rootNode as XmlElementNode, nextEditablePath), editorConfig, nextEditablePath)
         : undefined;
 
+      const editedNode = state.editorState.node;
+      const resultingNode = postprocessNode(editedNode);
+
       return update(state, {
-        rootNode: buildSpec(state.editorState.path, {$set: state.editorState.node}),
-        editorState: newEditorState !== undefined ? {$set: newEditorState} : {changed: {$set: false}},
+        rootNode: buildSpec(state.editorState.path, {$set: resultingNode}),
+        editorState: newEditorState !== undefined
+          ? {$set: newEditorState}
+          : {changed: {$set: false}, node: {$set: resultingNode}},
         changed: {$set: true}
       });
     }
@@ -301,7 +307,8 @@ export function XmlDocumentEditor({
 
     return (
       <NodeEditorRightSide key={path.join('.')} rootNode={state.rootNode as XmlElementNode} originalNode={node} changed={changed}
-                           deleteNode={() => deleteNode(path)} applyUpdates={() => applyUpdates()}
+                           deleteNode={() => deleteNode(path)} applyUpdates={() => { applyUpdates();
+                                                                setState((state) => update(state, {editorState: {$set: defaultRightSideState}})); }}
                            cancelSelection={() => setState((state) => update(state, {editorState: {$set: defaultRightSideState}}))}
                            jumpElement={(forward) => jumpEditableNodes(node.tagName, forward)} fontSizeSelectorProps={fontSizeSelectorProps}
                            globalUpdateButtonRef={globalUpdateButtonRef}>
@@ -356,17 +363,45 @@ export function XmlDocumentEditor({
     if (!isXmlElementNode(node)) {
       return node;
     }
-    const key = path.join('.');
-    if (!affectedParentKeys.has(key)) {
-      // This subtree had no deletions — leave it entirely alone
+
+    // Never remove structural/marker tags
+    const structuralTags = ['lb', 'clb', 'parsep', 'gap'];
+    if (structuralTags.includes(node.tagName)) {
       return node;
     }
+
+    const key = path.join('.');
+    if (!affectedParentKeys.has(key)) {
+      return node;
+    }
+
     const cleanedChildren = node.children
       .map((child, i) => pruneEmptyAncestors(child, [...path, i], affectedParentKeys))
       .filter((c): c is XmlNode => c !== null);
-    if (cleanedChildren.length === 0) {
+
+    // Separate structural markers from regular content
+    const structuralChildren = cleanedChildren.filter(child =>
+      isXmlElementNode(child) && structuralTags.includes(child.tagName)
+    );
+    const regularChildren = cleanedChildren.filter(child =>
+      !(isXmlElementNode(child) && structuralTags.includes(child.tagName))
+    );
+
+    // If there are any structural markers, ALWAYS keep the node
+    if (structuralChildren.length > 0) {
+      return {...node, children: cleanedChildren};
+    }
+
+    // No structural markers: check if only whitespace remains
+    const isEffectivelyEmpty = regularChildren.length === 0 ||
+      regularChildren.every(child =>
+        isXmlTextNode(child) && child.textContent.trim() === ''
+      );
+
+    if (isEffectivelyEmpty) {
       return null;
     }
+
     return {...node, children: cleanedChildren};
   }
 
@@ -521,7 +556,9 @@ export function XmlDocumentEditor({
       </div>
     ) : (
       <div className="px-2 grid grid-cols-2 gap-4" style={{ height: 'calc(100vh - 5.5rem)' }}>
-        <EditorLeftSide {...leftSideProps} filename={filename} node={state.rootNode} onNodeSelect={onNodeSelect}/>
+        <div className="max-h-full overflow-auto" style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word', overflowWrap: 'break-word' }}>
+          <EditorLeftSide {...leftSideProps} filename={filename} node={state.rootNode} onNodeSelect={onNodeSelect}/>
+        </div>
 
         {state.editorState._type === 'EditNodeRightState'
           ? (

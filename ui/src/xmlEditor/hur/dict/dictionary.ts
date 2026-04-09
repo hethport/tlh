@@ -3,21 +3,73 @@ import { getText, getMrps } from '../common/xmlUtilities';
 import { makeBoundTranscription } from '../transduction/transcribe';
 import { makeStandardAnalyses } from '../transduction/standardAnalysis';
 import { setGlosses, saveGloss } from '../translations/glossUpdater';
-import { MorphologicalAnalysis, writeMorphAnalysisValue, readMorphologicalAnalysis }
+import { MorphologicalAnalysis, readMorphologicalAnalysis }
   from '../../../model/morphologicalAnalysis';
 import { convertDictionary } from '../common/utility';
-import { isValid, normalize } from './morphologicalAnalysisValidator';
-import segmenter from '../segmentation/segmenter';
+import { isValid, normalize, isValidFor } from './morphologicalAnalysisValidator';
+import { Segmenter, createSegmenter } from '../segmentation/segmenter';
 import { readMorphAnalysisValue } from '../morphologicalAnalysis/auxiliary';
-import { inConcordance } from '../concordance/concordance';
-import { objectToSetValuedMap, updateSetValuedMapWithOverride, formIsFragment, remove } from '../common/utils';
-import { locallyStoreSetValuedMap } from '../dictLocalStorage/localStorageUtils';
+import { objectToSetValuedMap, remove } from '../common/utils';
+import { locallyStoreSetValuedMap, loadFromLocalStorage } from '../dictLocalStorage/localStorageUtils';
+import { reserializeMorphologicalAnalysis } from '../morphologicalAnalysis/reserialization';
+import { containsBrackets, removeBrackets } from '../common/brackets';
+import { SegmenterInfo, IStem } from '../segmentation/segmenterInfo';
+import { addMultiple, add } from '../common/utils';
+import { isOnTheStopListFor } from '../stopList/stopList';
+import { StemInventories, getStemInventories }
+  from '../segmentation/stemInventories';
+import { SuffixChainInventories, getSuffixChainInventories }
+  from '../segmentation/suffixChainInventories';
+import { LookupConfig, defaultLookupConfig } from '../../lookupConfig';
+import { simplifyTranscription } from '../transduction/simplifyTranscription';
+import { parseMorphologicalAnalyses } from './parseMorphologicalAnalyses';
+import { writeMorphologicalAnalysesToNode } from './writeMorphologicalAnalysesToNode';
+import { getNegatedFrequencyDifference } from '../concordance/concordance';
+import { shouldBeAnnotated } from './shouldBeAnnotated';
 
 export type Dictionary = Map<string, Set<string>>;
 
 export type ModifyDictionary = (dictionary: Dictionary) => Dictionary;
 
 export type SetDictionary = (modifyDictionary: ModifyDictionary) => void;
+
+export type DictionaryObject = { [key: string]: string[] };
+
+let segmenter: Segmenter = new Segmenter();
+let segmenterInfo: SegmenterInfo = new SegmenterInfo(segmenter);
+
+const lookupConfigKey = 'lookupPreferences';
+
+export function getLookupConfig(): LookupConfig {
+  const lookupConfig = loadFromLocalStorage<LookupConfig>(lookupConfigKey, defaultLookupConfig);
+  return lookupConfig;
+}
+
+function simplifyDictionary(dictionary: Dictionary, lookupConfig: LookupConfig): Dictionary {
+  simplifiedDictionary = new Map<string, Set<string>>();
+  for (const [transcription, analyses] of dictionary) {
+    const simplifiedTranscription = simplifyTranscription(transcription, lookupConfig);
+    addMultiple(simplifiedDictionary, simplifiedTranscription, analyses);
+  }
+  return simplifiedDictionary;
+}
+
+function rebuildSimplifiedDictionary(dictionary: Dictionary, lookupConfig: LookupConfig): void {
+  simplifiedDictionary = simplifyDictionary(dictionary, lookupConfig);
+  segmenter = createSegmenter(dictionary, lookupConfig);
+  segmenterInfo = new SegmenterInfo(segmenter);
+}
+
+export function rebuildSimplifiedDictionaryWithNewConfig(lookupConfig: LookupConfig): void {
+  rebuildSimplifiedDictionary(dictionary, lookupConfig);
+}
+
+function readLookupConfigAndRebuildSimplifiedDictionary(dictionary: Dictionary): void {
+  const lookupConfig = getLookupConfig();
+  rebuildSimplifiedDictionary(dictionary, lookupConfig);
+}
+
+let simplifiedDictionary: Dictionary = new Map();
 
 function initializeDictionary(locStorKey: string): Dictionary {
   const locallyStoredDictionary = localStorage.getItem(locStorKey);
@@ -26,7 +78,7 @@ function initializeDictionary(locStorKey: string): Dictionary {
   } else {
     const dictObject: { [key: string]: string[] } = JSON.parse(locallyStoredDictionary);
     const dict = objectToSetValuedMap(cleanUpDictionary(dictObject));
-    updateSegmenter(dict);
+    readLookupConfigAndRebuildSimplifiedDictionary(dict);
     return dict;
   }
 }
@@ -57,7 +109,27 @@ export function containsAnalysis(dictionary: Dictionary, analysis: string): bool
   return Array.from(dictionary.values()).some(analyses => analyses.has(analysis));
 }
 
-export function annotateHurrianWord(node: XmlElementNode): void {
+type LookupResult = Set<string> | undefined;
+
+/*
+ * Repeat the lookup with brackets removed if it was unsuccessful.
+ */
+function lookup(dictionary: Dictionary, transcription: string): LookupResult {
+  const analyses = dictionary.get(transcription);
+  if (analyses === undefined && containsBrackets(transcription)) {
+    return dictionary.get(removeBrackets(transcription));
+  } else {
+    return analyses;
+  }
+}
+
+function isAppropriateFor(morphologicalAnalysis: MorphologicalAnalysis, transcription: string): boolean {
+  return isValidFor(morphologicalAnalysis, transcription) &&
+    !isOnTheStopListFor(morphologicalAnalysis, transcription);
+}
+
+export function annotateHurrianWord(node: XmlElementNode, lookupConfig: LookupConfig): void {
+
   const transliteration: string = getText(node);
   const transcription: string = makeBoundTranscription(transliteration);
 
@@ -65,44 +137,38 @@ export function annotateHurrianWord(node: XmlElementNode): void {
   if (node.attributes.mrp0sel === 'HURR') {
     node.attributes.mrp0sel = '';
   }
+  const simplifiedTranscription = simplifyTranscription(transcription, lookupConfig);
 
-  if (dictionary.has(transcription)) {
+  const possibilities: Set<string> | undefined = lookup(simplifiedDictionary, simplifiedTranscription);
+  if (possibilities !== undefined) {
     setGlosses(node);
-    const possibilities: Set<string> | undefined = dictionary.get(transcription);
-    if (possibilities === undefined) {
-      throw new Error();
-    }
     if (node.attributes.firstAnalysisIsPlaceholder === 'true') {
       delete node.attributes.mrp1;
       delete node.attributes.firstAnalysisIsPlaceholder;
     }
     const mrps: Map<string, string> = getMrps(node);
     if (mrps.size === 0) {
-      let i = 1;
-      for (const analysis of possibilities) {
-        if (isValid(analysis)) {
-          node.attributes['mrp' + i.toString()] = analysis;
-          i++;
-        }
-      }
+      const morphologicalAnalyses = parseMorphologicalAnalyses(possibilities)
+        .filter(morphologicalAnalysis => isAppropriateFor(morphologicalAnalysis, transcription))
+        .sort(getNegatedFrequencyDifference);
+      writeMorphologicalAnalysesToNode(morphologicalAnalyses, node);
     }
   } else {
+    if (!shouldBeAnnotated(transcription)) {
+      return;
+    }
     const mrps: Map<string, string> = getMrps(node);
     if (mrps.size === 0) {
-      const results: MorphologicalAnalysis[] = segmenter.segment(transcription);
+      const results: MorphologicalAnalysis[] = segmenter.segment(
+        simplifiedTranscription, transcription, lookupConfig
+      ).filter(ma => !isOnTheStopListFor(ma, transcription));
       if (results.length > 0) {
-        let i = 1;
-        for (const ma of results) {
-          node.attributes['mrp' + i.toString()] = writeMorphAnalysisValue(ma);
-          i++;
-        }
+        writeMorphologicalAnalysesToNode(results, node);
       } else {
-        const analyses: MorphologicalAnalysis[] = makeStandardAnalyses(transcription);
+        const analyses: MorphologicalAnalysis[] = makeStandardAnalyses(transcription)
+          .filter(ma => !isOnTheStopListFor(ma, transcription));
         if (analyses.length > 0) {
-          for (const ma of analyses) {
-            node.attributes['mrp' + ma.number.toString()]
-            = writeMorphAnalysisValue(ma);
-          }
+          writeMorphologicalAnalysesToNode(analyses, node);
         }
         else {
           node.attributes.mrp1 = transcription + '@@@@';
@@ -115,39 +181,30 @@ export function annotateHurrianWord(node: XmlElementNode): void {
 }
 
 export function updateHurrianDictionary(
-  node: XmlElementNode, number: number, value: string
+  node: XmlElementNode, number: number, value: string, lookupConfig: LookupConfig
 ): void {
   if (number === 1) {
     delete node.attributes.firstAnalysisIsPlaceholder;
   }
   const transcription: string = node.attributes.trans || '';
-  basicUpdateHurrianDictionary(transcription, value);
+  basicUpdateHurrianDictionary(transcription, value, lookupConfig);
   saveGloss(number, value);
 }
 
 export function basicUpdateHurrianDictionary(
-  transcription: string, value: string
+  transcription: string, value: string, lookupConfig: LookupConfig
 ): void {
   if (!isValid(value)) {
     return;
   }
   const normalized = normalize(value, true, false);
   if (normalized !== null) {
-    let possibilities: Set<string> | undefined;
-    if (dictionary.has(transcription)) {
-      possibilities = dictionary.get(transcription);
-    }
-    else {
-      possibilities = new Set<string>();
-      dictionary.set(transcription, possibilities);
-    }
-    if (possibilities === undefined) {
-      throw new Error();
-    }
-    possibilities.add(normalized);
+    add(dictionary, transcription, normalized);
+    const simplifiedTranscription = simplifyTranscription(transcription, lookupConfig);
+    add(simplifiedDictionary, simplifiedTranscription, normalized);
     const ma = readMorphologicalAnalysis(1, normalized, []);
     if (ma !== undefined) {
-      segmenter.add(transcription, ma);
+      segmenter.add(simplifiedTranscription, ma, lookupConfig, transcription);
     }
   }
 }
@@ -160,36 +217,47 @@ export function getDictionary(): { [key: string]: string[] } {
   return convertDictionary(dictionary);
 }
 
-export function upgradeDictionary(object: { [key: string]: string[] }): void {
-  updateSetValuedMapWithOverride(dictionary, object);
-  updateSegmenter(dictionary);
-}
-
-function updateSegmenter(dict: Dictionary): void {
-  for (const [transcription, analyses] of dict.entries()) {
-    if (!formIsFragment(transcription)) {
-      for (const analysis of analyses) {
-        if (isValid(analysis)) {
-          const morphologicalAnalysis = readMorphAnalysisValue(analysis);
-          if (morphologicalAnalysis !== undefined) {
-            segmenter.add(transcription, morphologicalAnalysis);
-          }
-        }
-      }
-    }
-  }
-}
-
 export function cleanUpDictionary(object: { [key: string]: string[] }): { [key: string]: string[] } {
   const newObject: { [key: string]: string[] } = {};
   for (const [key, values] of Object.entries(object)) {
     const newValues = values.filter(analysis => {
       const ma = readMorphAnalysisValue(analysis);
-      return ma !== undefined && inConcordance(ma);
+      return ma !== undefined;
     });
     if (newValues.length > 0) {
       newObject[key] = newValues;
     }
   }
   return newObject;
+}
+
+export function setDictionary(obj: { [key: string]: string[] }): void {
+  const newObj: { [key: string]: string[] } = {};
+  for (const [transcription, analyses] of Object.entries(obj)) {
+    const newAnalyses: string[] = [];
+    for (const analysis of analyses) {
+      const reserialized = reserializeMorphologicalAnalysis(analysis);
+      if (reserialized !== undefined) {
+        newAnalyses.push(reserialized);
+      }
+    }
+    if (newAnalyses.length > 0) {
+      newObj[transcription] = newAnalyses;
+    }
+  }
+  dictionary = objectToSetValuedMap(newObj);
+  readLookupConfigAndRebuildSimplifiedDictionary(dictionary);
+}
+
+export function getStemVariants(stem: IStem): Set<string> {
+  return segmenterInfo.getStemVariants(stem);
+}
+
+
+export function getStems(): StemInventories {
+  return getStemInventories(segmenter);
+}
+
+export function getSuffixChains(): SuffixChainInventories {
+  return getSuffixChainInventories(segmenter);
 }

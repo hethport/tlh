@@ -33,6 +33,10 @@ export const dictionaryViewerUrl = '/dictionaryViewer';
 
 export const macroeditorUrl = '/macroeditor';
 
+export const suffixDictionaryUrl = '/suffixDictionary';
+
+export const stopListViewerUrl = '/stopList';
+
 export const userManagementUrl = '/userManagement';
 
 export const pipelineManagementUrl = '/pipelineManagement';
@@ -44,6 +48,8 @@ export const manuscriptsUrlFragment = 'manuscripts';
 export const managePicturesUrl = 'managePictures';
 
 export const createTransliterationUrl = 'createTransliteration';
+
+export const createAnonymousTransliterationUrl = 'createAnonymousTransliteration';
 
 export const transliterationReviewUrl = 'transliterationReview';
 

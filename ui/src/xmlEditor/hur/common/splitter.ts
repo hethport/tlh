@@ -1,8 +1,24 @@
+import { removePotentiallyImproperSuffix } from './auxiliary';
+
+export const openingBracket = '[';
+
+/**
+ * Determine whether the letter at the specified position
+ * in the given word is enclosed in parentheses.
+ */
+function inParentheses(word: string, position: number): boolean {
+  if (position < 1 || position >= word.length - 1) {
+    return false;
+  } else {
+    return word[position - 1] === '(' && word[position + 1] === ')';
+  }
+}
+
 export function findBoundary(segmentation: string): number {
   let i;
   for (i = 0; i < segmentation.length; i++) {
     const char: string = segmentation[i];
-    if (char == '-' || char == '=') {
+    if (char == '-' && !inParentheses(segmentation, i) || char == '=') {
       break;
     }
   }
@@ -24,7 +40,12 @@ function findTagBoundary(segmentation: string): number {
 export function getStem(segmentation: string): string {
   const i: number = findBoundary(segmentation);
   const stem: string = segmentation.substring(0, i);
-  return stem.replaceAll('(', '').replaceAll(')', '');
+  return stem;
+}
+
+export function getStemWithoutFinalOpeningBracket(segmentation: string): string {
+  const stem = getStem(segmentation);
+  return removePotentiallyImproperSuffix(stem, openingBracket);
 }
 
 function basicGetGrammaticalMorphemes(segmentation: string, i: number): string {
@@ -49,6 +70,12 @@ export function getStemAndGrammaticalMorphemes(segmentation: string): [string, s
   const stem: string = segmentation.substring(0, i);
   const grammaticalMorphemes = basicGetGrammaticalMorphemes(segmentation, i);
   return [stem, grammaticalMorphemes];
+}
+
+export function getGrammaticalMorphemesWithBoundary(segmentation: string): string {
+  const i: number = findBoundary(segmentation);
+  const grammaticalMorphemes = segmentation.substring(i);
+  return grammaticalMorphemes;
 }
 
 export function getStemAndGrammaticalMorphemesWithBoundary(segmentation: string): [string, string] {

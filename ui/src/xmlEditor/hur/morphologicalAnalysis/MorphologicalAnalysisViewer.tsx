@@ -12,7 +12,7 @@ export function MorphologicalAnalysisViewer({ morphologicalAnalysis }: IProps): 
   const morphTags = getMorphTags(morphologicalAnalysis) || [];
   
   return (
-    <pre className="dict-entry">
+    <pre className="morphological-analysis-viewer">
       <label>{referenceWord}</label>
       {(morphTags).map((tag: string, index: number) => {
           const gloss = makeGloss(translation, tag);

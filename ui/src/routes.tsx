@@ -22,7 +22,10 @@ import {
   xmlComparatorUrl,
   xmlConversionUrl,
   dictionaryViewerUrl,
-  macroeditorUrl
+  createAnonymousTransliterationUrl,
+  macroeditorUrl,
+  suffixDictionaryUrl,
+  stopListViewerUrl
 } from './urls';
 import {RegisterForm} from './forms/RegisterForm';
 import {Home} from './Home';
@@ -41,6 +44,7 @@ import {Rights, XmlReviewType} from './graphql';
 import {ManuscriptData} from './manuscript/ManuscriptData';
 import {UploadPicturesForm} from './manuscript/UploadPicturesForm';
 import {TransliterationInputContainer} from './manuscript/TransliterationInput';
+import {AnonymousTransliterationInput} from './manuscript/AnonymousTransliterationInput';
 import {UserManagement} from './UserManagement';
 import {TransliterationReview} from './manuscript/TransliterationReview';
 import {XmlConversion} from './manuscript/xmlConversion/XmlConversion';
@@ -50,7 +54,12 @@ import {DocumentApproval} from './manuscript/DocumentApproval';
 import {ForgotPasswordForm} from './forms/ForgotPasswordForm';
 import {ResetPasswordForm} from './forms/ResetPasswordForm';
 import {getGlobalDictionary} from './xmlEditor/hur/dict/dictionary';
+import {getGlobalEnglishTranslations} from './xmlEditor/hur/translations/englishTranslations';
 import {getChanges} from './xmlEditor/hur/changes/changesAccumulator';
+import {TextDisplay} from './xmlEditor/hur/concordanceEntryViewer/TextDisplay';
+import {SuffixDictionaryContainer} from './xmlEditor/hur/dictionaryViewer/SuffixDictionaryContainer';
+import {StopListViewer} from './xmlEditor/hur/StopListViewer';
+import {getGlobalStopList} from './xmlEditor/hur/stopList/stopList';
 
 export const router = createBrowserRouter([
     {
@@ -96,13 +105,28 @@ export const router = createBrowserRouter([
         {path: xmlComparatorUrl, element: <XmlComparatorContainer/>},
         
         {path: dictionaryViewerUrl,
-         element: <DictionaryViewerContainer getInitialDictionary={getGlobalDictionary}/>},
+         element: <DictionaryViewerContainer
+                    getInitialDictionary={getGlobalDictionary}
+                    getInitialEnglishTranslations={getGlobalEnglishTranslations} />},
         
         {path: macroeditorUrl, element: <MacroeditorContainer getChanges={getChanges}/>},
+
+        {path: suffixDictionaryUrl, element: <SuffixDictionaryContainer
+                                              getInitialDictionary={getGlobalDictionary}/>},
+
+        {path: stopListViewerUrl, element: <StopListViewer
+                                            getInitialStopList={getGlobalStopList}/>},
 
         {path: preferencesUrl, element: <Preferences/>},
 
         {path: documentMergerUrl, element: <DocumentMergerContainer/>},
+
+        {path: createAnonymousTransliterationUrl, element: <AnonymousTransliterationInput/>},
+
+        {path: 'texts/:text', element: <TextDisplay/>},
+
+        {path: 'texts/:text/:highlightedAnalysis', element: <TextDisplay/>},
+
       ],
       errorElement: <ErrorBoundary/>
     }

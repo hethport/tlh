@@ -3,14 +3,26 @@ import { getPos } from '../partsOfSpeech/partsOfSpeech';
 import { MorphologicalAnalysis, SingleMorphologicalAnalysisWithoutEnclitics,
   MultiMorphologicalAnalysisWithoutEnclitics
 } from '../../../model/morphologicalAnalysis';
-import { makeAnalysisOptions, getMorphTags } from '../common/utils';
+import { makeAnalysisOptions, getMorphTags, formIsFragment } from '../common/utils';
 import { basicGetStem } from '../common/splitter';
+import { isValid } from '../dict/morphologicalAnalysisValidator';
+import { readMorphAnalysisValue } from '../morphologicalAnalysis/auxiliary';
+import { quickGetAttestations } from '../concordance/concordance';
+import { LookupConfig } from '../../lookupConfig';
+import { simplifyTranscription } from '../transduction/simplifyTranscription';
+
+const openClassPartsOfSpeech = ['noun', 'verb', 'NF', 'ADJ'];
+
+function getFrequency(ma: MorphologicalAnalysis): number {
+  return quickGetAttestations(ma).length;
+}
 
 export class Analysis extends PartialAnalysis {
   pos: string;
 
-  constructor(segmentation: string, translation: string, morphTags: string[], pos: string) {
-    super(segmentation, translation, morphTags);
+  constructor(segmentation: string, translation: string, morphTags: string[], pos: string,
+              surfaceSuffixChain: string, suffixChainFrequency: number) {
+    super(segmentation, translation, morphTags, surfaceSuffixChain, suffixChainFrequency);
     this.pos = pos;
   }
 
@@ -44,10 +56,17 @@ export class Analysis extends PartialAnalysis {
   }
 }
 
-class Segmenter {
+function compareAnalyses(analysis1: Analysis, analysis2: Analysis): number {
+  // We negate the frequency difference to get descending
+  // sorting by frequency.
+  return - (analysis1.suffixChainFrequency - analysis2.suffixChainFrequency);
+}
+
+export class Segmenter {
   segmenters = new Map<string, BasicSegmenter>();
 
-  add(transcription: string, analysis: MorphologicalAnalysis) {
+  add(transcription: string, analysis: MorphologicalAnalysis, lookupConfig: LookupConfig,
+      detailedTranscription: string) {
     const morphTags = getMorphTags(analysis);
     if (morphTags !== null) {
       const segmentation = analysis.referenceWord;
@@ -59,45 +78,79 @@ class Segmenter {
         segmenter = new BasicSegmenter();
         this.segmenters.set(pos, segmenter);
       }
-      segmenter.add(transcription, segmentation, translation, morphTags);
+      const frequency = getFrequency(analysis);
+      segmenter.add(transcription, segmentation, translation, morphTags, frequency, lookupConfig,
+                    detailedTranscription);
     }
   }
 
-  segment(wordform: string): MorphologicalAnalysis[] {
-    const result: MorphologicalAnalysis[] = [];
+  segment(wordform: string, detailedTranscription: string, lookupConfig: LookupConfig): MorphologicalAnalysis[] {
+    let result: Analysis[] = [];
     for (const [pos, segmenter] of this.segmenters) {
-      const partialAnalyses = segmenter.segment(wordform);
+      const partialAnalyses = segmenter.segment(wordform, lookupConfig);
       for (const partialAnalysis of partialAnalyses) {
         const analysis = new Analysis(
           partialAnalysis.segmentation,
           partialAnalysis.translation,
           partialAnalysis.morphTags,
-          pos
+          pos,
+          partialAnalysis.surfaceSuffixChain,
+          partialAnalysis.suffixChainFrequency
         );
-        result.push(analysis.toMorphologicalAnalysis());
+        result.push(analysis);
       }
     }
     if (result.length === 0) {
-      for (const [pos, segmenter] of this.segmenters) {
-        const partialAnalyses = segmenter.segmentOov(wordform);
+      let maxLength = 0;
+      for (const pos of openClassPartsOfSpeech) {
+        const segmenter = this.segmenters.get(pos);
+        if (segmenter === undefined) {
+          continue;
+        }
+        const partialAnalyses = segmenter.segmentOov(wordform, detailedTranscription, lookupConfig);
         for (const partialAnalysis of partialAnalyses) {
-          const segmentation = partialAnalysis.segmentation;
+          const { segmentation, surfaceSuffixChain } = partialAnalysis;
           const stem = basicGetStem(segmentation);
           if (stem.length >= 2) {
+            const length = surfaceSuffixChain.length === 0 ? 1 : surfaceSuffixChain.length;
+            if (length > maxLength) {
+              maxLength = length;
+              result = [];
+            } else if (length < maxLength) {
+              continue;
+            }
             const analysis = new Analysis(
               partialAnalysis.segmentation,
               partialAnalysis.translation,
               partialAnalysis.morphTags,
-              pos
+              pos,
+              surfaceSuffixChain,
+              partialAnalysis.suffixChainFrequency
             );
-            result.push(analysis.toMorphologicalAnalysis());
+            result.push(analysis);
           }
         }
       }
     }
-    return result;
+    return result.sort(compareAnalyses)
+      .map(analysis => analysis.toMorphologicalAnalysis());
   }
 }
 
-const segmenter = new Segmenter();
-export default segmenter;
+export function createSegmenter(dict: Map<string, Set<string>>, lookupConfig: LookupConfig): Segmenter {
+  const segmenter = new Segmenter();
+  for (const [transcription, analyses] of dict.entries()) {
+    if (!formIsFragment(transcription)) {
+      for (const analysis of analyses) {
+        if (isValid(analysis)) {
+          const morphologicalAnalysis = readMorphAnalysisValue(analysis);
+          if (morphologicalAnalysis !== undefined) {
+            const simplifiedTranscription = simplifyTranscription(transcription, lookupConfig);
+            segmenter.add(simplifiedTranscription, morphologicalAnalysis, lookupConfig, transcription);
+          }
+        }
+      }
+    }
+  }
+  return segmenter;
+}

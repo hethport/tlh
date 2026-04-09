@@ -1,9 +1,9 @@
 import {useTranslation} from 'react-i18next';
-import {JSX, useState} from 'react';
+import {JSX, useState, useEffect} from 'react';
 import {IndexQuery, useIndexLazyQuery} from './graphql';
-import {Link} from 'react-router-dom';
+import {Link, useNavigate} from 'react-router-dom';
 import {WithQuery} from './WithQuery';
-import {createManuscriptUrl} from './urls';
+import {createAnonymousTransliterationUrl, createManuscriptUrl} from './urls';
 import {ManuscriptsOverview} from './ManuscriptsOverview';
 import {ManuscriptLinkButtons} from './ManuscriptLinkButtons';
 import {Box} from './Box';
@@ -39,8 +39,24 @@ function Inner({manuscriptCount, allManuscripts, myManuscripts, page, queryPage,
 export function Home(): JSX.Element {
 
   const {t} = useTranslation('common');
+  const navigate = useNavigate();
   const [executeIndexQuery, indexQuery] = useIndexLazyQuery();
   const [page, setPage] = useState(0);
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.shiftKey && event.key === 'M') {
+        event.preventDefault();
+        navigate(createAnonymousTransliterationUrl);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [navigate]);
 
   function queryPage(page: number) {
     executeIndexQuery({variables: {page}})

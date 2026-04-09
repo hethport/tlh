@@ -1,16 +1,16 @@
 import {JSX, useState} from 'react';
 import {useTranslation} from 'react-i18next';
 import {SingleMorphAnalysisOptionButton} from './SingleMorphAnalysisOptionButton';
-import {isSingleMorphologicalAnalysis, MorphologicalAnalysis, MultiMorphologicalAnalysis, writeMorphAnalysisValue} from '../../model/morphologicalAnalysis';
+import {isSingleMorphologicalAnalysis, MorphologicalAnalysis, MultiMorphologicalAnalysis} from '../../model/morphologicalAnalysis';
 import {CanToggleAnalysisSelection} from './MorphAnalysisOptionContainer';
 import {MultiMorphAnalysisOptionButtons} from './MultiMorphAnalysisOptionButtons';
 import classNames from 'classnames';
 import {analysisIsInNumerus, numeri, NumerusOption, stringifyNumerus} from './numerusOption';
 import update from 'immutability-helper';
-import { deleteAnalysisFromHurrianDictionary } from '../hur/dict/dictionary';
 import { getPartsOfSpeech, getPos } from '../hur/partsOfSpeech/partsOfSpeech';
 import {TranslationEditor} from '../hur/translations/TranslationEditor';
 import {getStem} from '../hur/common/splitter';
+import { addToTheStopListFor } from '../hur/stopList/stopList';
 
 interface IProps extends CanToggleAnalysisSelection {
   morphologicalAnalysis: MorphologicalAnalysis;
@@ -86,14 +86,13 @@ export function MorphAnalysisOptionButtons({morphologicalAnalysis, toggleAnalysi
     }
   };
 
-  const deleteNodeAndDictionaryMorphology = () => {
+  const deleteNodeMorphologyAndItToTheStopList = () => {
     if (isSelected(morphologicalAnalysis)) {
       alert('You should unselect the analysis before deletion.');
     }
     else {
       deleteMorphology(morphologicalAnalysis);
-      const value: string = writeMorphAnalysisValue(morphologicalAnalysis);
-      deleteAnalysisFromHurrianDictionary(transcription, value);
+      addToTheStopListFor(morphologicalAnalysis, transcription);
     }
   };
 
@@ -161,13 +160,13 @@ export function MorphAnalysisOptionButtons({morphologicalAnalysis, toggleAnalysi
 
         <button type="button" className="p-2 rounded-r border border-slate-500"
                 onClick={deleteNodeMorphology}
-                title={'Delete for this only'}>
+                title={t('deleteMorphologicalAnalysis')}>
         &#9960;
         </button>
 
         <button type="button" className="p-2 rounded-r border border-slate-500"
-                onClick={deleteNodeAndDictionaryMorphology}
-                title={'Delete morphological analysis'}>
+                onClick={deleteNodeMorphologyAndItToTheStopList}
+                title={t('deleteMorphologicalAnalysisAndAddItToTheStopList')}>
         &#10754;
         </button>
 

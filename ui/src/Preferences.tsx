@@ -1,9 +1,17 @@
 import {Field, Form, Formik} from 'formik';
 import {useTranslation} from 'react-i18next';
 import {useDispatch, useSelector} from 'react-redux';
-import {editorKeyConfigSelector, updatePreferences} from './newStore';
+import {editorKeyConfigSelector, updatePreferences,
+  dictionaryConfigSelector, updateDictionaryPreferences,
+  alphabetizationConfigSelector, updateAlphabetizationPreferences,
+  lookupConfigSelector, updateLookupPreferences}
+  from './newStore';
 import {JSX, useState} from 'react';
 import {EditorKeyConfig} from './xmlEditor/editorKeyConfig';
+import {DictionaryConfig} from './xmlEditor/dictionaryConfig';
+import {AlphabetizationConfig, alphabetizationConfigKeys} from './xmlEditor/alphabetizationConfig';
+import {LookupConfig, lookupConfigKeys} from './xmlEditor/lookupConfig';
+import {rebuildSimplifiedDictionaryWithNewConfig} from './xmlEditor/hur/dict/dictionary';
 
 const splitKey = ',';
 
@@ -13,6 +21,17 @@ interface FormValues {
   updateAndPrevNodeKeys: string;
   prevNodeKeys: string;
   submitKeys: string;
+  fragmInSuffixDict: boolean;
+  showUnclearForms: boolean;
+  alphabetizeFAsP: boolean;
+  alphabetizeVAsB: boolean;
+  alphabetizeIAsE: boolean;
+  alphabetizeOAsU: boolean;
+  alphabetizeVoicedConsonantsAsVoiceless: boolean;
+  ignorePlene: boolean;
+  mergeLabials: boolean;
+  mergeMidAndHighVowels: boolean;
+  ignoreVoice: boolean;
 }
 
 function dismantleFormEntry(entry: string): string[] {
@@ -30,6 +49,9 @@ export function Preferences(): JSX.Element {
   const {t} = useTranslation('common');
   const dispatch = useDispatch();
   const currentEditorConfig: EditorKeyConfig = useSelector(editorKeyConfigSelector);
+  const currentDictionaryConfig: DictionaryConfig = useSelector(dictionaryConfigSelector);
+  const currentAlphabetizationConfig: AlphabetizationConfig = useSelector(alphabetizationConfigSelector);
+  const currentLookupConfig: LookupConfig = useSelector(lookupConfigSelector);
   const [updated, setUpdated] = useState(false);
 
   const initialValues: FormValues = {
@@ -37,11 +59,19 @@ export function Preferences(): JSX.Element {
     nextNodeKeys: currentEditorConfig.nextEditableNodeKeys.join(splitKey),
     updateAndPrevNodeKeys: currentEditorConfig.updateAndPreviousEditableNodeKeys.join(splitKey),
     prevNodeKeys: currentEditorConfig.previousEditableNodeKeys.join(splitKey),
-    submitKeys: currentEditorConfig.submitChangeKeys.join(splitKey)
+    submitKeys: currentEditorConfig.submitChangeKeys.join(splitKey),
+    fragmInSuffixDict: currentDictionaryConfig.fragmInSuffixDict,
+    showUnclearForms: currentDictionaryConfig.showUnclearForms,
+    ...currentAlphabetizationConfig,
+    ...currentLookupConfig,
   };
 
   function onSubmit(newConfig: FormValues): void {
-    const {updateAndNextNodeKeys, nextNodeKeys, updateAndPrevNodeKeys, prevNodeKeys, submitKeys} = newConfig;
+    const {updateAndNextNodeKeys, nextNodeKeys, updateAndPrevNodeKeys, prevNodeKeys, submitKeys,
+           fragmInSuffixDict, showUnclearForms,
+           alphabetizeFAsP, alphabetizeVAsB, alphabetizeIAsE, alphabetizeOAsU,
+           alphabetizeVoicedConsonantsAsVoiceless,
+           ignorePlene, mergeLabials,mergeMidAndHighVowels, ignoreVoice,} = newConfig;
 
     const updateAndNextEditableNodeKeys = dismantleFormEntry(updateAndNextNodeKeys);
     const nextEditableNodeKeys = dismantleFormEntry(nextNodeKeys);
@@ -80,7 +110,37 @@ export function Preferences(): JSX.Element {
       })
     );
 
+    dispatch(
+      updateAlphabetizationPreferences({
+        alphabetizeFAsP,
+        alphabetizeVAsB,
+        alphabetizeIAsE,
+        alphabetizeOAsU,
+        alphabetizeVoicedConsonantsAsVoiceless
+      })
+    );
+
+    dispatch(
+      updateDictionaryPreferences({
+        fragmInSuffixDict,
+        showUnclearForms,
+      })
+    );
+
+    const newLookupConfig: LookupConfig = {
+      ignorePlene,
+      mergeLabials,
+      mergeMidAndHighVowels,
+      ignoreVoice,
+    };
+
+    dispatch(
+      updateLookupPreferences(newLookupConfig)
+    );
+
     setUpdated(true);
+
+    rebuildSimplifiedDictionaryWithNewConfig(newLookupConfig);
   }
 
   return (
@@ -116,6 +176,42 @@ export function Preferences(): JSX.Element {
             <label htmlFor="submitChangesKeys" className="font-bold">{t('submitChangesKeys')}</label>
             <Field type="text" id="submitChangesKeys" name="submitKeys" className="mt-2 p-2 rounded border border-slate-500 w-full"/>
           </div>
+
+          <br/>
+
+          <h2 className="font-bold text-xl">{t('hurrianDictionary')}</h2>
+
+          <div className="mt-4">
+            <label htmlFor="fragmInSuffixDict" className="font-bold checkbox-label">{t('fragmInSuffixDict')}</label>
+            <Field type="checkbox" id="fragmInSuffixDict" name="fragmInSuffixDict" className="rounded border border-slate-500"/>
+          </div>
+
+          <div className="mt-4">
+            <label htmlFor="showUnclearForms" className="font-bold checkbox-label">{t('showFormsWithUnknownMeaningAndUnclearPos')}</label>
+            <Field type="checkbox" id="showUnclearForms" name="showUnclearForms" className="rounded border border-slate-500"/>
+          </div>
+
+          <>
+            {alphabetizationConfigKeys.map((key: string) => (
+              <div className="mt-4" key={key}>
+                <label htmlFor={key} className="font-bold checkbox-label">{t(key)}</label>
+                <Field type="checkbox" id={key} name={key} className="rounded border border-slate-500"/>
+              </div>
+            ))}
+          </>
+
+          <br/>
+
+          <h2 className="font-bold text-xl">{t('lookupOptions')}</h2>
+
+          <>
+            {lookupConfigKeys.map((key: string) => (
+              <div className="mt-4" key={key}>
+              <label htmlFor={key} className="font-bold checkbox-label">{t(key)}</label>
+              <Field type="checkbox" id={key} name={key} className="rounded border border-slate-500"/>
+              </div>
+            ))}
+          </>
 
           {updated && <div className="mt-4 p-2 rounded bg-green-500 text-white text-center">{t('preferencesUpdated')}</div>}
 

@@ -32,7 +32,7 @@ create table if not exists tlh_dig_users (
 
 create table if not exists tlh_dig_manuscripts (
   main_identifier            varchar(20)                                              not null primary key,
-  main_identifier_type       enum ( 'ExcavationNumber', 'CollectionNumber' )          not null default 'ExcavationNumber',
+  main_identifier_type       enum ( 'InventoryNumber', 'PublicationNumber', 'ExcavationNumber', 'CollectionNumber' )          not null default 'InventoryNumber',
   palaeo_classification      varchar(100)                                             not null default 'OldScript',
   palaeo_classification_sure boolean                                                  not null default false,
   default_language           enum ( 'Hit', 'Luw', 'Pal', 'Hat', 'Hur', 'Akk', 'Sum' ) not null default 'Hit',
@@ -51,7 +51,7 @@ create table if not exists tlh_dig_manuscript_other_identifiers (
   main_identifier varchar(20)                                                                  not null references tlh_dig_manuscripts (main_identifier) on update cascade on delete cascade,
 
   identifier      varchar(20)                                                                  not null unique,
-  identifier_type enum ( 'ExcavationNumber', 'CollectionNumber', 'PublicationShortReference' ) not null default 'ExcavationNumber',
+  identifier_type enum ( 'InventoryNumber', 'PublicationNumber', 'ExcavationNumber', 'CollectionNumber', 'PublicationShortReference' ) not null default 'InventoryNumber',
 
   primary key (main_identifier, identifier, identifier_type)
 );

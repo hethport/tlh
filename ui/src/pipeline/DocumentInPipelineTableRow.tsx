@@ -26,12 +26,15 @@ function getOrThrow<T>(value: T | null | undefined, message: string): T {
   }
 }
 
-const DateCheckMark = ({ date, user }: { date: string; user: string; }): JSX.Element => <span><code>{user}</code>, {date}</span>;
+const DateCheckMark = ({ date, user }: { date: string; user: string; }): JSX.Element => (
+  <span><code>{user}</code>, {date}</span>
+);
 
 export function DocumentInPipelineTableRow({
   allReviewers,
   manuscriptIdentifier,
   author,
+  creationDate,
   transliterationReviewDateString,
   appointedTransliterationReviewer,
   appointedXmlConverter,
@@ -85,6 +88,7 @@ export function DocumentInPipelineTableRow({
     }
   };
 
+  const creationDateFormatted = formatDate(creationDate);
   const transliterationReviewDate = transliterationReviewDateString ? formatDate(transliterationReviewDateString) : undefined;
   const xmlConversionDate = xmlConversionDateString ? formatDate(xmlConversionDateString) : undefined;
   const firstXmlReviewDate = firstXmlReviewDateString ? formatDate(firstXmlReviewDateString) : undefined;
@@ -96,37 +100,39 @@ export function DocumentInPipelineTableRow({
 
       <td className="p-2">{author}</td>
 
+      <td className="p-2 text-sm">{creationDateFormatted}</td>
+
       <td className="p-2">
         {transliterationReviewDate !== undefined
           ? <DateCheckMark date={transliterationReviewDate} user={appointedTransliterationReviewer || 'ERROR!'} />
           : <UserSelect currentSelected={appointedTransliterationReviewer} allUsers={allReviewers} loading={executeAppointTransliterationReviewerLoading}
-            onNewUser={onChangeAppointedTransliterationReviewer} />}
+                        onNewUser={onChangeAppointedTransliterationReviewer} />}
       </td>
 
       <td className="p-2">
         {xmlConversionDate !== undefined
           ? <DateCheckMark date={xmlConversionDate} user={appointedXmlConverter || 'ERROR!'} />
           : <UserSelect currentSelected={appointedXmlConverter} allUsers={allReviewers} loading={executeAppointXmlConvertLoading}
-            onNewUser={onChangeAppointedXmlConverter} />}
+                        onNewUser={onChangeAppointedXmlConverter} />}
       </td>
 
       <td className="p-2">
         {firstXmlReviewDate !== undefined
           ? <DateCheckMark date={firstXmlReviewDate} user={appointedFirstXmlReviewer || 'ERROR!'} />
           : <UserSelect currentSelected={appointedFirstXmlReviewer} allUsers={allReviewers} loading={executeAppointFirstXmlReviewerLoading}
-            onNewUser={onChangeAppointFirstXmlReviewer} />}
+                        onNewUser={onChangeAppointFirstXmlReviewer} />}
       </td>
 
       <td className="p-2">
         {secondXmlReviewDate !== undefined
           ? <DateCheckMark date={secondXmlReviewDate} user={appointedSecondXmlReviewer || 'ERROR!'} />
           : <UserSelect currentSelected={appointedSecondXmlReviewer} allUsers={allReviewers} loading={executeAppointSecondXmlReviewerLoading}
-            onNewUser={onChangeAppointSecondXmlReviewer} />}
+                        onNewUser={onChangeAppointSecondXmlReviewer} />}
       </td>
 
       <td className="p-2">
         <button type="button" onClick={onDeleteManuscript} title={t('deleteManuscript')} disabled={deleteManuscriptLoading}
-          className="px-4 py-2 rounded bg-red-600 text-white">
+                className="px-4 py-2 rounded bg-red-600 text-white">
           <DeleteIcon />
         </button>
       </td>

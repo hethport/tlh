@@ -88,6 +88,16 @@ where approved_trans.input is null and second_xml_revs.main_identifier = ?;",
       }
     );
   }
+
+  /** @return string[] */
+  static function selectAllCreators(): array
+  {
+    return SqlHelpers::executeMultiSelectQuery(
+      "SELECT DISTINCT creator_username FROM tlh_dig_manuscripts ORDER BY creator_username;",
+      null,
+      fn(array $row): string => $row['creator_username']
+    );
+  }
 }
 
 ExecutiveEditor::$queryType = new ObjectType([
@@ -108,16 +118,39 @@ ExecutiveEditor::$queryType = new ObjectType([
       'type' => Type::nonNull(Type::listOf(Type::nonNull(Type::string()))),
       'resolve' => fn(): array => User::selectAllReviewers()
     ],
+    'allCreators' => [
+      'type' => Type::nonNull(Type::listOf(Type::nonNull(Type::string()))),
+      'resolve' => fn(): array => ExecutiveEditor::selectAllCreators()
+    ],
     'documentsInPipelineCount' => [
       'type' => Type::nonNull(Type::int()),
-      'resolve' => fn() => DocumentInPipeline::selectCount()
+      'args' => [
+        'filterByStep' => Type::string(),
+        'filterByCreator' => Type::string()
+      ],
+      'resolve' => fn(User $_user, array $args) => DocumentInPipeline::selectCount(
+        $args['filterByStep'] ?? null,
+        $args['filterByCreator'] ?? null
+      )
     ],
     'documentsInPipeline' => [
       'type' => Type::nonNull(Type::listOf(Type::nonNull(DocumentInPipeline::$queryType))),
       'args' => [
-        'page' => Type::int()
+        'page' => Type::int(),
+        'pageSize' => Type::int(),
+        'sortBy' => Type::string(),
+        'sortDirection' => Type::string(),
+        'filterByStep' => Type::string(),
+        'filterByCreator' => Type::string()
       ],
-      'resolve' => fn(User $_user, array $args): array => DocumentInPipeline::selectDocumentsInPipeline($args['page'] ?? 0)
+      'resolve' => fn(User $_user, array $args): array => DocumentInPipeline::selectDocumentsInPipeline(
+        $args['page'] ?? 0,
+        $args['pageSize'] ?? 50,
+        $args['sortBy'] ?? 'creationDate',
+        $args['sortDirection'] ?? 'DESC',
+        $args['filterByStep'] ?? null,
+        $args['filterByCreator'] ?? null
+      )
     ],
     'documentsAwaitingApproval' => [
       'type' => Type::nonNull(Type::listOf(Type::nonNull(Type::string()))),
@@ -291,7 +324,7 @@ ExecutiveEditor::$mutationsType = new ObjectType([
         $manuscript = Manuscript::resolveManuscriptById($manuscriptIdentifier);
 
         // TODO: check conditions -> not submitted yet...!
-      
+
         if (!$manuscript->selectSecondXmlReviewPerformed()) {
           throw new MySafeGraphQLException("Second xml review of manuscript $manuscriptIdentifier was not yet performed!");
         }
