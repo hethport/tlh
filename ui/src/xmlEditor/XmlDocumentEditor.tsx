@@ -1,5 +1,5 @@
 import {ReactElement, useEffect, useState, useRef} from 'react';
-import {isXmlElementNode, XmlElementNode, XmlNode, xmlTextNode} from 'simple_xml';
+import {isXmlElementNode, isXmlTextNode, XmlElementNode, XmlNode, xmlTextNode} from 'simple_xml';
 import {XmlEditorConfig, XmlSingleEditableNodeConfig} from './editorConfig';
 import {useTranslation} from 'react-i18next';
 import {useSelector} from 'react-redux';
@@ -365,7 +365,13 @@ export function XmlDocumentEditor({
     const cleanedChildren = node.children
       .map((child, i) => pruneEmptyAncestors(child, [...path, i], affectedParentKeys))
       .filter((c): c is XmlNode => c !== null);
-    if (cleanedChildren.length === 0) {
+
+    const isEffectivelyEmpty = cleanedChildren.length === 0 ||
+      cleanedChildren.every(child =>
+        isXmlTextNode(child) && child.textContent.trim() === ''
+      );
+
+    if (isEffectivelyEmpty) {
       return null;
     }
     return {...node, children: cleanedChildren};
