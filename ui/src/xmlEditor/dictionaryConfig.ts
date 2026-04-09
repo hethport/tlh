@@ -9,3 +9,5 @@ export const defaultDictionaryConfig: DictionaryConfig = {
   fragmInSuffixDict: false,
   showUnclearForms: false,
 };
+
+export const dictionaryConfigKeys = Object.keys(defaultDictionaryConfig);

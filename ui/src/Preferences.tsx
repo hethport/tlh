@@ -8,7 +8,7 @@ import {editorKeyConfigSelector, updatePreferences,
   from './newStore';
 import {JSX, useState} from 'react';
 import {EditorKeyConfig} from './xmlEditor/editorKeyConfig';
-import {DictionaryConfig} from './xmlEditor/dictionaryConfig';
+import {DictionaryConfig, dictionaryConfigKeys} from './xmlEditor/dictionaryConfig';
 import {AlphabetizationConfig, alphabetizationConfigKeys} from './xmlEditor/alphabetizationConfig';
 import {LookupConfig, lookupConfigKeys} from './xmlEditor/lookupConfig';
 import {rebuildSimplifiedDictionaryWithNewConfig} from './xmlEditor/hur/dict/dictionary';
@@ -60,8 +60,7 @@ export function Preferences(): JSX.Element {
     updateAndPrevNodeKeys: currentEditorConfig.updateAndPreviousEditableNodeKeys.join(splitKey),
     prevNodeKeys: currentEditorConfig.previousEditableNodeKeys.join(splitKey),
     submitKeys: currentEditorConfig.submitChangeKeys.join(splitKey),
-    fragmInSuffixDict: currentDictionaryConfig.fragmInSuffixDict,
-    showUnclearForms: currentDictionaryConfig.showUnclearForms,
+    ...currentDictionaryConfig,
     ...currentAlphabetizationConfig,
     ...currentLookupConfig,
   };
@@ -181,18 +180,8 @@ export function Preferences(): JSX.Element {
 
           <h2 className="font-bold text-xl">{t('hurrianDictionary')}</h2>
 
-          <div className="mt-4">
-            <label htmlFor="fragmInSuffixDict" className="font-bold checkbox-label">{t('fragmInSuffixDict')}</label>
-            <Field type="checkbox" id="fragmInSuffixDict" name="fragmInSuffixDict" className="rounded border border-slate-500"/>
-          </div>
-
-          <div className="mt-4">
-            <label htmlFor="showUnclearForms" className="font-bold checkbox-label">{t('showFormsWithUnknownMeaningAndUnclearPos')}</label>
-            <Field type="checkbox" id="showUnclearForms" name="showUnclearForms" className="rounded border border-slate-500"/>
-          </div>
-
           <>
-            {alphabetizationConfigKeys.map((key: string) => (
+            {dictionaryConfigKeys.concat(alphabetizationConfigKeys).map((key: string) => (
               <div className="mt-4" key={key}>
                 <label htmlFor={key} className="font-bold checkbox-label">{t(key)}</label>
                 <Field type="checkbox" id={key} name={key} className="rounded border border-slate-500"/>
