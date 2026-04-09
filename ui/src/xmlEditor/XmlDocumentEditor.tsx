@@ -358,9 +358,14 @@ export function XmlDocumentEditor({
       return node;
     }
 
+    // Never remove structural/marker tags
+    const structuralTags = ['lb', 'clb', 'parsep', 'gap'];
+    if (structuralTags.includes(node.tagName)) {
+      return node;
+    }
+
     const key = path.join('.');
     if (!affectedParentKeys.has(key)) {
-      // This subtree had no deletions — leave it entirely alone
       return node;
     }
 
@@ -368,23 +373,22 @@ export function XmlDocumentEditor({
       .map((child, i) => pruneEmptyAncestors(child, [...path, i], affectedParentKeys))
       .filter((c): c is XmlNode => c !== null);
 
-    // Check if the node is effectively empty:
-    // Separate lb tags from other content
-    const lbChildren = cleanedChildren.filter(child =>
-      isXmlElementNode(child) && child.tagName === 'lb'
+    // Separate structural markers from regular content
+    const structuralChildren = cleanedChildren.filter(child =>
+      isXmlElementNode(child) && structuralTags.includes(child.tagName)
     );
-    const nonLbChildren = cleanedChildren.filter(child =>
-      !(isXmlElementNode(child) && child.tagName === 'lb')
+    const regularChildren = cleanedChildren.filter(child =>
+      !(isXmlElementNode(child) && structuralTags.includes(child.tagName))
     );
 
-    // If there are lb tags, keep the node even if other content is empty
-    if (lbChildren.length > 0) {
+    // If there are any structural markers, ALWAYS keep the node
+    if (structuralChildren.length > 0) {
       return {...node, children: cleanedChildren};
     }
 
-    // No lb tags: check if only whitespace remains
-    const isEffectivelyEmpty = nonLbChildren.length === 0 ||
-      nonLbChildren.every(child =>
+    // No structural markers: check if only whitespace remains
+    const isEffectivelyEmpty = regularChildren.length === 0 ||
+      regularChildren.every(child =>
         isXmlTextNode(child) && child.textContent.trim() === ''
       );
 
