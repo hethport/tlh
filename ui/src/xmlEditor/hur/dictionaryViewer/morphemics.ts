@@ -4,7 +4,7 @@ import { getGrammaticalMorphemesWithBoundary } from '../common/splitter';
 import { getMorphTags } from '../morphologicalAnalysis/auxiliary';
 
 const grammaticalMorphemeStringSplitPattern = /(?=[-=])/;
-const morphTagSplitPattern = /(?=[-=])|(?<![123](?:SG|PL))(?=.ABS)/;
+const morphTagSplitPattern = /(?=[-=])|(?<![123](?:SG|PL)|=.*)(?=.ABS)/;
 const errorForm = '';
 const errorLabel = '';
 

@@ -70,7 +70,8 @@ export function WordformElement({ entry, handleSegmentationInput,
         }
       </div>
       {showAttestations &&
-        <ConcordanceEntryViewer attestations={attestations} getLine={getLine} />}
+        <ConcordanceEntryViewer attestations={attestations} getLine={getLine}
+                                highlightedMa={morphologicalAnalysis} />}
     </div>
   );
 }

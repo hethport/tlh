@@ -125,6 +125,8 @@ export const router = createBrowserRouter([
 
         {path: 'texts/:text', element: <TextDisplay/>},
 
+        {path: 'texts/:text/:highlightedAnalysis', element: <TextDisplay/>},
+
       ],
       errorElement: <ErrorBoundary/>
     }
