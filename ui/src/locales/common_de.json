@@ -303,6 +303,7 @@
   "deleteMorphologicalAnalysisAndAddItToTheStopList": "Morphologische Analyse löschen und auf die schwarze Liste setzen",
   "removeFromTheList": "Aus der Liste entfernen",
   "showUnclearForms": "Formen mit unbekannter Bedeutung und unklarer Wortart im Wörterbuch anzeigen",
+  "showFragmentaryGrammaticalMorphemes": "Morpheme mit Bruchklammern und gebrochenen Zeichen im Suffixwörterbuch anzeigen",
   "alphabetizeFAsP": "⟨f⟩ als ⟨p⟩ alphabetisieren",
   "alphabetizeVAsB": "⟨v⟩ als ⟨b⟩ alphabetisieren",
   "alphabetizeIAsE": "⟨i⟩ als ⟨e⟩ alphabetisieren",

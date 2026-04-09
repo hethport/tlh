@@ -56,7 +56,7 @@ export function Preferences(): JSX.Element {
 
   function onSubmit(newConfig: FormValues): void {
     const {updateAndNextNodeKeys, nextNodeKeys, updateAndPrevNodeKeys, prevNodeKeys, submitKeys,
-           fragmInSuffixDict, showUnclearForms,
+           fragmInSuffixDict, showUnclearForms, showFragmentaryGrammaticalMorphemes,
            alphabetizeFAsP, alphabetizeVAsB, alphabetizeIAsE, alphabetizeOAsU,
            alphabetizeVoicedConsonantsAsVoiceless,
            ignorePlene, mergeLabials,mergeMidAndHighVowels, ignoreVoice,} = newConfig;
@@ -112,6 +112,7 @@ export function Preferences(): JSX.Element {
       updateDictionaryPreferences({
         fragmInSuffixDict,
         showUnclearForms,
+        showFragmentaryGrammaticalMorphemes,
       })
     );
 
