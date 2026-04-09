@@ -1,13 +1,19 @@
 import { convertDictionary } from '../common/utility';
-import { add, remove, replaceKey, updateSetValuedMapWithOverride } from '../common/utils';
+import { add, remove, replaceKey, replaceKeyWithMultiple, updateSetValuedMapWithOverride,
+  objectToSetValuedMap } from '../common/utils';
 import { isValid, normalize } from '../dict/morphologicalAnalysisValidator';
 import { writeMorphAnalysisValue, MorphologicalAnalysis } from '../../../model/morphologicalAnalysis';
 import { readMorphAnalysisValue } from '../morphologicalAnalysis/auxiliary';
 import { loadSetValuedMapFromLocalStorage, locallyStoreSetValuedMap }
   from '../dictLocalStorage/localStorageUtils';
-import { hasMultipleOccurences } from '../corpus/corpus';
+import { hasMultipleOccurences } from '../corpus/basicCorpus';
 import { addMorphologicalAnalysis } from '../dict/dictionaryUpdater';
 import { deleteAnalysisFromHurrianDictionary } from '../dict/dictionary';
+import { reserializeMorphologicalAnalysis } from '../morphologicalAnalysis/reserialization';
+import { LookupConfig } from '../../lookupConfig';
+
+export type Concordance = Map<string, Set<string>>;
+export type ConcordanceObject = { [key: string]: string[] };
 
 const sep = ',';
 
@@ -24,7 +30,7 @@ export class Attestation {
 }
 
 const localStorageKey = 'HurrianConcordance';
-const concordance: Map<string, Set<string>> = loadSetValuedMapFromLocalStorage(localStorageKey);
+let concordance: Concordance = loadSetValuedMapFromLocalStorage(localStorageKey);
 export function locallyStoreHurrianConcordance(): void {
   locallyStoreSetValuedMap(concordance, localStorageKey);
 }
@@ -39,9 +45,10 @@ function preprocess(analysis: string): string {
   }
 }
 
-export function addAttestation(transcription: string, analysis: string, attestation: Attestation) {
+export function addAttestation(transcription: string, analysis: string, attestation: Attestation,
+                               lookupConfig: LookupConfig) {
   if (isValid(analysis)) {
-    addMorphologicalAnalysis(transcription, analysis);
+    addMorphologicalAnalysis(transcription, analysis, lookupConfig);
     add(concordance, preprocess(analysis), attestation.toString());
   }
 }
@@ -63,7 +70,7 @@ function padDigits(a: string): string {
   return a.replaceAll(pattern, digit => '0' + digit);
 }
 
-function compare(a: string, b: string): number {
+export function compareLineNumbers(a: string, b: string): number {
   const newA = padDigits(a);
   const newB = padDigits(b);
   if (newA < newB) {
@@ -91,26 +98,52 @@ export function getAttestations(morphologicalAnalysis: MorphologicalAnalysis): A
   if (current === undefined) {
     return [];
   } else {
-    return Array.from(current).sort(compare).map((repr: string) => {
+    return Array.from(current).sort(compareLineNumbers).map((repr: string) => {
       const [text, line] = repr.split(sep);
       return new Attestation(text, line);
     });
   }
 }
 
-export function getConcordance(): { [key: string]: string[] } {
+export function getConcordance(): ConcordanceObject {
   return convertDictionary(concordance);
 }
 
-export function updateConcordance(object: { [key: string]: string[] }) {
-  updateSetValuedMapWithOverride(concordance, object);
+export function updateConcordance(obj: ConcordanceObject) {
+  updateSetValuedMapWithOverride(concordance, obj);
 }
 
 export function updateConcordanceKey(oldAnalysis: string, newAnalysis: string): void {
   replaceKey(concordance, oldAnalysis, newAnalysis);
 }
 
+export function replaceConcordanceKeyWithMultiple(oldAnalysis: string, newAnalyses: string[]): void {
+  replaceKeyWithMultiple(concordance, oldAnalysis, newAnalyses);
+}
+
 export function inConcordance(ma: MorphologicalAnalysis): boolean {
   const value = writeMorphAnalysisValue(ma);
   return concordance.has(value);
+}
+
+export function setConcordance(obj: ConcordanceObject): void {
+  concordance = new Map();
+  for (const [analysis, attestations] of objectToSetValuedMap(obj)) {
+    const reserialized = reserializeMorphologicalAnalysis(analysis);
+    if (reserialized !== undefined) {
+      concordance.set(reserialized, attestations);
+    }
+  }
+}
+
+export function getFrequency(morphologicalAnalysis: MorphologicalAnalysis): number {
+  return quickGetAttestations(morphologicalAnalysis).length;
+}
+
+export function getFrequencyDifference(ma1: MorphologicalAnalysis, ma2: MorphologicalAnalysis): number {
+  return getFrequency(ma1) - getFrequency(ma2);
+}
+
+export function getNegatedFrequencyDifference(ma1: MorphologicalAnalysis, ma2: MorphologicalAnalysis): number {
+  return - getFrequencyDifference(ma1, ma2);
 }

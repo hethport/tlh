@@ -1,26 +1,13 @@
-import { updateMapping, convertMapping } from '../common/utility';
 import { Attestation, quickGetAttestations } from '../concordance/concordance';
 import { XmlElementNode, getElementByPath } from 'simple_xml';
-import { Line, makeLine } from './lineConstructor';
-import { makeWord, updateMorphologicalAnalysis, hasGivenAnalysis } from './wordConstructor';
+import { Line } from './lineType';
+import { makeLine } from './lineConstructor';
+import { makeWord, updateMorphologicalAnalysis } from './wordConstructor';
 import { findLine, findLineStart, getParent } from './lineFinder';
 import { readMorphAnalysisValue } from '../morphologicalAnalysis/auxiliary';
-import { loadMapFromLocalStorage, locallyStoreMap } from '../dictLocalStorage/localStorageUtils';
-import { makeGlossFromMorphologicalAnalysis } from '../common/utils';
-
-const localStorageKey = 'HurrianCorpus';
-const corpus: Map<string, Line> = loadMapFromLocalStorage(localStorageKey);
-cleanUpCorpus();
-export function locallyStoreHurrianCorpus(): void {
-  locallyStoreMap(corpus, localStorageKey);
-}
-
-function cleanUpCorpus(): void {
-  for (const [key, line] of corpus.entries()) {
-    const newLine = line.filter(word => word !== null);
-    corpus.set(key, newLine);
-  }
-}
+import { compareLineNumbers } from './lineNumberComparer';
+import { MorphologicalAnalysis } from '../../../model/morphologicalAnalysis';
+import { corpus, lineNumbers, addLineNumber } from './basicCorpus';
 
 /*fetch('Concordance.json')
   .then(response => response.json())
@@ -33,6 +20,7 @@ function cleanUpCorpus(): void {
 function addLine(address: string, nodes: XmlElementNode[]): void {
   const line = makeLine(nodes);
   corpus.set(address, line);
+  addLineNumber(lineNumbers, address);
 }
 
 function updateLine(line: Line, position: number, node: XmlElementNode): void {
@@ -59,55 +47,44 @@ export function addOrUpdateLineBySingleNodePath(address: Attestation,
   }
 }
 
-export function updateCorpus(object: { [key: string]: Line }) {
-  updateMapping(corpus, object);
-  cleanUpCorpus();
-}
-
-export function getCorpus(): { [key: string]: Line } {
-  cleanUpCorpus();
-  return convertMapping(corpus);
-}
-
 export function getLine(attestation: Attestation): Line {
   return corpus.get(attestation.toString()) || [];
 }
 
-export function replaceMorphologicalAnalysis(oldAnalysis: string, newAnalysis: string): void {
+export function replaceMorphologicalAnalysis(oldAnalysis: string, newAnalyses: string[]): void {
   const oldMa = readMorphAnalysisValue(oldAnalysis);
   if (oldMa !== undefined) {
-    const newMa = readMorphAnalysisValue(newAnalysis);
+    const newMas: MorphologicalAnalysis[] = [];
+    for (const newAnalysis of newAnalyses) {
+      const newMa = readMorphAnalysisValue(newAnalysis);
+      if (newMa !== undefined) {
+        newMas.push(newMa);
+      }
+    }
     for (const attestation of quickGetAttestations(oldMa)) {
       const line = corpus.get(attestation);
       if (line !== undefined) {
         for (let i = 0; i < line.length; i++) {
           const word = line[i];
-          line[i] = updateMorphologicalAnalysis(word, oldMa, newMa);
+          line[i] = updateMorphologicalAnalysis(word, oldMa, newMas);
         }
       }
     }
   }
 }
 
-/* Check whether an analysis occurs in multiple positions in the specified line.
- */
-export function hasMultipleOccurences(analysis: string, attestation: string): boolean {
-  const line = corpus.get(attestation);
-  if (line !== undefined) {
-    const morphologicalAnalysis = readMorphAnalysisValue(analysis);
-    if (morphologicalAnalysis !== undefined) {
-      const gloss = makeGlossFromMorphologicalAnalysis(morphologicalAnalysis);
-      for (let i = 0, counter = 0; i < line.length; i++) {
-        const word = line[i];
-        const hasSameAnalysis = hasGivenAnalysis(word, gloss, morphologicalAnalysis);
-        if (hasSameAnalysis) {
-          counter++;
-        }
-        if (counter > 1) {
-          return true;
-        }
-      }
-    }
+type TaggedLine = {
+  id: string;
+  line: Line;
+}
+
+export function getText(text: string): TaggedLine[] {
+  const textLines = lineNumbers.get(text);
+  if (textLines === undefined) {
+    return [];
+  } else {
+    return Array.from(textLines).sort(compareLineNumbers).map(line => {
+      return {id: line, line: getLine(new Attestation(text, line))};
+    });
   }
-  return false;
 }

@@ -1,6 +1,9 @@
 import { configureStore, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { Rights } from './graphql';
 import { defaultEditorKeyConfig, EditorKeyConfig } from './xmlEditor/editorKeyConfig';
+import { defaultDictionaryConfig, DictionaryConfig, dictionaryConfigKey } from './xmlEditor/dictionaryConfig';
+import { defaultAlphabetizationConfig, AlphabetizationConfig, alphabetizationConfigKey } from './xmlEditor/alphabetizationConfig';
+import { defaultLookupConfig, LookupConfig, lookupConfigKey } from './xmlEditor/lookupConfig';
 
 function loadFromLocalStorage<T>(key: string, defaultValue: T): T {
   const foundString = localStorage.getItem(key);
@@ -72,17 +75,82 @@ export const { updatePreferences } = editorKeyConfigSlice.actions;
 
 export const editorKeyConfigSelector: (store: StoreState) => EditorKeyConfig = ({ editorKeyConfig }) => editorKeyConfig.editorKeyConfig;
 
+// Dictionary display configuration
+
+const dictionaryConfigSlice = createSlice({
+  name: 'dictionaryConfig',
+  initialState: () => ({ dictionaryConfig: loadFromLocalStorage<DictionaryConfig>(dictionaryConfigKey, defaultDictionaryConfig) }),
+  reducers: {
+    updateDictionaryPreferences(state, { payload }: PayloadAction<DictionaryConfig>) {
+      localStorage.setItem(dictionaryConfigKey, JSON.stringify(payload));
+      state.dictionaryConfig = payload;
+    }
+  }
+});
+
+export const { updateDictionaryPreferences } = dictionaryConfigSlice.actions;
+
+export const dictionaryConfigSelector: (store: StoreState) => DictionaryConfig = ({ dictionaryConfig }) => dictionaryConfig.dictionaryConfig;
+
+// Alphabetization configuration
+
+const alphabetizationConfigSlice = createSlice({
+  name: 'alphabetizationConfig',
+  initialState: () => ({
+    alphabetizationConfig:
+    loadFromLocalStorage<AlphabetizationConfig>(alphabetizationConfigKey, defaultAlphabetizationConfig)
+  }),
+  reducers: {
+    updateAlphabetizationPreferences(state, { payload }: PayloadAction<AlphabetizationConfig>) {
+      localStorage.setItem(alphabetizationConfigKey, JSON.stringify(payload));
+      state.alphabetizationConfig = payload;
+    }
+  }
+});
+
+export const { updateAlphabetizationPreferences } = alphabetizationConfigSlice.actions;
+
+export const alphabetizationConfigSelector: (store: StoreState) => AlphabetizationConfig =
+({ alphabetizationConfig }) => alphabetizationConfig.alphabetizationConfig;
+
+// Dictionary lookup configuration
+
+const lookupConfigSlice = createSlice({
+  name: 'lookupConfig',
+  initialState: () => ({
+    lookupConfig:
+    loadFromLocalStorage<LookupConfig>(lookupConfigKey, defaultLookupConfig)
+  }),
+  reducers: {
+    updateLookupPreferences(state, { payload }: PayloadAction<LookupConfig>) {
+      localStorage.setItem(lookupConfigKey, JSON.stringify(payload));
+      state.lookupConfig = payload;
+    }
+  }
+});
+
+export const { updateLookupPreferences } = lookupConfigSlice.actions;
+
+export const lookupConfigSelector: (store: StoreState) => LookupConfig =
+  ({ lookupConfig }) => lookupConfig.lookupConfig;
+
 // Store
 
 interface StoreState {
   user: { user: User | null };
   editorKeyConfig: { editorKeyConfig: EditorKeyConfig };
+  dictionaryConfig: { dictionaryConfig: DictionaryConfig };
+  lookupConfig: { lookupConfig: LookupConfig };
+  alphabetizationConfig: { alphabetizationConfig: AlphabetizationConfig };
 }
 
 export const newStore = configureStore({
   reducer: {
     user: userSlice.reducer,
     editorKeyConfig: editorKeyConfigSlice.reducer,
+    dictionaryConfig: dictionaryConfigSlice.reducer,
+    lookupConfig: lookupConfigSlice.reducer,
+    alphabetizationConfig: alphabetizationConfigSlice.reducer,
   }
 });
 

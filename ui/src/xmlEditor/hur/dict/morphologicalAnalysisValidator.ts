@@ -1,12 +1,20 @@
 import { formIsFragment } from '../common/utils';
 import { getPos } from '../partsOfSpeech/partsOfSpeech';
-import { splitSegmentation } from '../../morphAnalysisOption/MorphemesEditor';
+import { splitSegmentation } from '../common/morphemeSplitting';
+import { containsBrackets } from '../common/brackets';
+import { MorphologicalAnalysis } from '../../../model/morphologicalAnalysis';
 
 const sep = /(?<!\()-(?!\))|=/;
 
 function haveMatchingNumberOfMorphemes(segmentation: string, analysis: string) {
-  const segmentationLength = splitSegmentation(segmentation).length;
-  const analysisLength = analysis.split(sep).filter(tag => tag !== '.ABS').length;
+  const morphemes = splitSegmentation(segmentation);
+  const grammaticalMorphemes = morphemes.slice(1)
+    .map(([morpheme]) => morpheme)
+    .filter((grammaticalMorpheme: string) => !formIsFragment(grammaticalMorpheme));
+  const segmentationLength = grammaticalMorphemes.length + 1;
+  const morphemeLabels = analysis.split(sep)
+    .filter(label => label !== '' && !formIsFragment(label));
+  const analysisLength = morphemeLabels.filter(tag => tag !== '.ABS').length;
   return segmentationLength === analysisLength + 1
       || segmentationLength === analysisLength
       && (analysis.startsWith('=') || analysis === '');
@@ -24,6 +32,15 @@ export function isValidForm(form: string): boolean {
 }
 
 const inflecting = new Set<string>(['noun', 'verb', 'PRON', 'NF']);
+
+/*
+ * Determine whether a morphological analysis is valid
+ * for a word with the given transcription.
+ */
+export function isValidFor(ma: MorphologicalAnalysis, transcription: string): boolean {
+  // Analyses with brackets should never be proposed for words which contain no brackets.
+  return !(containsBrackets(ma.referenceWord) && !containsBrackets(transcription));
+}
 
 export function isValid(analysis: string): boolean {
   const fields: string[] = analysis.split('@').map(field => field.trim());

@@ -1,7 +1,31 @@
 import { removeMacron } from './utils';
+import { removeBrackets } from './brackets';
+import { AlphabetizationConfig } from '../../alphabetizationConfig';
+import { convertVoicedConsonantsToVoiceless } from '../transduction/simplifyTranscription';
 
-function preprocessLetter(letter: string): string {
-  return removeMacron(letter).toLowerCase();
+function preprocessString(s: string,
+  { alphabetizeFAsP, alphabetizeVAsB,
+    alphabetizeIAsE, alphabetizeOAsU,
+    alphabetizeVoicedConsonantsAsVoiceless }: AlphabetizationConfig): string {
+  s = removeBrackets(removeMacron(s))
+    .toLowerCase()
+    .replaceAll('+', '');
+  if (alphabetizeFAsP) {
+    s = s.replaceAll('f', 'p');
+  }
+  if (alphabetizeVAsB) {
+    s = s.replaceAll('v', 'b');
+  }
+  if (alphabetizeIAsE) {
+    s = s.replaceAll('i', 'e');
+  }
+  if (alphabetizeOAsU) {
+    s = s.replaceAll('o', 'u');
+  }
+  if (alphabetizeVoicedConsonantsAsVoiceless) {
+    s = convertVoicedConsonantsToVoiceless(s);
+  }
+  return s;
 }
 
 const lang = 'lv';
@@ -16,9 +40,12 @@ function compareLetter(a: string, b: string): number {
   }
 }
 
-export function compare(a: string, b: string): number {
-  a = preprocessLetter(a);
-  b = preprocessLetter(b);
+export const englishCompare = new Intl.Collator('en').compare;
+export const germanCompare = new Intl.Collator('de').compare;
+
+export function compare(a: string, b: string, options: AlphabetizationConfig): number {
+  a = preprocessString(a, options);
+  b = preprocessString(b, options);
   for (let i = 0; i < Math.min(a.length, b.length); i++) {
     const comparisonResult = compareLetter(a[i], b[i]);
     if (comparisonResult === 0) {

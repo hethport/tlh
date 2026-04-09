@@ -1,6 +1,6 @@
 import { JSX } from 'react';
 import { Attestation } from '../concordance/concordance';
-import { Line } from '../corpus/lineConstructor';
+import { Line } from '../corpus/lineType';
 import { AttestationViewer } from './AttestationViewer';
 
 interface IProps {

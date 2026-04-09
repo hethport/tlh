@@ -1,0 +1,86 @@
+import { JSX } from 'react';
+import { groupByMany } from '../common/utils';
+import { GrammaticalMorphemeViewer } from './GrammaticalMorphemeViewer';
+import { Entry } from './Wordform';
+import { DictionaryDownloader } from '../dict/files/DictionaryDownloader';
+import { ChangesDownloader } from '../changes/ChangesDownloader';
+import { writeMorphAnalysisValue } from '../../../model/morphologicalAnalysis';
+import { SetDictionary, getGlobalDictionary } from '../dict/dictionary';
+import { compare } from '../common/comparison';
+import { DictionaryUploader } from '../dict/files/DictionaryUploader';
+import { getGrammaticalMorphemes } from './morphemics';
+import { parseGrammaticalMorpheme, GrammaticalMorpheme } from './grammaticalMorpheme';
+import { hasContent } from './suffixDictionaryFilter';
+import { shouldBeInSuffixDict } from './suffixDictionaryFragmentFilter';
+import { DictionaryConfig } from '../../dictionaryConfig';
+import { dictionaryConfigSelector, alphabetizationConfigSelector } from '../../../newStore';
+import { useSelector } from 'react-redux';
+
+interface IProps {
+  entries: Entry[];
+  setDictionary: SetDictionary;
+}
+
+function keyFunc({morphologicalAnalysis}: Entry): string[] {
+  return getGrammaticalMorphemes(morphologicalAnalysis).map(gram => gram.toString());
+}
+
+function valueFunc(entry: Entry): Entry {
+  return entry;
+}
+
+export function SuffixDictionary({entries, setDictionary}: IProps): JSX.Element {
+
+  const currentDictionaryConfig: DictionaryConfig = useSelector(dictionaryConfigSelector);
+  const { fragmInSuffixDict } = currentDictionaryConfig;
+  const alphabetizationConfig = useSelector(alphabetizationConfigSelector);
+  const compareWithOptions = (a: string, b: string) => compare(a, b, alphabetizationConfig);
+
+  const filteredEntries = entries.filter((entry: Entry) => {
+    const { morphologicalAnalysis } = entry;
+    return shouldBeInSuffixDict(morphologicalAnalysis, fragmInSuffixDict);
+  });
+  
+  const grouped = groupByMany(filteredEntries, keyFunc, valueFunc);
+  
+  const grammaticalMorphemeReprs = Array.from(grouped.keys()).sort(compareWithOptions);
+
+  const grammaticalMorphemes = grammaticalMorphemeReprs.map(parseGrammaticalMorpheme).filter(hasContent);
+  
+  return (
+    <div className="grid grid-cols-2 gap-2 my-2 uneven-columns">
+      <div className="mt-2">
+        Click on the button &quot;&#8744;&quot; or a stem&apos;s number to see its derivatives and inflected forms. <br /> 
+        Click on a similar button next to a word to see its attestations. <br />
+        <br />
+        {grammaticalMorphemes.map((grammaticalMorpheme: GrammaticalMorpheme, index: number) => {
+          const grammaticalMorphemeRepr = grammaticalMorpheme.toString();
+          const group = grouped.get(grammaticalMorphemeRepr);
+          const entries: Entry[] = group === undefined ? [] : Array.from(group);
+          const key = grammaticalMorphemeRepr + '@' + entries
+            .map(entry => writeMorphAnalysisValue(entry.morphologicalAnalysis))
+            .join('|');
+          return (
+            <GrammaticalMorphemeViewer
+              index={index + 1}
+              grammaticalMorpheme={grammaticalMorpheme}
+              initialEntries={entries}
+              key={key} 
+              setDictionary={setDictionary}
+              initialUnfolded={false} />
+          );
+        })}
+      </div>
+      <div>
+        <div className="button-stack">
+          <DictionaryDownloader />
+          <ChangesDownloader />
+          <DictionaryUploader onUpload={() => {
+            const globalDictionary = getGlobalDictionary();
+            setDictionary(() => globalDictionary);
+          }}/>
+        </div>
+      </div>
+    </div>
+  );
+}

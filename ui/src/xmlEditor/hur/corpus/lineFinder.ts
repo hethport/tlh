@@ -1,9 +1,9 @@
 import { XmlElementNode, isXmlElementNode, getElementByPath } from 'simple_xml';
 
-const tagNames = ['w', 'wsep', 'clb', 'gap', 'note'];
+const lineBreakTagName = 'lb';
 
 function isLineElement(child: XmlElementNode): boolean {
-  return tagNames.some(tagName => child.tagName === tagName);
+  return child.tagName !== lineBreakTagName;
 }
 
 // Returns the position in parent.children of the closest line break on the left
