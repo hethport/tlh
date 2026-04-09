@@ -15,6 +15,7 @@ import { shouldBeInSuffixDict } from './suffixDictionaryFragmentFilter';
 import { DictionaryConfig } from '../../dictionaryConfig';
 import { dictionaryConfigSelector, alphabetizationConfigSelector } from '../../../newStore';
 import { useSelector } from 'react-redux';
+import { formIsFragment } from '../common/utils';
 
 interface IProps {
   entries: Entry[];
@@ -32,7 +33,7 @@ function valueFunc(entry: Entry): Entry {
 export function SuffixDictionary({entries, setDictionary}: IProps): JSX.Element {
 
   const currentDictionaryConfig: DictionaryConfig = useSelector(dictionaryConfigSelector);
-  const { fragmInSuffixDict } = currentDictionaryConfig;
+  const { fragmInSuffixDict, showFragmentaryGrammaticalMorphemes } = currentDictionaryConfig;
   const alphabetizationConfig = useSelector(alphabetizationConfigSelector);
   const compareWithOptions = (a: string, b: string) => compare(a, b, alphabetizationConfig);
 
@@ -45,7 +46,11 @@ export function SuffixDictionary({entries, setDictionary}: IProps): JSX.Element 
   
   const grammaticalMorphemeReprs = Array.from(grouped.keys()).sort(compareWithOptions);
 
-  const grammaticalMorphemes = grammaticalMorphemeReprs.map(parseGrammaticalMorpheme).filter(hasContent);
+  let grammaticalMorphemes = grammaticalMorphemeReprs.map(parseGrammaticalMorpheme).filter(hasContent);
+
+  if (!showFragmentaryGrammaticalMorphemes) {
+    grammaticalMorphemes = grammaticalMorphemes.filter(({ form }) => !formIsFragment(form));
+  }
   
   return (
     <div className="grid grid-cols-2 gap-2 my-2 uneven-columns">
