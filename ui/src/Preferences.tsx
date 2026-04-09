@@ -15,23 +15,12 @@ import {rebuildSimplifiedDictionaryWithNewConfig} from './xmlEditor/hur/dict/dic
 
 const splitKey = ',';
 
-interface FormValues {
+interface FormValues extends DictionaryConfig, AlphabetizationConfig, LookupConfig {
   updateAndNextNodeKeys: string;
   nextNodeKeys: string;
   updateAndPrevNodeKeys: string;
   prevNodeKeys: string;
   submitKeys: string;
-  fragmInSuffixDict: boolean;
-  showUnclearForms: boolean;
-  alphabetizeFAsP: boolean;
-  alphabetizeVAsB: boolean;
-  alphabetizeIAsE: boolean;
-  alphabetizeOAsU: boolean;
-  alphabetizeVoicedConsonantsAsVoiceless: boolean;
-  ignorePlene: boolean;
-  mergeLabials: boolean;
-  mergeMidAndHighVowels: boolean;
-  ignoreVoice: boolean;
 }
 
 function dismantleFormEntry(entry: string): string[] {
