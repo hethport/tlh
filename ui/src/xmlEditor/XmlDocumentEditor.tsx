@@ -357,23 +357,41 @@ export function XmlDocumentEditor({
     if (!isXmlElementNode(node)) {
       return node;
     }
+
     const key = path.join('.');
     if (!affectedParentKeys.has(key)) {
       // This subtree had no deletions — leave it entirely alone
       return node;
     }
+
     const cleanedChildren = node.children
       .map((child, i) => pruneEmptyAncestors(child, [...path, i], affectedParentKeys))
       .filter((c): c is XmlNode => c !== null);
 
-    const isEffectivelyEmpty = cleanedChildren.length === 0 ||
-      cleanedChildren.every(child =>
+    // Check if the node is effectively empty:
+    // Separate lb tags from other content
+    const lbChildren = cleanedChildren.filter(child =>
+      isXmlElementNode(child) && child.tagName === 'lb'
+    );
+    const nonLbChildren = cleanedChildren.filter(child =>
+      !(isXmlElementNode(child) && child.tagName === 'lb')
+    );
+
+    // If there are lb tags, keep the node even if other content is empty
+    if (lbChildren.length > 0) {
+      return {...node, children: cleanedChildren};
+    }
+
+    // No lb tags: check if only whitespace remains
+    const isEffectivelyEmpty = nonLbChildren.length === 0 ||
+      nonLbChildren.every(child =>
         isXmlTextNode(child) && child.textContent.trim() === ''
       );
 
     if (isEffectivelyEmpty) {
       return null;
     }
+
     return {...node, children: cleanedChildren};
   }
 
