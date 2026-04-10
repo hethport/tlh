@@ -1,5 +1,5 @@
 const formSep = /((?<!\()-|-(?!\))|=| )/u;
-const glossSep = /((?<!\()-|-(?!\))|=| |(?<!=[123](?:SG|PL))\.(?=ABS)|^\.)/;
+const glossSep = /((?<!\()-|-(?!\))|=| |(?<!=[123](?:SG|PL)|=.*)\.(?=ABS)|^\.)/;
 export const prestemBoundary = ' ';
 
 export function splitSegmentation(segmentation: string): [string, string][] {
