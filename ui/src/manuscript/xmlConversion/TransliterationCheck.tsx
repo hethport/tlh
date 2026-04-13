@@ -17,7 +17,7 @@ export function TransliterationCheck({xmlCreationValues, initialTransliteration,
 
   return (
     <>
-      <TransliterationTextArea initialInput={input} xmlCreationValues={xmlCreationValues} onChange={setInput} disabled={false}/>
+      <TransliterationTextArea initialInput={input} xmlCreationValues={xmlCreationValues} onChange={setInput} disabled={false} language={xmlCreationValues.lang}/>
 
       <div className="text-center">
         <button type="button" onClick={() => onConvert(input)} className={blueButtonClasses}>{t('convertToXml')}</button>

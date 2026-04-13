@@ -74,7 +74,7 @@ function TransliterationInput({ mainIdentifier, manuscript, initialIsReleased, l
 
   return (
     <>
-      <TransliterationTextArea xmlCreationValues={xmlCreationValues} initialInput={input} onChange={updateTransliteration} disabled={isReleased} />
+      <TransliterationTextArea xmlCreationValues={xmlCreationValues} initialInput={input} onChange={updateTransliteration} disabled={isReleased} language={lang} />
 
       {uploadError && <ErrorMessage>{uploadError.message}</ErrorMessage>}
       {releaseError && <ErrorMessage>{releaseError.message}</ErrorMessage>}

@@ -141,6 +141,7 @@ export function AnonymousTransliterationInput(): ReactElement {
         initialInput={state.input}
         onChange={updateTransliteration}
         disabled={false}
+        language={state.lang}
       />
 
       <div className="my-4 p-2 rounded border border-blue-300 bg-blue-50">

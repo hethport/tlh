@@ -11,15 +11,17 @@ interface IProps {
   initialInput: string;
   onChange: (value: string) => void;
   disabled: boolean;
+  language: string;
 }
 
-export function TransliterationTextArea({xmlCreationValues, initialInput, onChange, disabled}: IProps): JSX.Element {
+export function TransliterationTextArea({xmlCreationValues, initialInput, onChange, disabled, language}: IProps): JSX.Element {
 
   const {t} = useTranslation('common');
+  const inputWithLanguage = `@${language}\n${initialInput}`;
 
-  const xmlContent = exportXmlFromParser(new TLHParser(initialInput), xmlCreationValues);
+  const xmlContent = exportXmlFromParser(new TLHParser(inputWithLanguage), xmlCreationValues);
 
-  const parsed = new TLHParser(initialInput).getLines().map(convertLine);
+  const parsed = new TLHParser(inputWithLanguage).getLines().map(convertLine);
 
   return (
     <div className="mt-2 p-2 grid grid-cols-3 gap-2 rounded border border-slate-500">
