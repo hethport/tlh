@@ -20,6 +20,10 @@ export interface EditorLeftSideProps extends NodeDisplayIProps {
   deleteModeActive?: boolean;
   markedForDeletion?: string[];
   onToggleMarkForDeletion?: (path: NodePath) => void;
+  canUndo?: boolean;
+  canRedo?: boolean;
+  onUndo?: () => void;
+  onRedo?: () => void;
 }
 
 interface IState {
@@ -41,6 +45,10 @@ export function EditorLeftSide({
   deleteModeActive,
   markedForDeletion,
   onToggleMarkForDeletion,
+  canUndo = false,
+  canRedo = false,
+  onUndo,
+  onRedo,
 }: EditorLeftSideProps): JSX.Element {
   const { t } = useTranslation('common');
 
@@ -125,6 +133,29 @@ export function EditorLeftSide({
   return (
     <div className="flex flex-col h-full overflow-hidden">
       <div className="p-4 rounded-t border border-slate-300 shadow-md flex-shrink-0">
+        {onUndo && onRedo && (
+          <div className="inline-block mr-3 space-x-1">
+            <button
+              type="button"
+              onClick={onUndo}
+              disabled={!canUndo}
+              className="px-2 py-1 rounded text-sm font-bold disabled:opacity-30 disabled:cursor-not-allowed bg-gray-500 text-white hover:bg-gray-600 disabled:hover:bg-gray-500"
+              title={'Undo (Ctrl+Z)'}
+            >
+              ↶
+            </button>
+            <button
+              type="button"
+              onClick={onRedo}
+              disabled={!canRedo}
+              className="px-2 py-1 rounded text-sm font-bold disabled:opacity-30 disabled:cursor-not-allowed bg-gray-500 text-white hover:bg-gray-600 disabled:hover:bg-gray-500"
+              title={'Redo (Ctrl+Y)'}
+            >
+              ↷
+            </button>
+          </div>
+        )}
+
         <span className="font-bold">{filename}</span>
 
         <div className="float-right space-x-2">

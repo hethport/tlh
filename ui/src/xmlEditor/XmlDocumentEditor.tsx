@@ -18,7 +18,6 @@ import {fetchCuneiform} from './elementEditors/LineBreakEditor';
 import {getPriorSiblingPath} from '../nodeIterators';
 import {coloredButtonClasses} from '../defaultDesign';
 import {condenseXmlEvents} from './HeaderEditor';
-import {postprocessNode} from './nodePostprocessing';
 
 export function buildActionSpec(innerAction: Spec<XmlNode>, path: number[]): Spec<XmlNode> {
   return path.reduceRight(
@@ -57,7 +56,12 @@ interface IState {
   insertModeActive: boolean;
   deleteModeActive: boolean;
   markedForDeletion: string[];
+  history: XmlNode[];
+  historyIndex: number;
 }
+
+// Maximum number of undo states to keep in memory
+const MAX_HISTORY_LENGTH = 50;
 
 function searchEditableNode(tagName: string, rootNode: XmlElementNode, currentPath: number[], forward: boolean): number[] | undefined {
 
@@ -149,7 +153,9 @@ export function XmlDocumentEditor({
     rightSideFontSize: 100,
     insertModeActive: false,
     deleteModeActive: false,
-    markedForDeletion: []
+    markedForDeletion: [],
+    history: [initialNode],
+    historyIndex: 0
   });
   const globalUpdateButtonRef = useRef<HTMLButtonElement>(null);
 
@@ -159,8 +165,57 @@ export function XmlDocumentEditor({
 
   useEffect(() => {
     document.addEventListener('keydown', handleJumpKey);
-    return () => document.removeEventListener('keydown', handleJumpKey);
+    document.addEventListener('keydown', handleUndoRedoKey);
+    return () => {
+      document.removeEventListener('keydown', handleJumpKey);
+      document.removeEventListener('keydown', handleUndoRedoKey);
+    };
   });
+
+  const undo = (): void => {
+    setState((state) => {
+      if (state.historyIndex > 0) {
+        const previousNode = state.history[state.historyIndex - 1];
+        return update(state, {
+          rootNode: {$set: previousNode},
+          historyIndex: {$set: state.historyIndex - 1},
+          changed: {$set: true},
+          editorState: {$set: defaultRightSideState} // Reset editor state on undo
+        });
+      }
+      return state;
+    });
+  };
+
+  const redo = (): void => {
+    setState((state) => {
+      if (state.historyIndex < state.history.length - 1) {
+        const nextNode = state.history[state.historyIndex + 1];
+        return update(state, {
+          rootNode: {$set: nextNode},
+          historyIndex: {$set: state.historyIndex + 1},
+          changed: {$set: true},
+          editorState: {$set: defaultRightSideState} // Reset editor state on redo
+        });
+      }
+      return state;
+    });
+  };
+
+  const handleUndoRedoKey = (event: KeyboardEvent): void => {
+    if (!state.keyHandlingEnabled) return;
+
+    // Undo: Ctrl+Z (Windows/Linux) or Cmd+Z (Mac)
+    if ((event.ctrlKey || event.metaKey) && event.key === 'z' && !event.shiftKey) {
+      event.preventDefault();
+      undo();
+    }
+    // Redo: Ctrl+Y (Windows/Linux) or Cmd+Shift+Z (Mac)
+    else if ((event.ctrlKey || event.metaKey) && (event.key === 'y' || (event.key === 'z' && event.shiftKey))) {
+      event.preventDefault();
+      redo();
+    }
+  };
 
   function exportXml(condenseEvents?: boolean): void {
     setState((state) => update(state, {changed: {$set: false}}));
@@ -195,7 +250,8 @@ export function XmlDocumentEditor({
       : editNodeEditorState(node, editorConfig, path)
   }));
 
-  const applyUpdates = (nextEditablePath?: number[]): void => setState((state) => {
+  const applyUpdates = (nextEditablePath?: number[]): void => {
+    setState((state) => {
       if (state.editorState._type !== 'EditNodeRightState') {
         return state;
       }
@@ -204,18 +260,20 @@ export function XmlDocumentEditor({
         ? editNodeEditorState(findElement(state.rootNode as XmlElementNode, nextEditablePath), editorConfig, nextEditablePath)
         : undefined;
 
-      const editedNode = state.editorState.node;
-      const resultingNode = postprocessNode(editedNode);
+      const newRootNode = update(state.rootNode, buildSpec(state.editorState.path, {$set: state.editorState.node}));
+
+      const currentHistory = state.history.slice(0, state.historyIndex + 1);
+      const newHistory = [...currentHistory, newRootNode].slice(-MAX_HISTORY_LENGTH);
 
       return update(state, {
-        rootNode: buildSpec(state.editorState.path, {$set: resultingNode}),
-        editorState: newEditorState !== undefined
-          ? {$set: newEditorState}
-          : {changed: {$set: false}, node: {$set: resultingNode}},
-        changed: {$set: true}
+        rootNode: {$set: newRootNode},
+        editorState: newEditorState !== undefined ? {$set: newEditorState} : {changed: {$set: false}},
+        changed: {$set: true},
+        history: {$set: newHistory},
+        historyIndex: {$set: newHistory.length - 1}
       });
-    }
-  );
+    });
+  };
 
   const updateEditedNode = (updateSpec: Spec<XmlElementNode>): void => setState((state) => update(state, {
     editorState: (editorState) => editorState._type === 'EditNodeRightState'
@@ -283,13 +341,21 @@ export function XmlDocumentEditor({
       ? getPriorSiblingPath(state.rootNode as XmlElementNode, path, 'lb')
       : undefined;
 
-    setState((state) => update(state, {
-        rootNode: buildSpec(path.slice(0, -1), {children: {$splice: [[path[path.length - 1], 1]]}}),
+    setState((state) => {
+      const newRootNode = update(state.rootNode, buildSpec(path.slice(0, -1), {children: {$splice: [[path[path.length - 1], 1]]}}));
+
+      const currentHistory = state.history.slice(0, state.historyIndex + 1);
+      const newHistory = [...currentHistory, newRootNode].slice(-MAX_HISTORY_LENGTH);
+
+      return update(state, {
+        rootNode: {$set: newRootNode},
         editorState: {$set: defaultRightSideState},
         changed: {$set: true},
-        lbCuneiformDirtyPath: {$set: lbCuneiformDirtyPath}
-      })
-    );
+        lbCuneiformDirtyPath: {$set: lbCuneiformDirtyPath},
+        history: {$set: newHistory},
+        historyIndex: {$set: newHistory.length - 1}
+      });
+    });
   }
 
   function renderNodeEditor({node, path, changed}: IEditNodeEditorState): ReactElement {
@@ -307,8 +373,7 @@ export function XmlDocumentEditor({
 
     return (
       <NodeEditorRightSide key={path.join('.')} rootNode={state.rootNode as XmlElementNode} originalNode={node} changed={changed}
-                           deleteNode={() => deleteNode(path)} applyUpdates={() => { applyUpdates();
-                                                                setState((state) => update(state, {editorState: {$set: defaultRightSideState}})); }}
+                           deleteNode={() => deleteNode(path)} applyUpdates={() => applyUpdates()}
                            cancelSelection={() => setState((state) => update(state, {editorState: {$set: defaultRightSideState}}))}
                            jumpElement={(forward) => jumpEditableNodes(node.tagName, forward)} fontSizeSelectorProps={fontSizeSelectorProps}
                            globalUpdateButtonRef={globalUpdateButtonRef}>
@@ -410,11 +475,11 @@ export function XmlDocumentEditor({
     if (!confirm(t('deleteThisElement'))) return;
 
     const sortedPaths = state.markedForDeletion
-      .map((s) => s.split('.').map(Number))
-      .sort((a, b) => {
-        for (let i = Math.max(a.length, b.length) - 1; i >= 0; i--) {
-          const diff = (b[i] ?? -1) - (a[i] ?? -1);
-          if (diff !== 0) return diff;
+      .map((pathString) => pathString.split('.').map(Number))
+      .sort((pathA: number[], pathB: number[]) => {
+        for (let i = Math.max(pathA.length, pathB.length) - 1; i >= 0; i--) {
+          const difference = (pathB[i] ?? -1) - (pathA[i] ?? -1);
+          if (difference !== 0) return difference;
         }
         return 0;
       });
@@ -430,18 +495,24 @@ export function XmlDocumentEditor({
     }
 
     setState((state) => {
-      let rootNode = state.rootNode;
+      let newRootNode = state.rootNode;
       for (const path of sortedPaths) {
         const spec = buildSpec(path.slice(0, -1), {children: {$splice: [[path[path.length - 1], 1]]}});
-        rootNode = update(rootNode, spec);
+        newRootNode = update(newRootNode, spec);
       }
       // Prune only along the affected ancestor paths
-      rootNode = pruneEmptyAncestors(rootNode, [], affectedParentKeys) ?? rootNode;
+      newRootNode = pruneEmptyAncestors(newRootNode, [], affectedParentKeys) ?? newRootNode;
+
+      const currentHistory = state.history.slice(0, state.historyIndex + 1);
+      const newHistory = [...currentHistory, newRootNode].slice(-MAX_HISTORY_LENGTH);
+
       return update(state, {
-        rootNode: {$set: rootNode},
+        rootNode: {$set: newRootNode},
         deleteModeActive: {$set: false},
         markedForDeletion: {$set: []},
-        changed: {$set: true}
+        changed: {$set: true},
+        history: {$set: newHistory},
+        historyIndex: {$set: newHistory.length - 1}
       });
     });
   }
@@ -482,19 +553,37 @@ export function XmlDocumentEditor({
 
     if (state.insertModeActive) {
       // In insert mode: apply the node but stay in AddNodeRightState (no editor opened)
-      setState((state) => update(state, {
-        rootNode: actionSpec,
-        changed: {$set: true},
-        lbCuneiformDirtyPath: {$set: lbCuneiformDirtyPath}
-      }));
+      setState((state) => {
+        const newRootNode = update(state.rootNode, actionSpec);
+
+        const currentHistory = state.history.slice(0, state.historyIndex + 1);
+        const newHistory = [...currentHistory, newRootNode].slice(-MAX_HISTORY_LENGTH);
+
+        return update(state, {
+          rootNode: {$set: newRootNode},
+          changed: {$set: true},
+          lbCuneiformDirtyPath: {$set: lbCuneiformDirtyPath},
+          history: {$set: newHistory},
+          historyIndex: {$set: newHistory.length - 1}
+        });
+      });
     } else {
       // Default behaviour: open the node editor after insertion
-      setState((state) => update(state, {
-        rootNode: actionSpec,
-        editorState: {$set: editNodeEditorState(newNode, editorConfig, path)},
-        changed: {$set: true},
-        lbCuneiformDirtyPath: {$set: lbCuneiformDirtyPath}
-      }));
+      setState((state) => {
+        const newRootNode = update(state.rootNode, actionSpec);
+
+        const currentHistory = state.history.slice(0, state.historyIndex + 1);
+        const newHistory = [...currentHistory, newRootNode].slice(-MAX_HISTORY_LENGTH);
+
+        return update(state, {
+          rootNode: {$set: newRootNode},
+          editorState: {$set: editNodeEditorState(newNode, editorConfig, path)},
+          changed: {$set: true},
+          lbCuneiformDirtyPath: {$set: lbCuneiformDirtyPath},
+          history: {$set: newHistory},
+          historyIndex: {$set: newHistory.length - 1}
+        });
+      });
     }
   }
 
@@ -521,12 +610,30 @@ export function XmlDocumentEditor({
         }
       }
       : undefined,
-    updateNode: (node) => setState((state) => update(state, {rootNode: {$set: node}})),
+    updateNode: (node) => {
+      setState((state) => {
+        const newRootNode = node;
+
+        const currentHistory = state.history.slice(0, state.historyIndex + 1);
+        const newHistory = [...currentHistory, newRootNode].slice(-MAX_HISTORY_LENGTH);
+
+        return update(state, {
+          rootNode: {$set: newRootNode},
+          history: {$set: newHistory},
+          historyIndex: {$set: newHistory.length - 1}
+        });
+      });
+    },
     setKeyHandlingEnabled: (value) => setState((state) => update(state, {keyHandlingEnabled: {$set: value}})),
     isLeftSide: true,
     deleteModeActive: state.deleteModeActive,
     markedForDeletion: state.markedForDeletion,
-    onToggleMarkForDeletion: toggleMarkForDeletion
+    onToggleMarkForDeletion: toggleMarkForDeletion,
+    // NEW: Pass undo/redo functions and state
+    canUndo: state.historyIndex > 0,
+    canRedo: state.historyIndex < state.history.length - 1,
+    onUndo: undo,
+    onRedo: redo
   };
 
   if (state.lbCuneiformDirtyPath !== undefined) {
