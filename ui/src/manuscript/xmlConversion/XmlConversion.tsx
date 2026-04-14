@@ -45,7 +45,10 @@ function Inner({ initialInput, initialIsConverted, ...xmlCreationValues }: IProp
     }
   };
 
-  const onConvert = (input: string): void => setState({ _type: 'XmlCheck', content: exportXmlFromParser(new TLHParser(input), xmlCreationValues) });
+  const onConvert = (input: string): void => {
+    const inputWithLanguage = `@${xmlCreationValues.lang}\n${input}`;
+    setState({ _type: 'XmlCheck', content: exportXmlFromParser(new TLHParser(inputWithLanguage), xmlCreationValues) });
+  };
 
   return converted
     ? (
