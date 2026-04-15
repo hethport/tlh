@@ -315,5 +315,11 @@
   "stemSearch": "Search for stems",
   "form": "Form",
   "pos": "Part of speech",
-  "submitSeachQuery": "Search"
+  "submitSeachQuery": "Search",
+  "newVersionAvailable": "New Version Available",
+  "versionUpdateMessage": "Version {{latest}} is now available (currently running {{current}})",
+  "updateNow": "Update Now",
+  "later": "Later",
+  "clearCache": "Clear Cache",
+  "clearCacheTooltip": "Clear browser cache and reload"
 }

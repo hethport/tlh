@@ -315,5 +315,11 @@
   "stemSearch": "Nach Stämmen suchen",
   "form": "Form",
   "pos": "Wortart",
-  "submitSeachQuery": "Suchen"
+  "submitSeachQuery": "Suchen",
+  "newVersionAvailable": "Neue Version verfügbar",
+  "versionUpdateMessage": "Version {{latest}} ist jetzt verfügbar (Derzeit läuft {{current}})",
+  "updateNow": "Jetzt updaten",
+  "later": "Später",
+  "clearCache": "Cache leeren",
+  "clearCacheTooltip": "Cache leeren und Seite neu laden"
 }
