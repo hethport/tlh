@@ -5,7 +5,7 @@ import {useTranslation} from 'react-i18next';
 import {Link} from 'react-router-dom';
 import {approveDocumentUrl} from './urls';
 
-const linkClasses = 'p-2 rounded bg-amber-500 text-white text-center w-full';
+const linkClasses = 'p-2 rounded bg-amber-500 hover:bg-amber-400 text-white text-center w-full';
 
 export function ExecutiveEditorHomeBox({documentsAwaitingApproval}: ExecutiveEditorHomeDataFragment): JSX.Element {
 

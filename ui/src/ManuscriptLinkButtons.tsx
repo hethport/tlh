@@ -12,7 +12,7 @@ export function ManuscriptLinkButtons({manuscripts, errorMsg}: IProps): JSX.Elem
     : (
       <div className="grid grid-cols-6 gap-2">
         {manuscripts.map((myManuscript) =>
-          <Link key={myManuscript} to={`/manuscripts/${encodeURIComponent(myManuscript)}/data`} className="p-2 rounded bg-blue-500 text-white text-center">
+          <Link key={myManuscript} to={`/manuscripts/${encodeURIComponent(myManuscript)}/data`} className="p-2 rounded bg-sky-600 hover:bg-sky-500 text-white text-center">
             {myManuscript}
           </Link>)}
       </div>

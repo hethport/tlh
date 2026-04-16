@@ -125,14 +125,14 @@ export function Home(): JSX.Element {
       <h1 className="font-bold text-2xl text-center mb-4">TLH<sup>dig</sup></h1>
 
       <div className="my-8 text-center flex gap-4 justify-center items-center">
-        <Link className="px-8 py-2 rounded bg-blue-600 text-white text-center" to={createManuscriptUrl}>
+        <Link className="px-8 py-2 rounded bg-sky-600 hover:bg-sky-500 text-white text-center" to={createManuscriptUrl}>
           {t('createManuscript')}
         </Link>
 
         {isDevOrTive && (
           <button
             onClick={hardReload}
-            className="px-6 py-2 rounded bg-gray-600 text-white hover:bg-gray-700 transition-colors flex items-center gap-2"
+            className="px-6 py-2 rounded bg-gray-700 text-white hover:bg-gray-600 transition-colors flex items-center gap-2"
             title={t('clearCacheTooltip') || 'Clear browser cache and reload'}
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -5,7 +5,7 @@ import {AppointmentType, ReviewerHomeDataFragment} from './graphql';
 import {Link} from 'react-router-dom';
 import {firstXmlReviewUrl, secondXmlReviewUrl, transliterationReviewUrl, xmlConversionUrl} from './urls';
 
-const buttonClasses = 'p-2 rounded bg-amber-500 text-white text-center w-full disabled:opacity-50';
+const buttonClasses = 'p-2 rounded bg-amber-500 hover:bg-amber-400 text-white text-center w-full disabled:opacity-50';
 
 const url = (manuscriptIdentifier: string, appointmentType: AppointmentType): string => {
   const typeUrlFragment = {

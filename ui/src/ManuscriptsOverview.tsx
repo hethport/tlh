@@ -21,7 +21,7 @@ export function ManuscriptsOverview({manuscriptCount, allManuscripts, queryPage,
     <PaginatedTable count={manuscriptCount} data={allManuscripts} columnNames={columnNames} queryPage={queryPage} emptyMessage={t('noManuscriptsYet')}
                     page={page}>
       {({mainIdentifier: {identifier, identifierType}, pictureCount, status, creatorUsername}) =>
-        <tr key={identifier} className="border-t border-slate-600 text-center">
+        <tr key={identifier} className="border-t border-slate-600 hover:bg-gray-100 text-center">
           <td className="p-2">
             <Link to={`manuscripts/${encodeURIComponent(identifier)}/data`}>{identifier} ({identifierType})</Link>
           </td>
