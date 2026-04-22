@@ -73,4 +73,4 @@ export const tlhDocumentAnalyzerUrl = `${tlhAnalyzerBaseUrl}/TLHaly/deuteDokumen
 
 export const getCuneiformUrl = `${tlhAnalyzerBaseUrl}/TLHcuni/create_cuneiform_single.php`;
 
-export const simtexGuidelinesUrl = `${tlhAnalyzerBaseUrl}/SIMTEX_Guidelines/`;
+export const simtexGuidelinesUrl = `${baseServerUrl}/SIMTEX_Guidelines/`;
