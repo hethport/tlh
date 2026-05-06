@@ -6,6 +6,7 @@ import { PartsOfSpeech, getPartsOfSpeech, setPartsOfSpeech } from '../partsOfSpe
 import { EnglishTranslationsObject, getEnglishTranslations, updateEnglishTranslations }
   from '../translations/englishTranslations';
 import { SuffixChainInventories } from '../segmentation/suffixChainInventories';
+import { NumericIDsObject, getNumericIDs, setNumericIDs } from '../numericIDs/numericIDs';
 
 export type LexicalData = {
   exportDate?: string;
@@ -16,6 +17,7 @@ export type LexicalData = {
   partsOfSpeech?: PartsOfSpeech;
   englishTranslations?: EnglishTranslationsObject;
   suffixChains?: SuffixChainInventories;
+  numericIDs?: NumericIDsObject;
 }
 
 export function getLexicalData(): LexicalData {
@@ -28,13 +30,18 @@ export function getLexicalData(): LexicalData {
   const corpus = getCorpus();
   const englishTranslations = getEnglishTranslations();
   const suffixChains = getSuffixChains();
+  const numericIDs = getNumericIDs();
   const lexicalData: LexicalData = {exportDate, partsOfSpeech, dictionary, glosses, concordance,
-    corpus, englishTranslations, suffixChains};
+    corpus, englishTranslations, suffixChains,
+    numericIDs
+  };
   return lexicalData;
 }
 
 export function setLexicalData(lexicalData: LexicalData): void {
-  const {dictionary, glosses, concordance, corpus, partsOfSpeech, englishTranslations} = lexicalData;
+  const {dictionary, glosses, concordance, corpus, partsOfSpeech, englishTranslations,
+    numericIDs
+  } = lexicalData;
   // The undefined checks for required fields are needed for the case the user
   // uploads a JSON file with another structure.
   // The concordance should be initialized before the dictionary,
@@ -58,5 +65,8 @@ export function setLexicalData(lexicalData: LexicalData): void {
   }
   if (englishTranslations !== undefined) {
     updateEnglishTranslations(englishTranslations);
+  }
+  if (numericIDs !== undefined) {
+    setNumericIDs(numericIDs);
   }
 }
