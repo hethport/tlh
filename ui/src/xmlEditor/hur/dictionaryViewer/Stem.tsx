@@ -54,7 +54,7 @@ export function StemElement({index, form, translation, englishTranslation, pos,
                               onChange={onPartOfSpeechChange} />
       </div>
       <div className="p-2 border-y border-r border-slate-500">
-        {numericIDs.join(', ')}
+        {numericIDs.sort((a: number, b: number) => a - b).join(', ')}
       </div>
       <button onClick={handleClick}
               className="p-2 border-y border-r border-slate-500 unfold-button">&#8744;</button>
