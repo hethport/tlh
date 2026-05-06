@@ -143,7 +143,6 @@ export function annotateHurrianWord(node: XmlElementNode, lookupConfig: LookupCo
   if (possibilities !== undefined) {
     setGlosses(node);
     if (node.attributes.firstAnalysisIsPlaceholder === 'true') {
-      delete node.attributes.mrp1;
       delete node.attributes.firstAnalysisIsPlaceholder;
     }
     const mrps: Map<string, string> = getMrps(node);
@@ -172,7 +171,6 @@ export function annotateHurrianWord(node: XmlElementNode, lookupConfig: LookupCo
         }
         else {
           node.attributes.mrp1 = transcription + '@@@@';
-          node.attributes.firstAnalysisIsPlaceholder = 'true';
         }
       }
       setGlosses(node);

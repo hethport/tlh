@@ -13,10 +13,19 @@ import { useTranslation } from 'react-i18next';
 import { getEnglishTranslationKey, EnglishTranslations, setGlobalEnglishTranslations,
   getGlobalEnglishTranslations
 } from '../translations/englishTranslations';
+import { References, setGlobalReferences, getGlobalReferences } from '../references/references';
+import { aggregateReferences } from '../references/aggregation';
+import { getNumericIDKey, NumericIDs, setGlobalNumericIDs,
+  getGlobalNumericIDs } from '../numericIDs/numericIDs';
+import { assignIDsToNewStems } from '../numericIDs/numericIDAssignment';
 import update from 'immutability-helper';
 import { EnglishTranslationsDownloader } from '../translations/files/EnglishTranslationsDownloader';
+import { ReferencesDownloader } from '../references/files/ReferencesDownloader';
+import { NumericIDsDownloader } from '../numericIDs/files/NumericIDsDownloader';
 import { DictionaryUploader } from '../dict/files/DictionaryUploader';
 import { EnglishTranslationsUploader } from '../translations/files/EnglishTranslationsUploader';
+import { ReferencesUploader } from '../references/files/ReferencesUploader';
+import { NumericIDsUploader } from '../numericIDs/files/NumericIDsUploader';
 import { rootMayBeOnlyPartiallyPreserved, shouldBeShownInTheDictionary } from './dictionaryFilter';
 import { DictionaryConfig } from '../../dictionaryConfig';
 import { LookupConfig } from '../../lookupConfig';
@@ -28,7 +37,14 @@ import { SearchForm } from '../search/SearchForm';
 interface IProps {
   entries: Entry[];
   initialEnglishTranslations: EnglishTranslations;
+  initialReferences: References;
+  initialNumericIDs: NumericIDs;
   setDictionary: SetDictionary;
+}
+
+type DictionaryViewerState = {
+  references: References;
+  allNumericIDs: NumericIDs;
 }
 
 function keyFunc({morphologicalAnalysis}: Entry): string {
@@ -41,7 +57,9 @@ function valueFunc(entry: Entry): Entry {
   return entry;
 }
 
-export function DictionaryViewer({entries, setDictionary, initialEnglishTranslations}: IProps): JSX.Element {
+export function DictionaryViewer({entries, setDictionary, initialEnglishTranslations, initialReferences,
+  initialNumericIDs
+}: IProps): JSX.Element {
   
   const {t} = useTranslation('common');
   
@@ -58,6 +76,29 @@ export function DictionaryViewer({entries, setDictionary, initialEnglishTranslat
   useEffect(() => {
     setGlobalEnglishTranslations(englishTranslations);
   }, [englishTranslations]);
+
+  const [state, setState] = useState<DictionaryViewerState>({
+    references: initialReferences,
+    allNumericIDs: initialNumericIDs,
+  });
+
+  const {references, allNumericIDs} = state;
+
+  const setReferences = (modification: (oldReferences: References) => References) => {
+    setState(state => update(state, {references: {$set: modification(state.references)}}));
+  };
+
+  const setNumericIDs = (modification: (oldNumericIDs: NumericIDs) => NumericIDs) => {
+    setState(state => update(state, {allNumericIDs: {$set: modification(state.allNumericIDs)}}));
+  };
+
+  useEffect(() => {
+    setGlobalReferences(references);
+  }, [references]);
+
+  useEffect(() => {
+    setGlobalNumericIDs(allNumericIDs);
+  }, [allNumericIDs]);
 
   type StemQuery = SearchQuery<keyof IStem>;
   const initialStemQuery: StemQuery = [
@@ -126,6 +167,11 @@ export function DictionaryViewer({entries, setDictionary, initialEnglishTranslat
                                                                  stemObject.pos,
                                                                  stemObject.translation);
           const englishTranslation = englishTranslations.get(englishTranslationKey) || '';
+          const numericIDKey = getNumericIDKey(stemObject.form, stemObject.pos, stemObject.translation);
+          const numericIDs = allNumericIDs.get(numericIDKey) || new Set<number>();
+          const reference = numericIDs.size > 0
+            ? references.get(Array.from(numericIDs)[0]) || ''
+            : '';
           const key = entries
             .map(entry => writeMorphAnalysisValue(entry.morphologicalAnalysis))
             .concat([englishTranslation])
@@ -150,6 +196,37 @@ export function DictionaryViewer({entries, setDictionary, initialEnglishTranslat
               });
             }
           });
+
+          const setReference = (newReference: string) => {
+            if (!(reference === '' && newReference === '')) {
+              setReferences(oldReferences => update(
+                oldReferences, {$add:
+                  Array.from(numericIDs).map(numericID => ([numericID, newReference]))
+                }
+              ));
+            }
+          };
+
+          const updateNumericIDKey = (newNumericIDKey: string) => {
+            setNumericIDs(oldNumericIDs => {
+              if (oldNumericIDs.has(newNumericIDKey)) {
+                  return update(oldNumericIDs, {
+                    [newNumericIDKey]: {$add: Array.from(numericIDs)},
+                    $remove: [numericIDKey]
+                  });
+                } else {
+                  return update(oldNumericIDs, {
+                    $add: [[newNumericIDKey, numericIDs]],
+                    $remove: [numericIDKey]
+                  });
+                }
+            });
+            setState(state => {
+              const newReferences = aggregateReferences(state.references, state.allNumericIDs);
+              return update(state, {references: {$set: newReferences}});
+            });
+          };
+
           const isFragmentary = entries.every(entry => {
             return getStem(entry.morphologicalAnalysis.referenceWord).endsWith(openingBracket);
           });
@@ -169,7 +246,11 @@ export function DictionaryViewer({entries, setDictionary, initialEnglishTranslat
               allUnfolded={allUnfolded}
               englishTranslation={englishTranslation}
               onEnglishTranslationBlur={setEnglishTranslation}
-              updateEnglishTranslationKey={updateEnglishTranslationKey}/>
+              updateEnglishTranslationKey={updateEnglishTranslationKey}
+              reference={reference}
+              numericIDs={numericIDs}
+              onReferenceBlur={setReference}
+              updateNumericIDKey={updateNumericIDKey} />
           );
         })}
       </div>
@@ -181,14 +262,35 @@ export function DictionaryViewer({entries, setDictionary, initialEnglishTranslat
             {allUnfolded ? t('foldAll') : t('unfoldAll')}
           </button>
           <EnglishTranslationsDownloader />
+          <ReferencesDownloader />
+          <NumericIDsDownloader />
           <DictionaryUploader onUpload={() => {
             const globalDictionary = getGlobalDictionary();
             setDictionary(() => globalDictionary);
+            const globalNumericIDs = getGlobalNumericIDs();
+            setNumericIDs(() => globalNumericIDs);
+            setState(state => {
+              const newReferences = aggregateReferences(state.references, state.allNumericIDs);
+              return update(state, {references: {$set: newReferences}});
+            });
           }}/>
           <EnglishTranslationsUploader onUpload={() => {
             const globalEnglishTranslations = getGlobalEnglishTranslations();
             setEnglishTranslations(globalEnglishTranslations);
           }}/>
+          <ReferencesUploader onUpload={() => {
+            const globalReferences = getGlobalReferences();
+            setReferences(() => globalReferences);
+          }}/>
+          <NumericIDsUploader onUpload={() => {
+            const globalNumericIDs = getGlobalNumericIDs();
+            setNumericIDs(() => globalNumericIDs);
+          }}/>
+          <button type="button" className={blueButtonClasses} onClick={() =>
+            setNumericIDs((stemIDs: NumericIDs) => assignIDsToNewStems(stemIDs, stemObjects))
+          }>
+            {t('assignIDsToNewStems')}
+          </button>
         </div>
       </div>
     </div>

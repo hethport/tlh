@@ -12,6 +12,14 @@ export function objectToMap<TValue>(object: {[key: string]: TValue}): Map<string
   return map;
 }
 
+export function objectWithNumericKeysToMap<TValue>(object: {[key: number]: TValue}): Map<number, TValue> {
+  const map = new Map<number, TValue>();
+  for (const [key, value] of Object.entries(object)) {
+    map.set(Number(key), value);
+  }
+  return map;
+}
+
 export function objectToArrayMap<TValue>(object: {[key: string]: TValue | TValue[]}): Map<string, TValue[]> {
   const map = new Map<string, TValue[]>();
   for (const [key, value] of Object.entries(object)) {

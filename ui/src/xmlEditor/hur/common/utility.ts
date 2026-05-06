@@ -9,6 +9,14 @@ export function convertMapping<TValue>(dictionary: Map<string, TValue>): { [key:
   return object;
 }
 
+export function convertMappingWithNumericKeys<TValue>(dictionary: Map<number, TValue>): { [key: number]: TValue } {
+  const object: { [key: number]: TValue } = {};
+  for (const [key, value] of dictionary) {
+    object[key] = value;
+  }
+  return object;
+}
+
 export function updateMapping<TValue>(dictionary: Map<string, TValue>,
                                       object: { [key: string]: TValue }): void {
   for (const [key, value] of Object.entries(object)) {
@@ -16,8 +24,8 @@ export function updateMapping<TValue>(dictionary: Map<string, TValue>,
   }
 }
 
-export function convertDictionary(dictionary: Map<string, Set<string>>): { [key: string]: string[] } {
-  const object: { [key: string]: string[] } = {};
+export function convertDictionary<TValue>(dictionary: Map<string, Set<TValue>>): { [key: string]: TValue[] } {
+  const object: { [key: string]: TValue[] } = {};
   for (const [key, value] of dictionary) {
     object[key] = Array.from(value);
   }

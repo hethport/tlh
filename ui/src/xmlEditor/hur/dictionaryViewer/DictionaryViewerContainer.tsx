@@ -7,6 +7,8 @@ import { Entry } from './Wordform';
 import { groupBy } from '../common/utils';
 import { Dictionary, setGlobalDictionary, getGlobalDictionary } from '../dict/dictionary';
 import { EnglishTranslations } from '../translations/englishTranslations';
+import { References } from '../references/references';
+import { NumericIDs } from '../numericIDs/numericIDs';
 import { locallyStoreHurrianData } from '../dictLocalStorage/hurrianDataLocalStorage';
 
 export interface Subentry {
@@ -17,15 +19,21 @@ export interface Subentry {
 interface IProps {
   getInitialDictionary: () => Dictionary;
   getInitialEnglishTranslations: () => EnglishTranslations;
+  getInitialReferences: () => References;
+  getInitialNumericIDs: () => NumericIDs;
 }
 
 export function DictionaryViewerContainer({getInitialDictionary,
-  getInitialEnglishTranslations
+  getInitialEnglishTranslations,
+  getInitialReferences,
+  getInitialNumericIDs
 }: IProps): JSX.Element {
   
   const {t} = useTranslation('common');
   const initialDictionary = getInitialDictionary();
   const initialEnglishTranslations = getInitialEnglishTranslations();
+  const initialReferences = getInitialReferences();
+  const initialNumericIDs = getInitialNumericIDs();
   const [dictionary, setDictionary] = useState(initialDictionary);
   const loaded = dictionary.size > 0;
   
@@ -66,7 +74,9 @@ export function DictionaryViewerContainer({getInitialDictionary,
         setDictionary(() => globalDictionary);
       }} /> :
       <DictionaryViewer entries={entries} setDictionary={setDictionary}
-                        initialEnglishTranslations={initialEnglishTranslations} />}
+                        initialEnglishTranslations={initialEnglishTranslations}
+                        initialReferences={initialReferences}
+                        initialNumericIDs={initialNumericIDs} />}
     </div>
   );
 }

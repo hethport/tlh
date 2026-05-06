@@ -14,6 +14,7 @@ import { replaceMorphologicalAnalysis } from '../corpus/corpus';
 import { areCorrect } from '../dict/morphologicalAnalysisValidator';
 import { getMorphTags } from '../morphologicalAnalysis/auxiliary';
 import { getEnglishTranslationKey } from '../translations/englishTranslations';
+import { getNumericIDKey } from '../numericIDs/numericIDs';
 import { getStemVariants } from '../dict/dictionary';
 import { groupBy } from '../common/utils';
 import { areLexicallyEquivalent, areEquivalent } from '../morphologicalAnalysis/lexicalEquivalence';
@@ -71,6 +72,10 @@ interface IProps {
   englishTranslation: string;
   onEnglishTranslationBlur: (eglishTranslation: string) => void;
   updateEnglishTranslationKey: (newEglishTranslationKey: string) => void;
+  reference: string;
+  numericIDs: Set<number>;
+  onReferenceBlur: (reference: string) => void;
+  updateNumericIDKey: (newNumericIDKey: string) => void;
 }
 
 function replaceStem(newStem: string, segmentation: string, newStemHasUnclosedBracket: boolean) {
@@ -288,7 +293,11 @@ type StemViewerState = {
 export function StemViewer({index, stem, initialEntries, setDictionary, initialUnfolded,
                             allUnfolded, englishTranslation,
                             onEnglishTranslationBlur,
-                            updateEnglishTranslationKey }: IProps): JSX.Element {
+                            updateEnglishTranslationKey,
+                            reference,
+                            numericIDs,
+                            onReferenceBlur,
+                            updateNumericIDKey}: IProps): JSX.Element {
   
   const [unfolded, setUnfolded] = useState(initialUnfolded);
   const initialState: StemViewerState = {
@@ -309,6 +318,11 @@ export function StemViewer({index, stem, initialEntries, setDictionary, initialU
   const isFragmentary = entries.every(entry => {
     return containsBrackets(entry.morphologicalAnalysis.referenceWord);
   });
+
+  const updateKeys = (stemForm: string, partOfSpeech: string, germanTranslation: string) => {
+    updateEnglishTranslationKey(getEnglishTranslationKey(stemForm, partOfSpeech, germanTranslation));
+    updateNumericIDKey(getNumericIDKey(stemForm, partOfSpeech, germanTranslation));
+  };
   
   return (
     <div className="flex flex-row">
@@ -331,7 +345,7 @@ export function StemViewer({index, stem, initialEntries, setDictionary, initialU
               setDictionary((dictionary: Dictionary) => {
                 return modifyGlobalEntries(dictionary, entries);
               });
-              updateEnglishTranslationKey(getEnglishTranslationKey(value, partOfSpeech, translation));
+              updateKeys(value, partOfSpeech, translation);
             }
           }}        
           onTranslationChange={(value: string) => {
@@ -346,7 +360,7 @@ export function StemViewer({index, stem, initialEntries, setDictionary, initialU
               setDictionary((dictionary: Dictionary) => {
                 return modifyGlobalEntries(dictionary, entries);
               });
-              updateEnglishTranslationKey(getEnglishTranslationKey(stemForm, partOfSpeech, value));
+              updateKeys(stemForm, partOfSpeech, value);
             }
           }}
           onPartOfSpeechChange={(value: string) => {
@@ -354,10 +368,13 @@ export function StemViewer({index, stem, initialEntries, setDictionary, initialU
             setDictionary((dictionary: Dictionary) => {
               return modifyGlobalPartOfSpeech(dictionary, initialEntries, value);
             });
-            updateEnglishTranslationKey(getEnglishTranslationKey(stemForm, value, translation));
+            updateKeys(stemForm, value, translation);
           }}
           englishTranslation={englishTranslation}
-          onEnglishTranslationBlur={onEnglishTranslationBlur} />
+          onEnglishTranslationBlur={onEnglishTranslationBlur}
+          reference={reference}
+          onReferenceBlur={onReferenceBlur}
+          numericIDs={Array.from(numericIDs).sort()}/>
         <br />
         {(unfolded || allUnfolded) &&
           <pre className="stem-variants">
