@@ -10,7 +10,9 @@ export function aggregateReferences(oldReferences: References, allNumericIDs: Nu
     for (const numericID of numericIDs) {
       const value = oldReferences.get(numericID);
       if (value !== undefined && value !== '') {
-        values.add(value);
+        for (const element of value.split(aggregatedReferencesSeparator)) {
+          values.add(element);
+        }
       }
     }
     const aggregatedValue = Array.from(values).sort().join(aggregatedReferencesSeparator);
