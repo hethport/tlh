@@ -280,7 +280,10 @@ export function DictionaryViewer({entries, setDictionary, initialEnglishTranslat
           }}/>
           <ReferencesUploader onUpload={() => {
             const globalReferences = getGlobalReferences();
-            setReferences(() => globalReferences);
+            setState(state => {
+              const newReferences = aggregateReferences(globalReferences, state.allNumericIDs);
+              return update(state, {references: {$set: newReferences}});
+            });
           }}/>
           <NumericIDsUploader onUpload={() => {
             const globalNumericIDs = getGlobalNumericIDs();
