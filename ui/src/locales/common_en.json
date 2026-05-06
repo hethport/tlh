@@ -292,6 +292,8 @@
   "secondXmlReviewDate": "Second XML Review Date",
   "exportEnglishTranslations": "Export English translations",
   "uploadEnglishTranslations": "Upload English translations",
+  "exportReferences": "Export BGH references",
+  "uploadReferences": "Upload BGH references",
   "suffixDictionary": "Suffixes",
   "hurrianDictionary": "Hurrian dictionary",
   "fragmInSuffixDict": "Use morphophonemic transcriptions with brackets for constructing the suffix dictionary",
@@ -315,7 +317,9 @@
   "ignoreVoice": "Do not distinguish voiced and voiceless consonants",
   "stemSearch": "Search for stems",
   "form": "Form",
-  "translation": "German translation",
   "pos": "Part of speech",
+  "assignIDsToNewStems": "Assign IDs to new stems",
+  "exportStems": "Export stems",
+  "uploadStems": "Upload stems",
   "submitSeachQuery": "Search"
 }
