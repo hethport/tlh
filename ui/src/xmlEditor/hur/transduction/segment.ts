@@ -1,5 +1,6 @@
 import {partsOfSpeech} from './analyze';
 import {patterns, firstEnclitics} from './patterns';
+import {removeMacron} from '../common/utils';
 
 const indecl = new Set(['tiššan', 'ḫenni']);
 
@@ -39,7 +40,7 @@ export function segment(word: string): [string, string][]
 			const groups = match.slice(1);
 			if (groups.filter(group => group !== undefined).length > 1)
 			{
-				result.push([joinSegments(groups, firstEnclitic), partOfSpeech]);
+				result.push([removeMacron(joinSegments(groups, firstEnclitic)), partOfSpeech]);
 			}
 		}
 	}
