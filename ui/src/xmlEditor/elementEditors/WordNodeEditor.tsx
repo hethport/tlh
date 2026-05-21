@@ -19,6 +19,7 @@ import {isSelected} from '../hur/morphologicalAnalysis/auxiliary';
 import {LookupConfig} from '../lookupConfig';
 import {lookupConfigSelector} from '../../newStore';
 import {useSelector} from 'react-redux';
+import {removeMacron} from '../hur/common/utils';
 
 type States = 'DefaultState' | 'AddMorphology' | 'EditEditingQuestion' | 'EditFootNoteState' | 'EditContent';
 
@@ -201,7 +202,7 @@ export function WordNodeEditor({node, path, updateEditedNode, setKeyHandlingEnab
     setState('DefaultState');
   }
 
-  const nextMorphAnalysis = (): MorphologicalAnalysis => multiMorphAnalysisWithoutEnclitics(Math.max(0, ...morphologies.map(({number}) => number)) + 1, node.attributes.trans || '');
+  const nextMorphAnalysis = (): MorphologicalAnalysis => multiMorphAnalysisWithoutEnclitics(Math.max(0, ...morphologies.map(({number}) => number)) + 1, removeMacron(node.attributes.trans || ''));
 
   const updateAttribute = (name: string, value: string | undefined): void => updateEditedNode({attributes: {[name]: {$set: value}}});
 
