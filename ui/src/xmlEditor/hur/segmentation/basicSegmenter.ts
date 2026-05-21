@@ -275,8 +275,9 @@ export default class BasicSegmenter {
           if (morphTags.length > 1) {
             morphTags = morphTags.filter((morphTag: string) => morphTag !== '');
           }
-          const underlyingStem = getPrefixWithNonBracketSymbolCount(detailedTranscription,
-                                                                    surfaceStem.length);
+          const underlyingStem = removeMacron(
+            getPrefixWithNonBracketSymbolCount(detailedTranscription, surfaceStem.length)
+          );
           if (allomorphyIsValid(surfaceStem, underlyingStem, suffixChain, segmentedSuffixChain, lookupConfig)) {
             const translation = '';
             const segmentation = joinStemAndSuffixChain(underlyingStem, segmentedSuffixChain);
