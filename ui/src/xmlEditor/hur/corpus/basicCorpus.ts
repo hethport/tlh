@@ -23,6 +23,10 @@ export function locallyStoreHurrianCorpus(): void {
   locallyStoreMap(corpus, localStorageKey);
 }
 
+export function deleteHurrianCorpusFromLocalStorage(): void {
+  localStorage.removeItem(localStorageKey);
+}
+
 function cleanUpCorpus(): void {
   for (const [key, line] of corpus.entries()) {
     const newLine = line.filter(word => word !== null);
