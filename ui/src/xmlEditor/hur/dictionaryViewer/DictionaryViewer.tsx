@@ -33,6 +33,7 @@ import { dictionaryConfigSelector, alphabetizationConfigSelector, lookupConfigSe
 import { useSelector } from 'react-redux';
 import { SearchQuery, selectMatching } from '../search/searchQuery';
 import { SearchForm } from '../search/SearchForm';
+import { CorpusUploader } from '../corpus/files/CorpusUploader';
 
 interface IProps {
   entries: Entry[];
@@ -288,6 +289,9 @@ export function DictionaryViewer({entries, setDictionary, initialEnglishTranslat
           <NumericIDsUploader onUpload={() => {
             const globalNumericIDs = getGlobalNumericIDs();
             setNumericIDs(() => globalNumericIDs);
+          }}/>
+          <CorpusUploader onUpload={() => {
+            // do nothing
           }}/>
           <button type="button" className={blueButtonClasses} onClick={() =>
             setNumericIDs((stemIDs: NumericIDs) => assignIDsToNewStems(stemIDs, stemObjects))
