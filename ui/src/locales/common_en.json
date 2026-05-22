@@ -294,6 +294,7 @@
   "uploadEnglishTranslations": "Upload English translations",
   "exportReferences": "Export BGH references",
   "uploadReferences": "Upload BGH references",
+  "uploadCorpus": "Upload corpus",
   "suffixDictionary": "Suffixes",
   "hurrianDictionary": "Hurrian dictionary",
   "fragmInSuffixDict": "Use morphophonemic transcriptions with brackets for constructing the suffix dictionary",
