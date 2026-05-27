@@ -690,7 +690,9 @@ export function XmlDocumentEditor({
                                   toggleDeleteMode={toggleDeleteMode}
                                   markedForDeletionCount={state.markedForDeletion.length}
                                   onDeleteMarked={deleteMarkedNodes}
-                                  onCancelDeleteMode={cancelDeleteMode}>
+                                  onCancelDeleteMode={cancelDeleteMode}
+                                  rootNode={state.rootNode as XmlElementNode}
+                                  updateNode={(node) => setState((s) => update(s, {rootNode: {$set: node}}))}>
               {children}
             </EditorEmptyRightSide>
           )}

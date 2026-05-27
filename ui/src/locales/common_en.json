@@ -321,5 +321,17 @@
   "updateNow": "Update Now",
   "later": "Later",
   "clearCache": "Clear Cache",
-  "clearCacheTooltip": "Clear browser cache and reload"
+  "clearCacheTooltip": "Clear browser cache and reload",  "scanLegacyText": "Scan for Legacy Text",
+  "scanning": "Scanning...",
+  "legacyReplacements": "Legacy Text Replacements",
+  "legacyReplacementsDescription": "Found {{count}} potential replacement{{plural}}. Review and select which changes to apply.",
+  "noReplacementsFound": "No replacements found",
+  "noReplacementsFoundDescription": "The document appears to already use the current format, or no legacy patterns were detected.",
+  "selectAll": "Select All",
+  "deselectAll": "Deselect All",
+  "selected": "selected",
+  "original": "Original",
+  "replacement": "Replacement",
+  "applyChanges": "Apply {{count}} Change{{plural}}",
+  "replacementsApplied": "Successfully applied {{count}} replacement{{plural}}."
 }

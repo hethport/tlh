@@ -4,6 +4,9 @@ import {useTranslation} from 'react-i18next';
 import {InsertablePositions} from './insertablePositions';
 import {SelectableButton} from '../genericElements/Buttons';
 import {amberButtonClasses, blueButtonClasses, redButtonClasses} from '../defaultDesign';
+import {LegacyReplacementModal} from '../legacyReplacements/LegacyReplacementModal';
+import {useLegacyReplacements} from '../legacyReplacements/useLegacyReplacements';
+import {XmlElementNode} from 'simple_xml';
 
 interface IProps {
   editorConfig: XmlEditorConfig;
@@ -23,6 +26,8 @@ interface IProps {
   markedForDeletionCount: number;
   onDeleteMarked: () => void;
   onCancelDeleteMode: () => void;
+  rootNode?: XmlElementNode;
+  updateNode?: (node: XmlElementNode) => void;
 }
 
 export function EditorEmptyRightSide({
@@ -43,10 +48,63 @@ export function EditorEmptyRightSide({
   markedForDeletionCount,
   onDeleteMarked,
   onCancelDeleteMode,
+  rootNode,
+  updateNode,
 }: IProps): ReactElement {
 
   const {t} = useTranslation('common');
   const [condenseOnExport, setCondenseOnExport] = useState(true);
+
+  // Legacy replacement state
+  const {
+    isScanning,
+    scanResult,
+    scanDocument,
+    applyReplacements,
+    clearScanResult,
+  } = useLegacyReplacements();
+  const [showReplacementModal, setShowReplacementModal] = useState(false);
+
+  const handleScanLegacyText = async () => {
+    if (!rootNode) {
+      alert('No document loaded');
+      return;
+    }
+
+    const result = await scanDocument(rootNode);
+
+    if (result.proposals.length === 0) {
+      alert(t('noReplacementsFound') || 'No legacy text patterns found in this document.');
+    } else {
+      setShowReplacementModal(true);
+    }
+  };
+
+  const handleConfirmReplacements = (acceptedIds: string[]) => {
+    if (!rootNode || !updateNode) {
+      return;
+    }
+
+    const updatedNode = applyReplacements(rootNode, acceptedIds);
+
+    if (updatedNode) {
+      updateNode(updatedNode);
+      setShowReplacementModal(false);
+      clearScanResult();
+
+      const count = acceptedIds.length;
+      alert(
+        (t('replacementsApplied') || `Successfully applied ${count} replacement${count !== 1 ? 's' : ''}.`)
+          .replace('{{count}}', String(count))
+          .replace('{{plural}}', count !== 1 ? 's' : '')
+      );
+    }
+  };
+
+  const handleCancelReplacements = () => {
+    setShowReplacementModal(false);
+    clearScanResult();
+  };
 
   const insertableTags: [string, InsertablePositions][] = Object.entries(editorConfig.nodeConfigs)
     .filter((c): c is [string, XmlSingleInsertableEditableNodeConfig] => isXmlSingleInsertableEditableNodeConfig(c[1]))
@@ -54,6 +112,15 @@ export function EditorEmptyRightSide({
 
   return (
     <div>
+      {/* Legacy Replacement Modal */}
+      {showReplacementModal && scanResult && (
+        <LegacyReplacementModal
+          proposals={scanResult.proposals}
+          onConfirm={handleConfirmReplacements}
+          onCancel={handleCancelReplacements}
+        />
+      )}
+
       <section className="p-2 rounded border border-slate-500">
         <h2 className="p-2 text-center font-bold text-lg">{t('insertableElements')}</h2>
         <div className="my-4 grid grid-cols-2 gap-2">
@@ -73,6 +140,21 @@ export function EditorEmptyRightSide({
             onClick={toggleDeleteMode}
           >
             {deleteModeActive ? (t('deleteModeActive') || '🗑 Delete Mode ON') : t('deleteModeMouseOver')}
+          </button>
+        </div>
+
+        {/* Legacy Text Replacement button */}
+        <div className="my-4">
+          <button
+            type="button"
+            className="w-full p-2 rounded bg-purple-600 text-white font-bold hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed"
+            title={t('scanLegacyText') || 'Scan and replace legacy text patterns'}
+            onClick={handleScanLegacyText}
+            disabled={!rootNode || !updateNode || isScanning || insertModeActive || deleteModeActive}
+          >
+            {isScanning
+              ? (t('scanning') || '⏳ Scanning...')
+              : (t('scanLegacyText') || '🔄 Scan for Legacy Text')}
           </button>
         </div>
 

@@ -321,5 +321,18 @@
   "updateNow": "Jetzt updaten",
   "later": "Später",
   "clearCache": "Cache leeren",
-  "clearCacheTooltip": "Cache leeren und Seite neu laden"
+  "clearCacheTooltip": "Cache leeren und Seite neu laden",
+  "scanLegacyText": "Nach Altem Format scannen",
+  "scanning": "Scanne...",
+  "legacyReplacements": "Textersetzungen (Altes Format)",
+  "legacyReplacementsDescription": "{{count}} mögliche Ersetzung{{plural}} gefunden. Überprüfen und auswählen Sie, welche Änderungen angewendet werden sollen.",
+  "noReplacementsFound": "Keine Ersetzungen gefunden",
+  "noReplacementsFoundDescription": "Das Dokument verwendet anscheinend bereits das aktuelle Format, oder es wurden keine Legacy-Muster erkannt.",
+  "selectAll": "Alle auswählen",
+  "deselectAll": "Alle abwählen",
+  "selected": "ausgewählt",
+  "original": "Original",
+  "replacement": "Ersetzung",
+  "applyChanges": "{{count}} Änderung{{plural}} anwenden",
+  "replacementsApplied": "{{count}} Ersetzung{{plural}} erfolgreich angewendet."
 }
