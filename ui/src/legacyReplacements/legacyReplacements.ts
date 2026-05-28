@@ -36,6 +36,8 @@ export interface ReplacementOptions {
   categories?: string[];
   /** Maximum iterations for bracket-preserving replacements (default: 24) */
   maxIterations?: number;
+  /** Whether we're in an XML editor context - enables XML-dependent word-split rules */
+  isXmlContext?: boolean;
 }
 
 export interface ReplacementResult {
@@ -55,28 +57,9 @@ export interface ReplacementLogEntry {
   after: string;
 }
 
-/** Pattern for splitting text into character/tag tokens */
 const TOKEN_PATTERN = /^(([^<])|(<[^>]*>))(.*)/u;
 
-/**
- * Characters to use in regex "dirt" pattern (optional brackets between tokens)
- * Matches philological brackets: [ ] ⸢ ⸣ 〈 〉 and markers: ! ? ° _ *
- */
 const DIRT_PATTERN = ')([\\[\\]\\*⸢⸣〈〉!?°_]*)(';
-
-/**
- * Special characters used in Hittite/Akkadian philology:
- * - ‗ (U+2017 DOUBLE LOW LINE): Encoded space within gaps
- * - ˽ (U+02FD MODIFIER LETTER SHELF): Tied space (non-breaking connection)
- *
- * Note: These are documented here for reference but not actively used in
- * the current implementation. They may be needed for gap text processing
- * if the corrTXTGAP category is added in the future.
- */
-
-// ============================================================================
-// Helper Functions
-// ============================================================================
 
 /**
  * Escapes special regex characters in a string
@@ -98,8 +81,8 @@ function tokenizeString(str: string): string[] {
     const match = remaining.match(TOKEN_PATTERN);
     if (!match) break;
 
-    tokens.push(match[1]); // The token (char or complete tag)
-    remaining = match[4];   // Rest of string
+    tokens.push(match[1]);
+    remaining = match[4];
   }
 
   return tokens;
@@ -112,7 +95,6 @@ function findCommonAffixes(
   oldTokens: string[],
   newTokens: string[]
 ): { prefixLen: number; oldSuffixStart: number; newSuffixStart: number } {
-  // Find common prefix
   let prefixLen = 0;
   while (
     prefixLen < oldTokens.length &&
@@ -122,7 +104,6 @@ function findCommonAffixes(
     prefixLen++;
   }
 
-  // Find common suffix
   let oldIdx = oldTokens.length - 1;
   let newIdx = newTokens.length - 1;
 
@@ -159,25 +140,21 @@ function buildSearchPattern(tokens: string[]): string {
 function normalizeBrackets(text: string): string {
   let result = text;
 
-  // Move opening brackets outside of hyphens and periods
   result = result.replace(/⸢-/g, '-⸢');
   result = result.replace(/⸢\./g, '.⸢');
   result = result.replace(/\[-/g, '-[');
   result = result.replace(/\[\./g, '.[');
 
-  // Move closing brackets outside of hyphens and periods
   result = result.replace(/-⸣/g, '⸣-');
   result = result.replace(/\.⸣/g, '⸣.');
   result = result.replace(/-\]/g, ']-');
   result = result.replace(/\.\]/g, '].');
 
-  // Move brackets outside of spaces
   result = result.replace(/ ⸣/g, '⸣ ');
   result = result.replace(/ \]/g, '] ');
   result = result.replace(/⸢ /g, ' ⸢');
   result = result.replace(/\[ /g, ' [');
 
-  // Move punctuation after letters to outside closing brackets
   const letterPattern = /⸣([a-zA-ZḪḫáàâéèêíìîúùûÁÀÂÉÈÊÍÌÎÚÙÛšŠṣṢṭṬ₀₁₂₃₄₅₆₇₈₉ₓ])-/gu;
   result = result.replace(letterPattern, '$1⸣-');
 
@@ -241,25 +218,65 @@ function applyBracketPreservingReplacement(
   let result = text;
   let count = 0;
 
-  // Tokenize patterns
+  // Skip bracket-preserving for XML - only use it for philological brackets
+  // If the line contains any XML tags, use simple replacement for ALL patterns
+  const HAS_XML_TAGS_IN_TEXT = /<[a-zA-Z]/;
+  if (HAS_XML_TAGS_IN_TEXT.test(text)) {
+    // This line contains XML tags - use simple replacement to avoid corrupting them
+    const before = result;
+    result = result.replace(new RegExp(escapeRegex(oldPattern), 'g'), newPattern);
+    if (before !== result) {
+      count = 1;
+      if (debug) {
+        log.push({
+          category,
+          pattern: oldPattern,
+          replacement: newPattern,
+          before,
+          after: result
+        });
+      }
+    }
+    return { text: result, count };
+  }
+
+  // Check if the pattern actually contains philological brackets
+  // If not, use simple replacement instead
+  // eslint-disable-next-line no-useless-escape
+  const BRACKET_PATTERN = /[\[\]⸢⸣〈〉]/;
+  if (!BRACKET_PATTERN.test(oldPattern) && !BRACKET_PATTERN.test(text)) {
+    const before = result;
+    result = result.replace(new RegExp(escapeRegex(oldPattern), 'g'), newPattern);
+    if (before !== result) {
+      count = 1;
+      if (debug) {
+        log.push({
+          category,
+          pattern: oldPattern,
+          replacement: newPattern,
+          before,
+          after: result
+        });
+      }
+    }
+    return { text: result, count };
+  }
+
   const oldTokens = tokenizeString(oldPattern);
   const newTokens = tokenizeString(newPattern);
 
-  // Find common prefix and suffix
   const { prefixLen, oldSuffixStart, newSuffixStart } = findCommonAffixes(
     oldTokens,
     newTokens
   );
 
-  // Build search regex
   const searchPattern = buildSearchPattern(oldTokens);
   const regex = new RegExp(searchPattern, 'gu');
 
-  // Prepare replacement template with slots for brackets
   const replacementTemplate: string[] = [];
   for (let i = 0; i < newTokens.length; i++) {
-    replacementTemplate.push(newTokens[i]); // Character/tag
-    replacementTemplate.push('');            // Slot for brackets
+    replacementTemplate.push(newTokens[i]);
+    replacementTemplate.push('');
   }
 
   let iterations = 0;
@@ -271,10 +288,8 @@ function applyBracketPreservingReplacement(
     const matchedText = match[0];
     const before = result;
 
-    // Copy template for this instance
     const instance = [...replacementTemplate];
 
-    // Copy prefix brackets (positions remain the same)
     for (let i = 0; i < prefixLen; i++) {
       const bracketIdx = i * 2 + 1;
       if (bracketIdx < match.length) {
@@ -282,12 +297,10 @@ function applyBracketPreservingReplacement(
       }
     }
 
-    // Redistribute middle brackets proportionally
     const middleCount = oldSuffixStart - prefixLen;
     for (let i = 0; i < middleCount; i++) {
       const oldIdx = (prefixLen + i) * 2 + 1;
 
-      // Calculate proportional position in new array
       const proportion = (newSuffixStart - prefixLen) / (oldSuffixStart - prefixLen);
       const newIdx = Math.round((prefixLen + i * proportion) * 2 + 1);
 
@@ -296,7 +309,6 @@ function applyBracketPreservingReplacement(
       }
     }
 
-    // Copy suffix brackets
     const oldSuffixCount = oldTokens.length - oldSuffixStart;
     for (let i = 0; i < oldSuffixCount; i++) {
       const oldIdx = (oldSuffixStart + i) * 2 + 1;
@@ -307,16 +319,13 @@ function applyBracketPreservingReplacement(
       }
     }
 
-    // Join and normalize
     let replacement = instance.join('');
     replacement = normalizeBrackets(replacement);
 
-    // Apply replacement
     result = result.substring(0, match.index) +
       replacement +
       result.substring(match.index + matchedText.length);
 
-    // Update regex lastIndex
     regex.lastIndex = match.index + replacement.length;
 
     count++;
@@ -377,11 +386,11 @@ function applyBracketPreservingReplacements(
  *
  * @example
  * ```typescript
- * const result = processLegacyLine(
- *   '<lb txtid="KOR2_TEST_XML" lnr="Rs iv 833" lg="Hit"/> <w><aGr>LÚKUŠ₇</aGr></w>',
- *   { debug: true }
- * );
- * console.log(result.text); // '<lb.../> <w><d>LÚ</d><sGr>KUŠ₇</sGr></w>'
+ * // For raw simtex input (TransliterationTextArea)
+ * const result = processLegacyLine(line, { isXmlContext: false });
+ *
+ * // For XML editor context (XmlDocumentEditor)
+ * const result = processLegacyLine(line, { isXmlContext: true });
  * ```
  */
 export function processLegacyLine(
@@ -391,14 +400,14 @@ export function processLegacyLine(
   const {
     debug = false,
     categories = ['varia', 'heth', 'logograms'],
-    maxIterations = 24
+    maxIterations = 24,
+    isXmlContext = false
   } = options;
 
   let result = line;
   let totalReplacements = 0;
   const log: ReplacementLogEntry[] = [];
 
-  // Process each category in order
   for (const categoryName of categories) {
     const category = replacementRules.categories[categoryName];
     if (!category) {
@@ -406,11 +415,23 @@ export function processLegacyLine(
       continue;
     }
 
+    // Filter rules based on context
+    let rulesToApply = category.rules;
+    if (!isXmlContext && categoryName === 'logograms') {
+      // In non-XML context (e.g., TransliterationTextArea), exclude word-split rules
+      rulesToApply = {};
+      for (const [pattern, replacement] of Object.entries(category.rules)) {
+        // Skip rules that split words across XML elements
+        if (!replacement.includes('</w> <w><sGr>')) {
+          rulesToApply[pattern] = replacement;
+        }
+      }
+    }
+
     if (category.preserveBrackets) {
-      // Apply bracket-preserving replacements
       const { text, count } = applyBracketPreservingReplacements(
         result,
-        category.rules,
+        rulesToApply,
         categoryName,
         maxIterations,
         debug,
@@ -419,10 +440,9 @@ export function processLegacyLine(
       result = text;
       totalReplacements += count;
     } else {
-      // Apply simple string replacements
       const { text, count } = applySimpleReplacements(
         result,
-        category.rules,
+        rulesToApply,
         categoryName,
         debug,
         log
@@ -480,7 +500,6 @@ export function loadCustomRules(
   merge = true
 ): void {
   if (merge) {
-    // Deep merge categories
     const categories = customRules.categories || {};
     for (const categoryName in categories) {
       const category = categories[categoryName];
@@ -496,7 +515,6 @@ export function loadCustomRules(
       }
     }
   } else {
-    // Replace entirely
     replacementRules = customRules as ReplacementRules;
   }
 }
@@ -515,10 +533,6 @@ export function getAvailableCategories(): string[] {
   return Object.keys(replacementRules.categories);
 }
 
-// ============================================================================
-// Exports
-// ============================================================================
-
 export default {
   processLegacyLine,
   processLegacyLines,
@@ -526,7 +540,6 @@ export default {
   loadCustomRules,
   getReplacementRules,
   getAvailableCategories,
-  // Also export helper functions for advanced usage
   tokenizeString,
   normalizeBrackets,
   escapeRegex

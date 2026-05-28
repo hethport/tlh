@@ -108,7 +108,7 @@
         "ḫal-li-re-e-eš": "ḫal-li-ri-e-eš",
         "ḫal-li-re-eš": "ḫal-li-ri-eš",
         "ḫa-li-en-tu-": "ḫa-le-en-tu-",
-        "ḫal-ke-eš": ">ḫal-ki-eš",
+        "ḫal-ke-eš": "ḫal-ki-eš",
         ">hal-za-a-i": ">ḫal-za-a-i",
         ">ḫal-zi-aḫ-ḫi": ">ḫal-zi-iḫ-ḫi",
         "ḫal-zi-ša-an-zi": "ḫal-ze-ša-an-zi",
@@ -272,7 +272,6 @@
         "te-eš-šu-ub-bi": "te-eš-šu-up-pí",
         "te-eš-šu-ub": "te-eš-šu-up",
         ">ti-i-ir": ">ti-i-er",
-        ">túḫ-uḫ-ša": ">túḫ<SP___AO_3a_MaterLect>uḫ</SP___AO_3a_MaterLect>-ša",
         ">ú-da-ir": ">ú-da-er",
         ">ú-e-mi-ir": ">ú-e-mi-er",
         ">ú-iz-zi": ">ú-ez-zi",
@@ -333,7 +332,8 @@
         "URU</d>ta-ḫar-p": "URU</d>ta-ḫur-p",
         "URU</d>ta-a-ḫar-p": "URU</d>ta-a-ḫur-p",
         "<d>É</d>tup-pa-aš": "<sGr>É</sGr></w> <w>tup-pa-aš",
-        "</num><aGr>-SU</aGr>": "</num><aGr>-ŠU</aGr>"
+        "</num><aGr>-SU</aGr>": "</num><aGr>-ŠU</aGr>",
+        "túḫ-uḫ-ša": "túḫ<materlect c=\"uḫ\"/>-ša"
       }
     },
     "logograms": {

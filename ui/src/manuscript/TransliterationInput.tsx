@@ -100,7 +100,7 @@ function TransliterationInput({ mainIdentifier, manuscript, initialIsReleased, l
 
       <div className="my-4 p-4 text-center">
         <button type="button" className={amberButtonClasses} onClick={onReleaseTransliteration}
-          disabled={uploadLoading || releaseLoading || !isSaved || isReleased}>
+                disabled={uploadLoading || releaseLoading || !isSaved || isReleased}>
           {t('releaseTransliteration')}
         </button>
       </div>
