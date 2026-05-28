@@ -271,7 +271,9 @@ export function XmlDocumentEditor({
 
       return update(state, {
         rootNode: {$set: newRootNode},
-        editorState: newEditorState !== undefined ? {$set: newEditorState} : {changed: {$set: false}},
+        editorState: newEditorState !== undefined
+          ? {$set: newEditorState}
+          : {changed: {$set: false}, node: {$set: resultingNode}},
         changed: {$set: true},
         history: {$set: newHistory},
         historyIndex: {$set: newHistory.length - 1}
