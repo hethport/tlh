@@ -37,6 +37,8 @@ export const suffixDictionaryUrl = '/suffixDictionary';
 
 export const stopListViewerUrl = '/stopList';
 
+export const hurrianDictionaryDownloadUrl = '/downloadHurrianDictionary';
+
 export const userManagementUrl = '/userManagement';
 
 export const pipelineManagementUrl = '/pipelineManagement';

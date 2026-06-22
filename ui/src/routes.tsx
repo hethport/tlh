@@ -25,7 +25,8 @@ import {
   createAnonymousTransliterationUrl,
   macroeditorUrl,
   suffixDictionaryUrl,
-  stopListViewerUrl
+  stopListViewerUrl,
+  hurrianDictionaryDownloadUrl,
 } from './urls';
 import {RegisterForm} from './forms/RegisterForm';
 import {Home} from './Home';
@@ -62,6 +63,8 @@ import {TextDisplay} from './xmlEditor/hur/concordanceEntryViewer/TextDisplay';
 import {SuffixDictionaryContainer} from './xmlEditor/hur/dictionaryViewer/SuffixDictionaryContainer';
 import {StopListViewer} from './xmlEditor/hur/StopListViewer';
 import {getGlobalStopList} from './xmlEditor/hur/stopList/stopList';
+import {HurrianDictionaryDownloadForm}
+  from './xmlEditor/hur/dict/download/DictionaryDownloadForm';
 
 export const router = createBrowserRouter([
     {
@@ -130,6 +133,8 @@ export const router = createBrowserRouter([
         {path: 'texts/:text', element: <TextDisplay/>},
 
         {path: 'texts/:text/:highlightedAnalysis', element: <TextDisplay/>},
+
+        {path: hurrianDictionaryDownloadUrl, element: <HurrianDictionaryDownloadForm/>}
 
       ],
       errorElement: <ErrorBoundary/>

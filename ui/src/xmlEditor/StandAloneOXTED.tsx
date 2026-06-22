@@ -11,6 +11,7 @@ import { DocumentEditTypes } from './documentEditTypes';
 import { XmlValidityChecker } from './XmlValidityChecker';
 import { downloadDictionary } from './hur/dict/files/dictionaryFileManager';
 import { DictionaryUploader } from './hur/dict/files/DictionaryUploader';
+import { HurrianDictionaryDownloadLink } from './hur/dict/download/DictionaryDownloadLink';
 
 const locStoreKey = 'editorState';
 
@@ -140,6 +141,7 @@ export function StandAloneOXTED({ editorConfig }: IProps): ReactElement {
           <div className="container mx-auto">
             <FileLoader accept="text/xml" onLoad={readFile} />
             <DictionaryUploader onUpload={() => { /*do nothing*/ }}/>
+            <HurrianDictionaryDownloadLink />
           </div>
         )}
     </div>
