@@ -2,6 +2,7 @@ import {JSX} from 'react';
 import {useTranslation} from 'react-i18next';
 import {ErrorMessage, Field, Form, Formik} from 'formik';
 import {blueButtonClasses, explTextClasses, inputClasses} from '../../../../defaultDesign';
+import {downloadHurrianDictionary} from './downloadHurrianDictionary';
 
 type FormValues = {
   username: string;
@@ -15,7 +16,8 @@ export function HurrianDictionaryDownloadForm(): JSX.Element {
   const {t} = useTranslation('common');
 
   function handleSubmit(values: FormValues): void {
-    alert(`Trying to log in as ${values.username}`);
+    const {username, password} = values;
+    downloadHurrianDictionary(username, password);
   }
 
   return (

@@ -74,3 +74,5 @@ export const tlhWordAnalyzerUrl = `${tlhAnalyzerBaseUrl}/TLHaly/jasonanalysis.ph
 export const tlhDocumentAnalyzerUrl = `${tlhAnalyzerBaseUrl}/TLHaly/deuteDokument.php`;
 
 export const getCuneiformUrl = `${tlhAnalyzerBaseUrl}/TLHcuni/create_cuneiform_single.php`;
+
+export const hurrianDictionaryUrl = 'https://tive.tlh.kallimachos.de/dictionary/dictionary.json';
