@@ -1,7 +1,7 @@
-import {JSX} from 'react';
+import {JSX, useState} from 'react';
 import {useTranslation} from 'react-i18next';
 import {ErrorMessage, Field, Form, Formik} from 'formik';
-import {blueButtonClasses, explTextClasses, inputClasses} from '../../../../defaultDesign';
+import {blueButtonClasses, explTextClasses, inputClasses, redMessageClasses} from '../../../../defaultDesign';
 import {downloadHurrianDictionary} from './downloadHurrianDictionary';
 
 type FormValues = {
@@ -15,9 +15,11 @@ export function HurrianDictionaryDownloadForm(): JSX.Element {
 
   const {t} = useTranslation('common');
 
-  function handleSubmit(values: FormValues): void {
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  async function handleSubmit(values: FormValues): Promise<void> {
     const {username, password} = values;
-    downloadHurrianDictionary(username, password);
+    downloadHurrianDictionary(username, password, setErrorMessage);
   }
 
   return (
@@ -40,6 +42,8 @@ export function HurrianDictionaryDownloadForm(): JSX.Element {
                    className={inputClasses(!!touched.password, !!errors.password)}/>
             <ErrorMessage name="password">{(msg) => <p className={explTextClasses}>{msg}</p>}</ErrorMessage>
           </div>
+
+          {errorMessage && <div className={redMessageClasses}>{errorMessage}</div>}
 
           <div className="text-center">
             <button type="submit" className={blueButtonClasses}>{t('performHurrianDictionaryDownload')}</button>
