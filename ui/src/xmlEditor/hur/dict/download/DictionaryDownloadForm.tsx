@@ -4,6 +4,8 @@ import {ErrorMessage, Field, Form, Formik} from 'formik';
 import {blueButtonClasses, explTextClasses, inputClasses, redMessageClasses,
   greenMessageClasses} from '../../../../defaultDesign';
 import {downloadHurrianDictionary, DownloadReport} from './downloadHurrianDictionary';
+import { Link } from 'react-router-dom';
+import { oxtedUrl, dictionaryViewerUrl } from '../../../../urls';
 
 type FormValues = {
   username: string;
@@ -53,9 +55,22 @@ export function HurrianDictionaryDownloadForm(): JSX.Element {
 
           {downloadStatus === 'Success' && <div className={greenMessageClasses}>{message}</div>}
 
-          <div className="text-center">
-            <button type="submit" className={blueButtonClasses}>{t('performHurrianDictionaryDownload')}</button>
-          </div>
+          {downloadStatus !== 'Success' &&
+            <div className="text-center">
+              <button type="submit" className={blueButtonClasses}>{t('performHurrianDictionaryDownload')}</button>
+            </div>
+          }
+
+          {downloadStatus === 'Success' &&
+            <div className="grid grid-cols-2 gap-2 my-2 further-action-buttons">
+              <span className="p-2 rounded border border-slate-500 w-full link-as-button">
+                <Link to={oxtedUrl}>{t('annotateAText')}</Link>
+              </span>
+              <span className="p-2 rounded border border-slate-500 w-full link-as-button">
+                <Link to={dictionaryViewerUrl}>{t('browseTheDictionary')}</Link>
+              </span>
+            </div>
+          }
         </Form>}
       </Formik>
     </div>

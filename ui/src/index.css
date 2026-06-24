@@ -315,8 +315,12 @@ code {
   margin-bottom: 1rem;
 }
 
-.hurrian-dictionary-download-link {
+.link-as-button {
   text-align: center;
+}
+
+.further-action-buttons {
+  margin-top: 1rem;
 }
 
 /*

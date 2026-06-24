@@ -324,5 +324,7 @@
   "uploadStems": "Upload stems",
   "submitSeachQuery": "Search",
   "downloadHurrianDictionary": "Download the Hurrian dictionary (password required)",
-  "performHurrianDictionaryDownload": "Download the Hurrian dictionary"
+  "performHurrianDictionaryDownload": "Download the Hurrian dictionary",
+  "annotateAText": "Annotate a text",
+  "browseTheDictionary": "Browse the dictionary"
 }

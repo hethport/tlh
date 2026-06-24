@@ -324,5 +324,7 @@
   "uploadStems": "Stämme hochladen",
   "submitSeachQuery": "Suchen",
   "downloadHurrianDictionary": "Hurritisches Wörterbuch herunterladen (Passwort erforderlich)",
-  "performHurrianDictionaryDownload": "Hurritisches Wörterbuch herunterladen"
+  "performHurrianDictionaryDownload": "Hurritisches Wörterbuch herunterladen",
+  "annotateAText": "Text annotieren",
+  "browseTheDictionary": "Wörterbuch durchsehen"
 }
