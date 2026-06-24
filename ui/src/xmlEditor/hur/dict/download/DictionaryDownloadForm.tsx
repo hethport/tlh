@@ -1,7 +1,8 @@
 import {JSX, useState} from 'react';
 import {useTranslation} from 'react-i18next';
 import {ErrorMessage, Field, Form, Formik} from 'formik';
-import {blueButtonClasses, explTextClasses, inputClasses, redMessageClasses} from '../../../../defaultDesign';
+import {blueButtonClasses, explTextClasses, inputClasses, redMessageClasses,
+  greenMessageClasses} from '../../../../defaultDesign';
 import {downloadHurrianDictionary, DownloadReport} from './downloadHurrianDictionary';
 
 type FormValues = {
@@ -17,10 +18,10 @@ export function HurrianDictionaryDownloadForm(): JSX.Element {
 
   const [state, setState] = useState<DownloadReport>({
     downloadStatus: 'Unitiated',
-    errorMessage: null
+    message: null
   });
 
-  const {downloadStatus, errorMessage} = state;
+  const {downloadStatus, message} = state;
 
   async function handleSubmit(values: FormValues): Promise<void> {
     const {username, password} = values;
@@ -48,7 +49,9 @@ export function HurrianDictionaryDownloadForm(): JSX.Element {
             <ErrorMessage name="password">{(msg) => <p className={explTextClasses}>{msg}</p>}</ErrorMessage>
           </div>
 
-          {downloadStatus === 'Failure' && <div className={redMessageClasses}>{errorMessage}</div>}
+          {downloadStatus === 'Failure' && <div className={redMessageClasses}>{message}</div>}
+
+          {downloadStatus === 'Success' && <div className={greenMessageClasses}>{message}</div>}
 
           <div className="text-center">
             <button type="submit" className={blueButtonClasses}>{t('performHurrianDictionaryDownload')}</button>
