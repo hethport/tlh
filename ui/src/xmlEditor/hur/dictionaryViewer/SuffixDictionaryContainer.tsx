@@ -8,6 +8,7 @@ import { groupBy } from '../common/utils';
 import { Dictionary, setGlobalDictionary, getGlobalDictionary } from '../dict/dictionary';
 import { locallyStoreHurrianData } from '../dictLocalStorage/hurrianDataLocalStorage';
 import { Subentry } from './DictionaryViewerContainer';
+import { HurrianDictionaryDownloadLink } from '../dict/download/DictionaryDownloadLink';
 
 interface IProps {
   getInitialDictionary: () => Dictionary;
@@ -52,10 +53,14 @@ export function SuffixDictionaryContainer({getInitialDictionary,}: IProps): JSX.
   return (
     <div className="container mx-auto">
     <h1 className="font-bold text-2xl text-center">{t('dictionaryViewer')}</h1>
-    {!loaded ? <DictionaryUploader onUpload={() => {
-      const globalDictionary = getGlobalDictionary();
-      setDictionary(() => globalDictionary);
-    }} /> :
+    {!loaded ?
+    <div className="container mx-auto">
+      <DictionaryUploader onUpload={() => {
+        const globalDictionary = getGlobalDictionary();
+        setDictionary(() => globalDictionary);
+      }}/>
+      <HurrianDictionaryDownloadLink/>
+    </div> :
     <SuffixDictionary entries={entries} setDictionary={setDictionary}/>}
     </div>
   );

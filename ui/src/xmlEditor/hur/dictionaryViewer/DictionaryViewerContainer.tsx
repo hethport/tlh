@@ -10,6 +10,7 @@ import { EnglishTranslations } from '../translations/englishTranslations';
 import { References } from '../references/references';
 import { NumericIDs } from '../numericIDs/numericIDs';
 import { locallyStoreHurrianData } from '../dictLocalStorage/hurrianDataLocalStorage';
+import { HurrianDictionaryDownloadLink } from '../dict/download/DictionaryDownloadLink';
 
 export interface Subentry {
   transcription: string;
@@ -69,10 +70,14 @@ export function DictionaryViewerContainer({getInitialDictionary,
   return (
     <div className="container mx-auto">
       <h1 className="font-bold text-2xl text-center">{t('dictionaryViewer')}</h1>
-      {!loaded ? <DictionaryUploader onUpload={() => {
-        const globalDictionary = getGlobalDictionary();
-        setDictionary(() => globalDictionary);
-      }} /> :
+      {!loaded ?
+      <div className="container mx-auto">
+        <DictionaryUploader onUpload={() => {
+          const globalDictionary = getGlobalDictionary();
+          setDictionary(() => globalDictionary);
+        }}/>
+        <HurrianDictionaryDownloadLink/>
+      </div> :
       <DictionaryViewer entries={entries} setDictionary={setDictionary}
                         initialEnglishTranslations={initialEnglishTranslations}
                         initialReferences={initialReferences}
