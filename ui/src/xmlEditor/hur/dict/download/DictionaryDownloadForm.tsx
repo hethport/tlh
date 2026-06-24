@@ -34,6 +34,8 @@ export function HurrianDictionaryDownloadForm(): JSX.Element {
     <div className="container mx-auto">
       <h1 className="font-bold text-2xl text-center">{t('login')}</h1>
 
+      The login and password are <b>not</b> the same as for TLHdig accounts!
+
       <Formik initialValues={initialValues} onSubmit={handleSubmit}>
         {({touched, errors}) => <Form>
 
