@@ -322,5 +322,7 @@
   "assignIDsToNewStems": "Assign IDs to new stems",
   "exportStems": "Export stems",
   "uploadStems": "Upload stems",
-  "submitSeachQuery": "Search"
+  "submitSeachQuery": "Search",
+  "downloadHurrianDictionary": "Download the Hurrian dictionary (password required)",
+  "performHurrianDictionaryDownload": "Download the Hurrian dictionary"
 }

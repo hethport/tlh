@@ -322,5 +322,7 @@
   "assignIDsToNewStems": "Neuen Stämmen Schlüssel zuweisen",
   "exportStems": "Stämme exportieren",
   "uploadStems": "Stämme hochladen",
-  "submitSeachQuery": "Suchen"
+  "submitSeachQuery": "Suchen",
+  "downloadHurrianDictionary": "Hurritisches Wörterbuch herunterladen (Passwort erforderlich)",
+  "performHurrianDictionaryDownload": "Hurritisches Wörterbuch herunterladen"
 }
