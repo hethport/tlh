@@ -21,7 +21,8 @@ export async function downloadHurrianDictionary(username: string, password: stri
       setLexicalData(lexicalData);
       const {exportDate} = lexicalData;
       const message = exportDate === undefined ? 'Success!'
-        : 'Success! The downloaded dictionary was created on ' + exportDate;
+        : 'Success! The downloaded dictionary was created on ' +
+        new Date(exportDate).toLocaleDateString();
       setDownloadReport({
         downloadStatus: 'Success',
         message
