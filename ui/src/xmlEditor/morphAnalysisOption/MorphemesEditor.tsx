@@ -174,7 +174,7 @@ export function MorphemesEditor({
             <input
               type="text"
               className="morpheme-input"
-              defaultValue={morpheme.form}
+              value={morpheme.form}
               onChange={(event) => {
                 const newForm = event.target.value;
                 morphemes[i].form = newForm;
@@ -198,7 +198,7 @@ export function MorphemesEditor({
               <input
                 type="text"
                 className="morpheme-input"
-                defaultValue={morpheme.tag}
+                value={morpheme.tag}
                 onChange={(event) => {
                   morphemes[i].tag = event.target.value;
                   if (i == 0) {
