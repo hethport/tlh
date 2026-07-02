@@ -7,10 +7,11 @@ import {MultiMorphAnalysisOptionButtons} from './MultiMorphAnalysisOptionButtons
 import classNames from 'classnames';
 import {analysisIsInNumerus, numeri, NumerusOption, stringifyNumerus} from './numerusOption';
 import update from 'immutability-helper';
-import { getPartsOfSpeech, getPos } from '../hur/partsOfSpeech/partsOfSpeech';
+import { getPos } from '../hur/partsOfSpeech/partsOfSpeech';
 import {TranslationEditor} from '../hur/translations/TranslationEditor';
 import {getStem} from '../hur/common/splitter';
 import { addToTheStopListFor } from '../hur/stopList/stopList';
+import { PartOfSpeechSelector } from '../hur/partsOfSpeech/PartOfSpeechSelector';
 
 interface IProps extends CanToggleAnalysisSelection {
   morphologicalAnalysis: MorphologicalAnalysis;
@@ -135,15 +136,8 @@ export function MorphAnalysisOptionButtons({morphologicalAnalysis, toggleAnalysi
             <span className="text-red-600">
             {
               hurrian ?
-              <select
-                defaultValue={actualParadigmClass}
-                onChange={(event) => {
-                  setParadigmClass(event.target.value);
-                }}>
-                {getPartsOfSpeech().map((partOfSpeech: string) => {
-                  return (<option key={partOfSpeech} value={partOfSpeech}>{partOfSpeech}</option>);
-                })}
-              </select> :
+              <PartOfSpeechSelector partOfSpeech={actualParadigmClass}
+                                    onChange={setParadigmClass}/> :
               paradigmClass
             }
             </span>
