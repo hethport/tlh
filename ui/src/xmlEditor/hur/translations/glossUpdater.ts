@@ -51,7 +51,7 @@ export function basicSaveGloss(morphologicalAnalysis: MorphologicalAnalysis): vo
   if (gloss !== '') {
     const stem = getStem(morphologicalAnalysis.referenceWord);
     if (isValidForm(stem)) {
-      const pos = getPos(morphologicalAnalysis.paradigmClass);
+      const pos = morphologicalAnalysis.paradigmClass;
       storeGloss(stem, pos, gloss);
     }
   }

@@ -1,7 +1,6 @@
 import { MorphologicalAnalysis } from '../../../model/morphologicalAnalysis';
 import { Spec } from 'immutability-helper';
 import { getStem } from '../common/splitter';
-import { getPos } from './glossUpdater';
 import { retrieveGloss } from './glossProvider';
 
 const stemWithFinalBoundary = /^[^-=]+[-=]$/;
@@ -17,7 +16,7 @@ export function updateHurrianAnalysis(referenceWord: string, paradigmClass: stri
     };
   }
   const stem = getStem(referenceWord);
-  const pos = getPos(paradigmClass);
+  const pos = paradigmClass;
   const glosses: Set<string> | null = retrieveGloss(stem, pos);
   if (glosses === null) {
     return {
