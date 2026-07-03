@@ -4,8 +4,18 @@ import { getStem } from '../common/splitter';
 import { getPos } from './glossUpdater';
 import { retrieveGloss } from './glossProvider';
 
+const stemWithFinalBoundary = /^[^-=]+[-=]$/;
+function stemWasTypedInCompletely(segmentation: string) {
+  return stemWithFinalBoundary.test(segmentation);
+}
+
 // Falls der Benutzer eine neue Segmentierung eingegeben hat, muss diese neu analysiert werden.
 export function updateHurrianAnalysis(referenceWord: string, paradigmClass: string): Spec<MorphologicalAnalysis> {
+  if (!stemWasTypedInCompletely(referenceWord)) {
+    return {
+      referenceWord: { $set: referenceWord },
+    };
+  }
   const stem = getStem(referenceWord);
   const pos = getPos(paradigmClass);
   const glosses: Set<string> | null = retrieveGloss(stem, pos);
