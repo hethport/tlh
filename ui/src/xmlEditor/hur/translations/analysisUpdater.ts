@@ -1,7 +1,7 @@
 import { MorphologicalAnalysis } from '../../../model/morphologicalAnalysis';
 import { Spec } from 'immutability-helper';
 import { getStem } from '../common/splitter';
-import { retrieveGloss } from './glossProvider';
+import { retrieveGloss, joinTranslationWords } from './glossProvider';
 
 const stemWithFinalBoundary = /^[^-=]+[-=]$/;
 function stemWasTypedInCompletely(segmentation: string) {
@@ -29,4 +29,21 @@ export function updateHurrianAnalysis(referenceWord: string, paradigmClass: stri
       translation: { $set: newTranslation }
     };
   }
+}
+
+export function updateHurrianPartOfSpeech(segmentation: string, translation: string, partOfSpeech: string): Spec<MorphologicalAnalysis> {
+  if (translation === '') {
+    const stem = getStem(segmentation);
+    const glosses = retrieveGloss(stem, partOfSpeech);
+    if (glosses !== null) {
+      const newTranslation = joinTranslationWords(Array.from(glosses));
+      return {
+        paradigmClass: { $set: partOfSpeech },
+        translation: { $set: newTranslation }
+      };
+    }
+  }
+  return {
+    paradigmClass: { $set: partOfSpeech }
+  };
 }

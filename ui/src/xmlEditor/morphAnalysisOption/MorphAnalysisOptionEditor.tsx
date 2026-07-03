@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { JSX, useState } from 'react';
 import { convertSingleMorphAnalysisToMultiMorphAnalysis } from '../../model/morphologicalAnalysisConverter';
 import update from 'immutability-helper';
-import { updateHurrianAnalysis } from '../hur/translations/analysisUpdater';
+import { updateHurrianAnalysis, updateHurrianPartOfSpeech } from '../hur/translations/analysisUpdater';
 
 interface IProps {
   initialMorphologicalAnalysis: MorphologicalAnalysis;
@@ -39,7 +39,9 @@ export function MorphAnalysisOptionEditor({ initialMorphologicalAnalysis, onSubm
     ? (value: string): void => setMorphAnalysis((ma) => update(ma, updateHurrianAnalysis(value, ma.paradigmClass)))
     : (value: string): void => setMorphAnalysis((ma) => update(ma, { referenceWord: { $set: value } }));
   const setDeterminativ = (value: string): void => setMorphAnalysis((ma) => update(ma, { determinative: { $set: value } }));
-  const setParadigmClass = (value: string): void => setMorphAnalysis((ma) => update(ma, { paradigmClass: { $set: value } }));
+  const setParadigmClass = hurrian
+    ? (value: string): void => setMorphAnalysis((ma) => update(ma, updateHurrianPartOfSpeech(ma.referenceWord, ma.translation, value)))
+    : (value: string): void => setMorphAnalysis((ma) => update(ma, { paradigmClass: { $set: value } }));
 
   // FIXME: sort multi morph analysis option (and multi enclitica?!) by letter!
 
