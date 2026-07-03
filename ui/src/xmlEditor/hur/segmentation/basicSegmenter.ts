@@ -8,6 +8,7 @@ import { LookupConfig } from '../../lookupConfig';
 import { getPrefixWithNonBracketSymbolCount } from '../common/brackets';
 import { allomorphyIsValid, suffixChainAllomorphyIsValidInSomeContext } from './allomorphyValidation';
 import { removeBrackets } from '../common/brackets';
+import { generateSurfaceAllomorphs } from './allomorphGeneration';
 
 const maximalDeletionCount = 1;
 const minimalFrequency = 1;
@@ -66,7 +67,7 @@ function removeDotsUnlessBetweenUppercase(stem: string): string {
   return apllyMedialVoicing(stem.replaceAll(dotNotBetweenUppercase, ''));
 }
 
-function preprocessStem(stem: string, lookupConfig: LookupConfig): string {
+export function preprocessStem(stem: string, lookupConfig: LookupConfig): string {
   return simplifyTranscription(
     removeDotsUnlessBetweenUppercase(
       lowerCaseInitials(
@@ -116,6 +117,11 @@ export default class BasicSegmenter {
   suffixTrie = new SuffixTrie();
   frequencies = new Map<string, number>();
   sources = new Map<string, Set<string>>();
+  pos: string;
+
+  constructor(pos: string) {
+    this.pos = pos;
+  }
 
   isFrequentEnough(suffixChain: SuffixChain): boolean {
     const frequency = this.frequencies.get(suffixChain.toString());
@@ -147,6 +153,10 @@ export default class BasicSegmenter {
       if (surfaceStem.length > 0) {
         const stem = new Stem(underlyingStem, translation);
         add(this.stems, surfaceStem, stem.toString());
+        const surfaceAllomorphs = generateSurfaceAllomorphs(stem, lookupConfig, this.pos);
+        for (const surfaceAllomorph of surfaceAllomorphs) {
+          add(this.stems, surfaceAllomorph, stem.toString());
+        }
       }
       if (preprocessedSuffixChain.length - surfaceSuffixChain.length > maximalDeletionCount) {
         return;

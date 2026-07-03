@@ -75,7 +75,7 @@ export class Segmenter {
       const pos = getPos(template, morphTags[0], translation);
       let segmenter = this.segmenters.get(pos);
       if (segmenter === undefined) {
-        segmenter = new BasicSegmenter();
+        segmenter = new BasicSegmenter(pos);
         this.segmenters.set(pos, segmenter);
       }
       const frequency = getFrequency(analysis);
