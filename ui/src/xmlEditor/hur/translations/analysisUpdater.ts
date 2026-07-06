@@ -10,25 +10,21 @@ function stemWasTypedInCompletely(segmentation: string) {
 
 // Falls der Benutzer eine neue Segmentierung eingegeben hat, muss diese neu analysiert werden.
 export function updateHurrianAnalysis(referenceWord: string, paradigmClass: string): Spec<MorphologicalAnalysis> {
-  if (!stemWasTypedInCompletely(referenceWord)) {
-    return {
-      referenceWord: { $set: referenceWord },
-    };
+  if (stemWasTypedInCompletely(referenceWord)) {
+    const stem = getStem(referenceWord);
+    const pos = paradigmClass;
+    const glosses: Set<string> | null = retrieveGloss(stem, pos);
+    if (glosses != null) {
+      const newTranslation: string = Array.from(glosses).sort().join('; ');
+      return {
+        referenceWord: { $set: referenceWord },
+        translation: { $set: newTranslation }
+      };
+    }
   }
-  const stem = getStem(referenceWord);
-  const pos = paradigmClass;
-  const glosses: Set<string> | null = retrieveGloss(stem, pos);
-  if (glosses === null) {
-    return {
-      referenceWord: { $set: referenceWord },
-    };
-  } else {
-    const newTranslation: string = Array.from(glosses).sort().join('; ');
-    return {
-      referenceWord: { $set: referenceWord },
-      translation: { $set: newTranslation }
-    };
-  }
+  return {
+    referenceWord: { $set: referenceWord },
+  };
 }
 
 export function updateHurrianPartOfSpeech(segmentation: string, translation: string, partOfSpeech: string): Spec<MorphologicalAnalysis> {
