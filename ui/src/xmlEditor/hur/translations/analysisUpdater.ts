@@ -9,8 +9,8 @@ function stemWasTypedInCompletely(segmentation: string) {
 }
 
 // Falls der Benutzer eine neue Segmentierung eingegeben hat, muss diese neu analysiert werden.
-export function updateHurrianAnalysis(referenceWord: string, paradigmClass: string): Spec<MorphologicalAnalysis> {
-  if (stemWasTypedInCompletely(referenceWord)) {
+export function updateHurrianAnalysis(referenceWord: string, translation: string, paradigmClass: string): Spec<MorphologicalAnalysis> {
+  if (translation === '' && stemWasTypedInCompletely(referenceWord)) {
     const stem = getStem(referenceWord);
     const pos = paradigmClass;
     const glosses: Set<string> | null = retrieveGloss(stem, pos);

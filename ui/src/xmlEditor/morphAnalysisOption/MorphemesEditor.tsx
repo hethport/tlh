@@ -120,7 +120,7 @@ export function MorphemesEditor({
 } : IProps) {
 
   const onSegmentationChange = (value: string): void => {
-    updateMorphology(updateHurrianAnalysis(value, paradigmClass), null);
+    updateMorphology(updateHurrianAnalysis(value, translation, paradigmClass), null);
   };
 
   const onTranslationChange = (value: string): void => {
@@ -139,7 +139,7 @@ export function MorphemesEditor({
   };
 
   const onSegmentationAndAnalysisChange = (segmentation: string, analysis: string): void => {
-    updateMorphology(updateHurrianAnalysis(segmentation, paradigmClass), analysis);
+    updateMorphology(updateHurrianAnalysis(segmentation, translation, paradigmClass), analysis);
   };
 
   const morphemes = buildMorphemes(segmentation, translation, analysis);

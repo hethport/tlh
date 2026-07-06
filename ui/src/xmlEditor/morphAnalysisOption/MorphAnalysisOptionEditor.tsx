@@ -36,7 +36,7 @@ export function MorphAnalysisOptionEditor({ initialMorphologicalAnalysis, onSubm
 
   const setTranslation = (value: string): void => setMorphAnalysis((ma) => update(ma, { translation: { $set: value } }));
   const setReferenceWord = hurrian
-    ? (value: string): void => setMorphAnalysis((ma) => update(ma, updateHurrianAnalysis(value, ma.paradigmClass)))
+    ? (value: string): void => setMorphAnalysis((ma) => update(ma, updateHurrianAnalysis(value, ma.translation, ma.paradigmClass)))
     : (value: string): void => setMorphAnalysis((ma) => update(ma, { referenceWord: { $set: value } }));
   const setDeterminativ = (value: string): void => setMorphAnalysis((ma) => update(ma, { determinative: { $set: value } }));
   const setParadigmClass = hurrian
