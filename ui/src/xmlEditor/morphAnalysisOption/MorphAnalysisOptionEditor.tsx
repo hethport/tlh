@@ -74,8 +74,12 @@ export function MorphAnalysisOptionEditor({ initialMorphologicalAnalysis, onSubm
       <div className="flex flex-row">
         <div className="px-4 py-2 rounded-l bg-gray-100 border-l border-y border-slate-500">{morphAnalysis.number}</div>
 
-        <input type="text" name="translation" defaultValue={morphAnalysis.translation} className="flex-grow p-2 border border-slate-500"
-          placeholder={t('translation') || 'translation'} onChange={(event) => setTranslation(event.target.value)} />
+        {hurrian
+          ? <input type="text" name="translation" value={morphAnalysis.translation} className="flex-grow p-2 border border-slate-500"
+              placeholder={t('translation') || 'translation'} onChange={(event) => setTranslation(event.target.value)} />
+          : <input type="text" name="translation" defaultValue={morphAnalysis.translation} className="flex-grow p-2 border border-slate-500"
+              placeholder={t('translation') || 'translation'} onChange={(event) => setTranslation(event.target.value)} />
+        }
 
         <input type="text" name="referenceWord" defaultValue={morphAnalysis.referenceWord} className="flex-grow p-2 border-r border-y border-slate-500"
           placeholder={t('referenceWord') || 'referenceWord'} onChange={(event) => setReferenceWord(event.target.value)} />
