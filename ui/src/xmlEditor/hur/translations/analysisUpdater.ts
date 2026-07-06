@@ -3,7 +3,7 @@ import { Spec } from 'immutability-helper';
 import { getStem } from '../common/splitter';
 import { retrieveGloss, joinTranslationWords } from './glossProvider';
 
-const stemWithFinalBoundary = /^[^-=]+[-=]$/;
+const stemWithFinalBoundary = /^[^-=]+[-=]/;
 function stemWasTypedInCompletely(segmentation: string) {
   return stemWithFinalBoundary.test(segmentation);
 }
