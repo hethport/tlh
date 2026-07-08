@@ -76,6 +76,15 @@ export function retrieveGloss(word: string, pos: string): Set<string> | null
 	}
 }
 
+export function getTranslations(stem: string, pos: string): string[] {
+  const translationSet = glosses.get(getKey(stem, pos));
+  if (translationSet === undefined) {
+    return [];
+  } else {
+    return Array.from(translationSet);
+  }
+}
+
 export function getGlosses(): GlossaryObject {
   return convertDictionary(glosses);
 }

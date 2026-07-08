@@ -6,6 +6,8 @@ import { JSX, useState } from 'react';
 import { convertSingleMorphAnalysisToMultiMorphAnalysis } from '../../model/morphologicalAnalysisConverter';
 import update from 'immutability-helper';
 import { updateHurrianAnalysis, updateHurrianPartOfSpeech } from '../hur/translations/analysisUpdater';
+import { TranslationInput } from '../hur/translations/TranslationInput';
+import { getStem } from '../hur/common/splitter';
 
 interface IProps {
   initialMorphologicalAnalysis: MorphologicalAnalysis;
@@ -75,8 +77,10 @@ export function MorphAnalysisOptionEditor({ initialMorphologicalAnalysis, onSubm
         <div className="px-4 py-2 rounded-l bg-gray-100 border-l border-y border-slate-500">{morphAnalysis.number}</div>
 
         {hurrian
-          ? <input type="text" name="translation" value={morphAnalysis.translation} className="flex-grow p-2 border border-slate-500"
-              placeholder={t('translation') || 'translation'} onChange={(event) => setTranslation(event.target.value)} />
+          ? <TranslationInput stem={getStem(morphAnalysis.referenceWord)}
+                              pos={morphAnalysis.paradigmClass}
+                              value={morphAnalysis.translation}
+                              onChange={(newTranslation) => setTranslation(newTranslation)} />
           : <input type="text" name="translation" defaultValue={morphAnalysis.translation} className="flex-grow p-2 border border-slate-500"
               placeholder={t('translation') || 'translation'} onChange={(event) => setTranslation(event.target.value)} />
         }
