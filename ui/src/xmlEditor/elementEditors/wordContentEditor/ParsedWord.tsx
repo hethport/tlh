@@ -6,6 +6,7 @@ import {tlhXmlEditorConfig} from '../../tlhXmlEditorConfig';
 import {NodeDisplay} from '../../NodeDisplay';
 import {useTranslation} from 'react-i18next';
 import {blueButtonClasses, whiteButtonClasses} from '../../../defaultDesign';
+import {removeMorphologicalAnalyses} from '../../../model/removeMorphologicalAnalyses';
 
 interface IProps {
   oldAttributes: Attributes;
@@ -29,7 +30,9 @@ export function ParsedWord({oldAttributes, initialParsedWord: initialParsedWord,
     try {
       const res = await fetchMorphologicalAnalyses(writeNode(parsedNode, tlhXmlEditorConfig.writeConfig).join(''), language);
       if (res) {
-        const updatedNode = update(parsedNode, {attributes: {$set: res}});
+        const oldAttrsWithoutMorph = removeMorphologicalAnalyses(oldAttributes);
+        const newAttributes = update(oldAttrsWithoutMorph, {$merge: res});
+        const updatedNode = update(parsedNode, {attributes: {$set: newAttributes}});
         setParsedNode(updatedNode);
         submitEdit(updatedNode);
       } else {

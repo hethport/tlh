@@ -301,3 +301,7 @@ export function fetchMorphologicalAnalyses(w: string, tl: string): Promise<Recor
     .then((res) => res.json());
 }
 
+export function isMorphologyAttribute(attributeName: string): boolean {
+  return morphologyAttributeNameRegex.test(attributeName);
+}
+
