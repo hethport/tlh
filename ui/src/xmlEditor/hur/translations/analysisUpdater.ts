@@ -14,7 +14,7 @@ export function updateHurrianAnalysis(referenceWord: string, translation: string
     const stem = getStem(referenceWord);
     const pos = paradigmClass;
     const glosses: Set<string> | null = retrieveGloss(stem, pos);
-    if (glosses != null) {
+    if (glosses != null && glosses.size === 1) {
       const newTranslation: string = Array.from(glosses).sort().join('; ');
       return {
         referenceWord: { $set: referenceWord },
