@@ -2,6 +2,8 @@ import {convertDictionary, updateGlossesLexicon} from '../common/utility';
 import { objectToSetValuedMap } from '../common/utils';
 import { loadSetValuedMapFromLocalStorage, locallyStoreSetValuedMap }
   from '../dictLocalStorage/localStorageUtils';
+import { getTranslationMap } from './getTranslationMap';
+import { getGlobalDictionary } from '../dict/dictionary';
 
 export type Glossary = Map<string, Set<string>>;
 export type GlossaryObject = { [key: string]: string[] };
@@ -12,6 +14,11 @@ export let glosses: Glossary = loadSetValuedMapFromLocalStorage(localStorageKey)
 export function locallyStoreHurrianStemTranslations(): void {
   locallyStoreSetValuedMap(glosses, localStorageKey);
 }
+
+// Stores a set of complete translations
+// (each may consist of several words)
+// for each pair (stem, part of speech)
+const translationMap = getTranslationMap(getGlobalDictionary());
 
 const translationWordSeparator = '; ';
 const meaningUnknown = 'u.B.';
@@ -77,7 +84,7 @@ export function retrieveGloss(word: string, pos: string): Set<string> | null
 }
 
 export function getTranslations(stem: string, pos: string): string[] {
-  const translationSet = glosses.get(getKey(stem, pos));
+  const translationSet = translationMap.get(getKey(stem, pos));
   if (translationSet === undefined) {
     return [];
   } else {
