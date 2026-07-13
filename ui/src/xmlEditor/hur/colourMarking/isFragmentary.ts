@@ -1,17 +1,28 @@
 import {XmlElementNode, isXmlElementNode, isXmlTextNode, XmlNode} from 'simple_xml';
-import {getSiblingsUntil} from '../../../nodeIterators';
+import {getSiblingsUntil, getPriorSiblingsUntil} from '../../../nodeIterators';
 
-function containsClosingBracket(node: XmlNode): boolean {
+const openingBracket = 'del_in';
+const closingBracket = 'del_fin';
+
+function hasChildWithTagName(node: XmlNode, tagName: string): boolean {
   if (isXmlElementNode(node)) {
     for (const child of node.children) {
       if (isXmlElementNode(child)) {
-        if (child.tagName === 'del_fin') {
+        if (child.tagName === tagName) {
           return true;
         }
       }
     }
   }
   return false;
+}
+
+function containsOpeningBracket(node: XmlNode): boolean {
+  return hasChildWithTagName(node, openingBracket);
+}
+
+function containsClosingBracket(node: XmlNode): boolean {
+  return hasChildWithTagName(node, closingBracket);
 }
 
 export function isFragmentary(node: XmlElementNode<'w'>, path: number[],
@@ -25,7 +36,13 @@ export function isFragmentary(node: XmlElementNode<'w'>, path: number[],
           break;
         case 'del_fin':
           if (!bracketOpen) {
-            return true;
+            if (rootNode === undefined) {
+              return true;
+            }
+            const precedingWords = getPriorSiblingsUntil(rootNode, path, 'lb');
+            if (!precedingWords.some(precedingWord => containsOpeningBracket(precedingWord))) {
+              return true;
+            }
           }
           bracketOpen = false;
           break;
