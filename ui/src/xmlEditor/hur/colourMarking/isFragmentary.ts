@@ -1,6 +1,21 @@
-import {XmlElementNode, isXmlElementNode, isXmlTextNode} from 'simple_xml';
+import {XmlElementNode, isXmlElementNode, isXmlTextNode, XmlNode} from 'simple_xml';
+import {getSiblingsUntil} from '../../../nodeIterators';
 
-export function isFragmentary(node: XmlElementNode<'w'>): boolean {
+function containsClosingBracket(node: XmlNode): boolean {
+  if (isXmlElementNode(node)) {
+    for (const child of node.children) {
+      if (isXmlElementNode(child)) {
+        if (child.tagName === 'del_fin') {
+          return true;
+        }
+      }
+    }
+  }
+  return false;
+}
+
+export function isFragmentary(node: XmlElementNode<'w'>, path: number[],
+                              rootNode: XmlElementNode | undefined): boolean {
   let bracketOpen = false;
   for (const child of node.children) {
     if (isXmlElementNode(child)) {
@@ -22,7 +37,11 @@ export function isFragmentary(node: XmlElementNode<'w'>): boolean {
     }
   }
   if (bracketOpen) {
-    return true;
+    if (rootNode === undefined) {
+      return true;
+    }
+    const followingWords = getSiblingsUntil(rootNode, path, 'lb');
+    return !followingWords.some(followingWord => containsClosingBracket(followingWord));
   }
   return false;
 }
