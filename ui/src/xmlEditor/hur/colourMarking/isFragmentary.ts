@@ -3,6 +3,7 @@ import {getSiblingsUntil, getPriorSiblingsUntil} from '../../../nodeIterators';
 
 const openingBracket = 'del_in';
 const closingBracket = 'del_fin';
+const space = 'space';
 
 function hasChildWithTagName(node: XmlNode, tagName: string): boolean {
   if (isXmlElementNode(node)) {
@@ -25,6 +26,10 @@ function containsClosingBracket(node: XmlNode): boolean {
   return hasChildWithTagName(node, closingBracket);
 }
 
+function containsSpace(node: XmlNode): boolean {
+  return hasChildWithTagName(node, space);
+}
+
 export function isFragmentary(node: XmlElementNode<'w'>, path: number[],
                               rootNode: XmlElementNode | undefined): boolean {
   let bracketOpen = false;
@@ -40,6 +45,13 @@ export function isFragmentary(node: XmlElementNode<'w'>, path: number[],
               return true;
             }
             const precedingWords = getPriorSiblingsUntil(rootNode, path, 'lb');
+            if (precedingWords.length > 0) {
+              // getPriorSiblingsUntil reverses the array
+              const previousWord = precedingWords[0];
+              if (containsSpace(previousWord)) {
+                return true;
+              }
+            }
             if (!precedingWords.some(precedingWord => containsOpeningBracket(precedingWord))) {
               return true;
             }
@@ -58,6 +70,12 @@ export function isFragmentary(node: XmlElementNode<'w'>, path: number[],
       return true;
     }
     const followingWords = getSiblingsUntil(rootNode, path, 'lb');
+    if (followingWords.length > 0) {
+      const nextWord= followingWords[0];
+      if (containsSpace(nextWord)) {
+        return true;
+      }
+    }
     return !followingWords.some(followingWord => containsClosingBracket(followingWord));
   }
   return false;
