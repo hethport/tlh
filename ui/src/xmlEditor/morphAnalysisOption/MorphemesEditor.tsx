@@ -4,6 +4,8 @@ import { updateHurrianAnalysis } from '../hur/translations/analysisUpdater';
 import { formIsFragment } from '../hur/common/utils';
 import { prestemBoundary, splitSegmentation, splitAnalysis } from '../hur/common/morphemeSplitting';
 
+const minimalInputSize = 5;
+
 interface IProps {
   segmentation: string,
   translation: string,
@@ -150,6 +152,7 @@ export function MorphemesEditor({
   return (
     <div className="segmentation-box">
     {morphemes.map((morpheme: Morpheme, i: number) => {
+      const inputSize = Math.max(morpheme.form.length, morpheme.tag.length, minimalInputSize);
       return (
         <div key={i.toString()} className="morpheme-box">
           <div className="field-box">
@@ -190,6 +193,7 @@ export function MorphemesEditor({
                   onSegmentationChange(makeSegmentation(morphemes));
                 }
               }}
+              size={inputSize}
             >
             </input>
           </div>
@@ -208,6 +212,7 @@ export function MorphemesEditor({
                     onAnalysisChange(makeAnalysis(morphemes));
                   }
                 }}
+                size={inputSize}
               >
               </input>
             </div>
