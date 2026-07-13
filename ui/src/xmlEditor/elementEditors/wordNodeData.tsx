@@ -6,10 +6,12 @@ import {SpacesEditor} from './SpacesEditor';
 import {selectedNodeClass} from '../tlhXmlEditorConfig';
 import {ReactElement} from 'react';
 import {getPriorSibling} from '../../nodeIterators';
+import {isFullyPreservedNotAnnotatedHurrian} from '../hur/colourMarking/isFullyPreservedNotAnnotatedHurrian';
 
 const isOnlySpaces = ({children}: XmlElementNode): boolean => children.length === 1 && isXmlElementNode(children[0]) && children[0].tagName === 'space';
 
-function backgroundColor(node: XmlElementNode, isSelected: boolean, selectedMorphology: string | undefined): string | undefined {
+function backgroundColor(node: XmlElementNode<'w'>, isSelected: boolean, selectedMorphology: string | undefined,
+                         path: number[], rootNode: XmlElementNode | undefined): string | undefined {
   if (isSelected) { // Prio 1: current selection
     return selectedNodeClass;
   }
@@ -25,6 +27,10 @@ function backgroundColor(node: XmlElementNode, isSelected: boolean, selectedMorp
 
   if (selectedMorphology === '???') {
     return 'bg-red-500';
+  }
+
+  if (isFullyPreservedNotAnnotatedHurrian(node, path, rootNode)) {
+    return 'bg-yellow-300';
   }
 
   return undefined;
@@ -47,7 +53,7 @@ export const wordNodeConfig: XmlSingleInsertableEditableNodeConfig<'w'> = {
       isOnlySpaces(node)
         ? [isSelected ? selectedNodeClass : 'bg-gray-200']
         : [
-          backgroundColor(node, isSelected, node.attributes.mrp0sel?.trim()),
+          backgroundColor(node, isSelected, node.attributes.mrp0sel?.trim(), path, rootNode),
           {'text-red-600': node.children.length === 0}
         ]
     );
