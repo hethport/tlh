@@ -7,6 +7,7 @@ import {selectedNodeClass} from '../tlhXmlEditorConfig';
 import {ReactElement} from 'react';
 import {getPriorSibling} from '../../nodeIterators';
 import {isFullyPreservedNotAnnotatedHurrian} from '../hur/colourMarking/isFullyPreservedNotAnnotatedHurrian';
+import {isHurrian} from '../nodeLanguage';
 
 const isOnlySpaces = ({children}: XmlElementNode): boolean => children.length === 1 && isXmlElementNode(children[0]) && children[0].tagName === 'space';
 
@@ -20,7 +21,7 @@ function backgroundColor(node: XmlElementNode<'w'>, isSelected: boolean, selecte
     return 'bg-blue-300';
   }
 
-  if (selectedMorphology !== undefined && selectedMorphology.length === 0 && selectedMorphology !== '???' && selectedMorphology !== 'DEL') {
+  if (selectedMorphology !== undefined && selectedMorphology.length === 0 && selectedMorphology !== '???' && selectedMorphology !== 'DEL' && !isHurrian(node, path, rootNode)) {
     // Prio 3: has no morphology selected
     return 'bg-yellow-300';
   }
