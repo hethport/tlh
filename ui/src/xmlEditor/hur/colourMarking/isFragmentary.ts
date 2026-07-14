@@ -18,6 +18,30 @@ function hasChildWithTagName(node: XmlNode, tagName: string): boolean {
   return false;
 }
 
+function startsWith(node: XmlNode, tagName: string): boolean {
+  if (isXmlElementNode(node) && node.children.length > 0) {
+    const child = node.children[0];
+    if (isXmlElementNode(child)) {
+      if (child.tagName === tagName) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+function endsWith(node: XmlNode, tagName: string): boolean {
+  if (isXmlElementNode(node) && node.children.length > 0) {
+    const child = node.children[node.children.length - 1];
+    if (isXmlElementNode(child)) {
+      if (child.tagName === tagName) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
 function containsOpeningBracket(node: XmlNode): boolean {
   return hasChildWithTagName(node, openingBracket);
 }
@@ -48,7 +72,7 @@ export function isFragmentary(node: XmlElementNode<'w'>, path: number[],
             if (precedingWords.length > 0) {
               // getPriorSiblingsUntil reverses the array
               const previousWord = precedingWords[0];
-              if (containsSpace(previousWord)) {
+              if (containsSpace(previousWord) && startsWith(node, closingBracket)) {
                 return true;
               }
             }
@@ -72,7 +96,7 @@ export function isFragmentary(node: XmlElementNode<'w'>, path: number[],
     const followingWords = getSiblingsUntil(rootNode, path, 'lb');
     if (followingWords.length > 0) {
       const nextWord= followingWords[0];
-      if (containsSpace(nextWord)) {
+      if (containsSpace(nextWord) && endsWith(node, openingBracket)) {
         return true;
       }
     }
