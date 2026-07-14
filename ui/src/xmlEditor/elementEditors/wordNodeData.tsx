@@ -8,6 +8,7 @@ import {ReactElement} from 'react';
 import {getPriorSibling} from '../../nodeIterators';
 import {isFullyPreservedNotAnnotatedHurrian} from '../hur/colourMarking/isFullyPreservedNotAnnotatedHurrian';
 import {isHurrian} from '../nodeLanguage';
+import {hasDeprecatedAnalyses} from '../hur/colourMarking/hasDeprecatedAnalyses';
 
 const isOnlySpaces = ({children}: XmlElementNode): boolean => children.length === 1 && isXmlElementNode(children[0]) && children[0].tagName === 'space';
 
@@ -19,6 +20,10 @@ function backgroundColor(node: XmlElementNode<'w'>, isSelected: boolean, selecte
 
   if (node.attributes.editingQuestion !== undefined) { // Prio 2: has editing question
     return 'bg-blue-300';
+  }
+
+  if (hasDeprecatedAnalyses(node, path, rootNode)) {
+    return 'bg-orange-300';
   }
 
   if (selectedMorphology !== undefined && selectedMorphology.length === 0 && selectedMorphology !== '???' && selectedMorphology !== 'DEL' && !isHurrian(node, path, rootNode)) {

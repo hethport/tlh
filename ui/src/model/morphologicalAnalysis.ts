@@ -2,7 +2,7 @@ import {LetteredAnalysisOption, parseMultiAnalysisString, SelectableLetteredAnal
 import {tlhWordAnalyzerUrl} from '../urls';
 import {XmlElementNode} from 'simple_xml';
 import {EncliticsAnalysis, isSingleEncliticsAnalysis, MultiEncliticsAnalysis, SingleEncliticsAnalysis, writeEncliticsAnalysis} from './encliticsAnalysis';
-import {SelectedMorphAnalysis, SelectedMultiMorphAnalysisWithEnclitic, selectedMultiMorphAnalysisWithEnclitics} from './selectedMorphologicalAnalysis';
+import {SelectedMorphAnalysis, SelectedMultiMorphAnalysisWithEnclitic, selectedMultiMorphAnalysisWithEnclitics, readSelectedMorphology} from './selectedMorphologicalAnalysis';
 
 const morphologyAttributeNameRegex = /^mrp(\d+)$/;
 
@@ -305,3 +305,10 @@ export function isMorphologyAttribute(attributeName: string): boolean {
   return morphologyAttributeNameRegex.test(attributeName);
 }
 
+export function getMorphologicalAnalyses(node: XmlElementNode<'w'>): MorphologicalAnalysis[] {
+  const selectedMorphologies: SelectedMorphAnalysis[] = node.attributes.mrp0sel !== undefined
+  ? readSelectedMorphology(node.attributes.mrp0sel)
+  : [];
+  const morphologies: MorphologicalAnalysis[] = readMorphologiesFromNode(node, selectedMorphologies);
+  return morphologies;
+}
