@@ -3,6 +3,7 @@ import { MorphologicalAnalysis } from '../../model/morphologicalAnalysis';
 import { updateHurrianAnalysis } from '../hur/translations/analysisUpdater';
 import { formIsFragment } from '../hur/common/utils';
 import { prestemBoundary, splitSegmentation, splitAnalysis } from '../hur/common/morphemeSplitting';
+import { GrammaticalGlossInput } from '../hur/autoglossing/GrammaticalGlossInput';
 
 const minimalInputSize = 5;
 
@@ -199,22 +200,21 @@ export function MorphemesEditor({
           </div>
           {!(morpheme.kind === 'fragment') &&
             <div className="field-box">
-              <input
-                type="text"
-                className="morpheme-input"
+              <GrammaticalGlossInput
+                position={i}
+                form={morpheme.getForm(i)}
                 value={morpheme.tag}
-                onChange={(event) => {
-                  morphemes[i].tag = event.target.value;
+                onChange={(newGrammaticalGloss: string) => {
+                  morphemes[i].tag = newGrammaticalGloss;
                   if (i == 0) {
-                    onTranslationChange(event.target.value);
+                    onTranslationChange(newGrammaticalGloss);
                   }
                   else {
                     onAnalysisChange(makeAnalysis(morphemes));
                   }
                 }}
-                size={inputSize}
-              >
-              </input>
+                inputElementSize={inputSize}
+              />
             </div>
           }
         </div>
