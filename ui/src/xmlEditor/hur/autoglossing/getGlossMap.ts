@@ -6,6 +6,10 @@ import {add} from '../common/utils';
 
 export type GlossMap = Map<string, Set<string>>;
 
+export function getKey(form: string, pos: string): string {
+  return form +',' + pos;
+}
+
 /**
  * Creates a map from forms of grammatical morphemes
  * to sets of their possible glosses.
@@ -17,12 +21,14 @@ export function getGlossMap(dictionary: Dictionary): GlossMap {
       const ma = readMorphAnalysisValue(analysis);
       if (ma !== undefined) {
         const grammaticalMorphemes = getGrammaticalMorphemes(ma);
+        const pos = ma.paradigmClass;
         for (const grammaticalMorpheme of grammaticalMorphemes) {
           const {form, label} = grammaticalMorpheme;
+          const key = getKey(form, pos);
           const grammaticalGloss = removePotentiallyImproperPrefix(
             removePotentiallyImproperPrefix(label, '-'), '='
           );
-          add(glossMap, form, grammaticalGloss);
+          add(glossMap, key, grammaticalGloss);
         }
       }
     }

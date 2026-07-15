@@ -216,6 +216,7 @@ export function MorphemesEditor({
                 : <GrammaticalGlossInput
                   position={i}
                   form={morpheme.getForm(i)}
+                  pos={paradigmClass}
                   value={morpheme.tag}
                   onChange={(newGrammaticalGloss: string) => {
                     morphemes[i].tag = newGrammaticalGloss;

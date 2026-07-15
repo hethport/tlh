@@ -4,6 +4,7 @@ import {getGrammaticalGlosses} from './grammaticalGlossProvider';
 interface IProps {
   position: number;
   form: string;
+  pos: string;
   value: string;
   onChange: (newGrammaticalGloss: string) => void;
   inputElementSize: number;
@@ -14,11 +15,11 @@ interface IProps {
  * which retrieves the possible glosses for a morpheme with
  * the given form and shows them in a dropdown.
  */
-export function GrammaticalGlossInput({position, form, value, onChange, inputElementSize}: IProps): JSX.Element {
+export function GrammaticalGlossInput({position, form, pos, value, onChange, inputElementSize}: IProps): JSX.Element {
 
   const datalistId = position.toString();
 
-  const grammaticalGlosses = getGrammaticalGlosses(form);
+  const grammaticalGlosses = getGrammaticalGlosses(form, pos);
 
   return (
     <div>
