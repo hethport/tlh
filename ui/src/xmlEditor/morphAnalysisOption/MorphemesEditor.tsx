@@ -3,6 +3,7 @@ import { MorphologicalAnalysis } from '../../model/morphologicalAnalysis';
 import { updateHurrianAnalysis } from '../hur/translations/analysisUpdater';
 import { formIsFragment } from '../hur/common/utils';
 import { prestemBoundary, splitSegmentation, splitAnalysis } from '../hur/common/morphemeSplitting';
+import { TranslationInput } from '../hur/translations/TranslationInput';
 import { GrammaticalGlossInput } from '../hur/autoglossing/GrammaticalGlossInput';
 
 const minimalInputSize = 5;
@@ -200,21 +201,29 @@ export function MorphemesEditor({
           </div>
           {!(morpheme.kind === 'fragment') &&
             <div className="field-box">
-              <GrammaticalGlossInput
-                position={i}
-                form={morpheme.getForm(i)}
-                value={morpheme.tag}
-                onChange={(newGrammaticalGloss: string) => {
-                  morphemes[i].tag = newGrammaticalGloss;
-                  if (i == 0) {
-                    onTranslationChange(newGrammaticalGloss);
-                  }
-                  else {
+              {
+                (i === 0)
+                ? <TranslationInput
+                  stem={morpheme.getForm(i)}
+                  pos={paradigmClass}
+                  value={morpheme.tag}
+                  onChange={(newTranslation: string) => {
+                    morphemes[i].tag = newTranslation;
+                    onTranslationChange(newTranslation);
+                  }}
+                  inputElementSize={inputSize}
+                />
+                : <GrammaticalGlossInput
+                  position={i}
+                  form={morpheme.getForm(i)}
+                  value={morpheme.tag}
+                  onChange={(newGrammaticalGloss: string) => {
+                    morphemes[i].tag = newGrammaticalGloss;
                     onAnalysisChange(makeAnalysis(morphemes));
-                  }
-                }}
-                inputElementSize={inputSize}
-              />
+                  }}
+                  inputElementSize={inputSize}
+                />
+              }
             </div>
           }
         </div>

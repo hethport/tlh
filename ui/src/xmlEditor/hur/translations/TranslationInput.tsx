@@ -1,21 +1,25 @@
 import {JSX} from 'react';
 import {getTranslations} from './glossProvider';
 
+const defaultInputSize = 20;
+
 interface IProps {
   stem: string;
   pos: string;
   value: string;
   onChange: (newTranslation: string) => void;
+  inputElementSize?: number;
 }
 
-export function TranslationInput({stem, pos, value, onChange}: IProps): JSX.Element {
+export function TranslationInput({stem, pos, value, onChange, inputElementSize}: IProps): JSX.Element {
 
   const translations = getTranslations(stem, pos) || [];
 
   return (
-    <div className="flex rounded border border-slate-500">
-      <input value={value} className="flex-grow p-2 rounded-r" list="translations"
-        onChange={event => onChange(event.target.value)}/>
+    <div>
+      <input value={value} list="translations"
+        onChange={event => onChange(event.target.value)}
+        size={inputElementSize || defaultInputSize}/>
 
       <datalist id="translations">
         {translations.map((translation: string) => <option key={translation} value={translation}>

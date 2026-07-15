@@ -2,7 +2,7 @@ import { XmlElementNode } from 'simple_xml';
 import { getText, getMrps } from '../common/xmlUtilities';
 import { makeBoundTranscription } from '../transduction/transcribe';
 import { makeStandardAnalyses } from '../transduction/standardAnalysis';
-import { setGlosses, saveGloss } from '../translations/glossUpdater';
+import { saveGloss } from '../translations/glossUpdater';
 import { MorphologicalAnalysis, readMorphologicalAnalysis }
   from '../../../model/morphologicalAnalysis';
 import { convertDictionary } from '../common/utility';
@@ -141,7 +141,6 @@ export function annotateHurrianWord(node: XmlElementNode, lookupConfig: LookupCo
 
   const possibilities: Set<string> | undefined = lookup(simplifiedDictionary, simplifiedTranscription);
   if (possibilities !== undefined) {
-    setGlosses(node);
     if (node.attributes.firstAnalysisIsPlaceholder === 'true') {
       delete node.attributes.firstAnalysisIsPlaceholder;
     }
@@ -173,7 +172,6 @@ export function annotateHurrianWord(node: XmlElementNode, lookupConfig: LookupCo
           node.attributes.mrp1 = transcription + '@@@@';
         }
       }
-      setGlosses(node);
     }
   }
 }
