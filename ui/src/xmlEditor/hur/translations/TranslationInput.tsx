@@ -9,17 +9,21 @@ interface IProps {
   value: string;
   onChange: (newTranslation: string) => void;
   inputElementSize?: number;
+  divClassName?: string;
+  inputClassName?: string;
 }
 
-export function TranslationInput({stem, pos, value, onChange, inputElementSize}: IProps): JSX.Element {
+export function TranslationInput({stem, pos, value, onChange, inputElementSize,
+                                  divClassName, inputClassName}: IProps): JSX.Element {
 
   const translations = getTranslations(stem, pos) || [];
 
   return (
-    <div>
+    <div className={divClassName || ''}>
       <input value={value} list="translations"
         onChange={event => onChange(event.target.value)}
-        size={inputElementSize || defaultInputSize}/>
+        size={inputElementSize || defaultInputSize}
+        className={inputClassName || ''}/>
 
       <datalist id="translations">
         {translations.map((translation: string) => <option key={translation} value={translation}>

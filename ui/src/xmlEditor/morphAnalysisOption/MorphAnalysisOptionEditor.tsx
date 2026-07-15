@@ -77,7 +77,9 @@ export function MorphAnalysisOptionEditor({ initialMorphologicalAnalysis, onSubm
         <div className="px-4 py-2 rounded-l bg-gray-100 border-l border-y border-slate-500">{morphAnalysis.number}</div>
 
         {hurrian
-          ? <TranslationInput stem={getStem(morphAnalysis.referenceWord)}
+          ? <TranslationInput divClassName="flex rounded border border-slate-500"
+                              inputClassName="flex-grow p-2 rounded-r"
+                              stem={getStem(morphAnalysis.referenceWord)}
                               pos={morphAnalysis.paradigmClass}
                               value={morphAnalysis.translation}
                               onChange={(newTranslation) => setTranslation(newTranslation)} />
