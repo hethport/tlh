@@ -78,7 +78,6 @@ function removeSuffix(suffix: string, s: string) {
 
 function buildMorphemes(segmentation: string, translation: string, analysis: string): Morpheme[] {
   const forms: [string, string][] = splitSegmentation(segmentation);
-  analysis = removeSuffix('-', analysis);
   const tags: [string, string][] = analysis === '' ? []
     : splitAnalysis(analysis);
   const morphemes: Morpheme[] = [];
