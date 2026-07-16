@@ -7,6 +7,11 @@ import {add} from '../common/utils';
 
 export type TranslationMap = Map<string, Set<string>>;
 
+/**
+ * Extracts the stem with its part of speech
+ * from a morphological analysis and adds its
+ * translation to the translation map.
+ */
 export function addTranslationFromMorphology(translationMap: TranslationMap, ma: MorphologicalAnalysis): void {
   const {referenceWord, translation} = ma;
   const stem = getStem(referenceWord);

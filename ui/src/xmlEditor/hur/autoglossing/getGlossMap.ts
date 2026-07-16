@@ -11,6 +11,11 @@ export function getKey(form: string, pos: string): string {
   return form +',' + pos;
 }
 
+/**
+ * Extracts the grammatical morphemes and the part of speech
+ * from a morphological analysis and adds the morphemes' glosses
+ * to the grammatical gloss map.
+ */
 export function addGlossesFromMorphology(glossMap: GlossMap, ma: MorphologicalAnalysis): void {
   const grammaticalMorphemes = getGrammaticalMorphemes(ma);
   const pos = ma.paradigmClass;
