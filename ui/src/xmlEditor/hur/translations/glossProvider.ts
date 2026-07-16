@@ -2,8 +2,9 @@ import {convertDictionary, updateGlossesLexicon} from '../common/utility';
 import { objectToSetValuedMap } from '../common/utils';
 import { loadSetValuedMapFromLocalStorage, locallyStoreSetValuedMap }
   from '../dictLocalStorage/localStorageUtils';
-import { TranslationMap, getTranslationMap } from './getTranslationMap';
+import { TranslationMap, getTranslationMap, addTranslationFromMorphology } from './getTranslationMap';
 import { getGlobalDictionary } from '../dict/dictionary';
+import {MorphologicalAnalysis} from '../../../model/morphologicalAnalysis';
 
 export type Glossary = Map<string, Set<string>>;
 export type GlossaryObject = { [key: string]: string[] };
@@ -36,6 +37,14 @@ let translationMap = generateTranslationMap();
  */
 export function regenerateTranslationMap(): void {
   translationMap = generateTranslationMap();
+}
+
+/**
+ * Updates the global translation map
+ * using the given morphological analysis.
+ */
+export function addToTranslationMap(ma: MorphologicalAnalysis): void {
+  addTranslationFromMorphology(translationMap, ma);
 }
 
 const translationWordSeparator = '; ';

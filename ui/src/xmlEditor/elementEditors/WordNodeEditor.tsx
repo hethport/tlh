@@ -12,7 +12,7 @@ import {getPriorSibling, getPriorSiblingPath} from '../../nodeIterators';
 import {AOption} from '../../myOption';
 import {fetchCuneiform} from './LineBreakEditor';
 import {annotateHurrianWord} from '../hur/dict/dictionary';
-import {Attestation, addAttestation, removeAttestation} from '../hur/concordance/concordance';
+import {Attestation, removeAttestation} from '../hur/concordance/concordance';
 import {basicGetText} from '../hur/common/xmlUtilities';
 import {addOrUpdateLineBySingleNodePath} from '../hur/corpus/corpus';
 import {isSelected} from '../hur/morphologicalAnalysis/auxiliary';
@@ -20,6 +20,7 @@ import {LookupConfig} from '../lookupConfig';
 import {lookupConfigSelector} from '../../newStore';
 import {useSelector} from 'react-redux';
 import {removeMacron} from '../hur/common/utils';
+import {updateLexicalData} from '../hur/lexicalData/lexicalDataUpdater';
 
 type States = 'DefaultState' | 'AddMorphology' | 'EditEditingQuestion' | 'EditFootNoteState' | 'EditContent';
 
@@ -93,7 +94,7 @@ export function WordNodeEditor({node, path, updateEditedNode, setKeyHandlingEnab
             }
           } else {
             if (targetState === undefined || targetState === true) {
-              concordanceModifier = () => addAttestation(transcription, analysis, attestation, currentLookupConfig);
+              concordanceModifier = () => updateLexicalData(transcription, analysis, attestation, currentLookupConfig);
             }
           }
           if (concordanceModifier !== undefined) {
@@ -185,7 +186,7 @@ export function WordNodeEditor({node, path, updateEditedNode, setKeyHandlingEnab
           globalUpdateButtonRef.current.addEventListener('click', remover, {once: true});
         }
         const concordanceModifier = () => {
-          addAttestation(transcription, value, attestation, currentLookupConfig);
+          updateLexicalData(transcription, value, attestation, currentLookupConfig);
         };
         const oldConcordanceModifier = updateMorphologyConcordanceModifiers.current.get(number);
         if (oldConcordanceModifier !== undefined) {

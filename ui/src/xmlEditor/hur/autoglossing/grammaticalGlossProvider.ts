@@ -1,5 +1,6 @@
-import {GlossMap, getGlossMap, getKey} from './getGlossMap';
+import {GlossMap, getGlossMap, getKey, addGlossesFromMorphology} from './getGlossMap';
 import {getGlobalDictionary} from '../dict/dictionary';
+import {MorphologicalAnalysis} from '../../../model/morphologicalAnalysis';
 
 /**
  * Generates a grammatical gloss map from
@@ -19,6 +20,14 @@ let glossMap: GlossMap = generateGrammaticalGlossMap();
  */
 export function regenerateGrammaticalGlossMap(): void {
   glossMap = generateGrammaticalGlossMap();
+}
+
+/**
+ * Updates the global grammatical gloss map
+ * using the given morphological analysis.
+ */
+export function addToGrammaticalGlossMap(ma: MorphologicalAnalysis): void {
+  addGlossesFromMorphology(glossMap, ma);
 }
 
 /**
