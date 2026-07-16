@@ -9,6 +9,7 @@ import { GrammaticalGlossInput } from '../hur/autoglossing/GrammaticalGlossInput
 const minimalInputSize = 5;
 
 interface IProps {
+  analysisOptionID: string;
   segmentation: string,
   translation: string,
   analysis: string,
@@ -118,6 +119,7 @@ function buildMorphemes(segmentation: string, translation: string, analysis: str
 }
 
 export function MorphemesEditor({
+  analysisOptionID,
   segmentation, translation, analysis, updateMorphology,
   paradigmClass
 } : IProps) {
@@ -203,6 +205,7 @@ export function MorphemesEditor({
               {
                 (i === 0)
                 ? <TranslationInput
+                  datalistID={analysisOptionID + i.toString()}
                   stem={morpheme.getForm(i)}
                   pos={paradigmClass}
                   value={morpheme.tag}
@@ -213,7 +216,7 @@ export function MorphemesEditor({
                   inputElementSize={inputSize}
                 />
                 : <GrammaticalGlossInput
-                  position={i}
+                  datalistID={analysisOptionID + i.toString()}
                   form={morpheme.getForm(i)}
                   pos={paradigmClass}
                   value={morpheme.tag}

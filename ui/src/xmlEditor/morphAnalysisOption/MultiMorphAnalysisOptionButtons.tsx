@@ -48,6 +48,7 @@ export function MultiMorphAnalysisOptionButtons({morphAnalysis, toggleAnalysisSe
                   <>{letter} - {analysis}</>
                 </SelectableButton>
                 {hurrian && <MorphemesEditor
+                  analysisOptionID={morphAnalysis.number.toString() + letter}
                   segmentation={morphAnalysis.referenceWord}
                   translation={morphAnalysis.translation}
                   analysis={analysis}

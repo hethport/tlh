@@ -49,6 +49,7 @@ export function SingleMorphAnalysisOptionButton({
             <>{morphAnalysis.analysis || morphAnalysis.paradigmClass}</>
           </SelectableButton>
           {hurrian && <MorphemesEditor
+            analysisOptionID={morphAnalysis.number.toString()}
             segmentation={morphAnalysis.referenceWord}
             translation={morphAnalysis.translation}
             analysis={morphAnalysis.analysis}
