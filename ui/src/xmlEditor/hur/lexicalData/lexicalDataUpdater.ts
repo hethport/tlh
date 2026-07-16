@@ -1,7 +1,7 @@
 import {LookupConfig} from '../../lookupConfig';
 import {Attestation, addAttestation} from '../concordance/concordance';
 import {readMorphAnalysisValue} from '../morphologicalAnalysis/auxiliary';
-import {addToTranslationMap} from '../translations/glossProvider';
+import {addToTranslationMap} from '../translations/translationProvider';
 import {addToGrammaticalGlossMap} from '../autoglossing/grammaticalGlossProvider';
 
 export function updateLexicalData(transcription: string, analysis: string, attestation: Attestation,

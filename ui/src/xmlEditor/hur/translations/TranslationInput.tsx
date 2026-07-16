@@ -1,5 +1,5 @@
 import {JSX} from 'react';
-import {getTranslations} from './glossProvider';
+import {getTranslations} from './translationProvider';
 
 const defaultInputSize = 20;
 

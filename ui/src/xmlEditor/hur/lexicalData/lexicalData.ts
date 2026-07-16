@@ -1,5 +1,6 @@
 import { DictionaryObject, getDictionary, setDictionary, getSuffixChains } from '../dict/dictionary';
-import { GlossaryObject, getGlosses, setGlosses, regenerateTranslationMap } from '../translations/glossProvider';
+import { GlossaryObject, getGlosses, setGlosses } from '../translations/glossProvider';
+import { regenerateTranslationMap } from '../translations/translationProvider';
 import { ConcordanceObject, getConcordance, setConcordance } from '../concordance/concordance';
 import { CorpusObject, getCorpus, setCorpus } from '../corpus/basicCorpus';
 import { PartsOfSpeech, getPartsOfSpeech, setPartsOfSpeech } from '../partsOfSpeech/partsOfSpeech';
