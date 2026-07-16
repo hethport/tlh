@@ -4,7 +4,7 @@ import {getStem} from '../common/splitter';
 import {getKey} from './glossProvider';
 import {add} from '../common/utils';
 
-type TranslationMap = Map<string, Set<string>>;
+export type TranslationMap = Map<string, Set<string>>;
 
 export function getTranslationMap(dictionary: Dictionary): TranslationMap {
   const translationMap: TranslationMap = new Map();

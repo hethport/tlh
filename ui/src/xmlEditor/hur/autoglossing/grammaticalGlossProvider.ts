@@ -1,7 +1,25 @@
 import {GlossMap, getGlossMap, getKey} from './getGlossMap';
 import {getGlobalDictionary} from '../dict/dictionary';
 
-const glossMap: GlossMap = getGlossMap(getGlobalDictionary());
+/**
+ * Generates a grammatical gloss map from
+ * the global dictionary.
+ */
+function generateGrammaticalGlossMap(): GlossMap {
+  return getGlossMap(getGlobalDictionary());
+}
+
+let glossMap: GlossMap = generateGrammaticalGlossMap();
+
+/**
+ * Regenerates the grammatical gloss map from
+ * the global dictionary.
+ * Should be called after dictionary
+ * upload or download.
+ */
+export function regenerateGrammaticalGlossMap(): void {
+  glossMap = generateGrammaticalGlossMap();
+}
 
 /**
  * Retrives the set of possible glosses for a

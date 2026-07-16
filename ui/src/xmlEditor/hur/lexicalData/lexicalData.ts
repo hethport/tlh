@@ -1,5 +1,5 @@
 import { DictionaryObject, getDictionary, setDictionary, getSuffixChains } from '../dict/dictionary';
-import { GlossaryObject, getGlosses, setGlosses } from '../translations/glossProvider';
+import { GlossaryObject, getGlosses, setGlosses, regenerateTranslationMap } from '../translations/glossProvider';
 import { ConcordanceObject, getConcordance, setConcordance } from '../concordance/concordance';
 import { CorpusObject, getCorpus, setCorpus } from '../corpus/basicCorpus';
 import { PartsOfSpeech, getPartsOfSpeech, setPartsOfSpeech } from '../partsOfSpeech/partsOfSpeech';
@@ -7,6 +7,7 @@ import { EnglishTranslationsObject, getEnglishTranslations, updateEnglishTransla
   from '../translations/englishTranslations';
 import { SuffixChainInventories } from '../segmentation/suffixChainInventories';
 import { NumericIDsObject, getNumericIDs, setNumericIDs } from '../numericIDs/numericIDs';
+import { regenerateGrammaticalGlossMap } from '../autoglossing/grammaticalGlossProvider';
 
 export type LexicalData = {
   exportDate?: string;
@@ -69,4 +70,8 @@ export function setLexicalData(lexicalData: LexicalData): void {
   if (numericIDs !== undefined) {
     setNumericIDs(numericIDs);
   }
+  // These functions should be called after the global
+  // dictionary has been updated.
+  regenerateTranslationMap();
+  regenerateGrammaticalGlossMap();
 }
