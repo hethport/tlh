@@ -1,3 +1,4 @@
+import {MorphologicalAnalysis} from '../../../model/morphologicalAnalysis';
 import {Dictionary} from '../dict/dictionary';
 import {readMorphAnalysisValue} from '../morphologicalAnalysis/auxiliary';
 import {getGrammaticalMorphemes} from '../dictionaryViewer/morphemics';
@@ -10,6 +11,19 @@ export function getKey(form: string, pos: string): string {
   return form +',' + pos;
 }
 
+export function addGlossesFromMorphology(glossMap: GlossMap, ma: MorphologicalAnalysis): void {
+  const grammaticalMorphemes = getGrammaticalMorphemes(ma);
+  const pos = ma.paradigmClass;
+  for (const grammaticalMorpheme of grammaticalMorphemes) {
+    const {form, label} = grammaticalMorpheme;
+    const key = getKey(form, pos);
+    const grammaticalGloss = removePotentiallyImproperPrefix(
+      removePotentiallyImproperPrefix(label, '-'), '='
+    );
+    add(glossMap, key, grammaticalGloss);
+  }
+}
+
 /**
  * Creates a map from forms of grammatical morphemes
  * to sets of their possible glosses.
@@ -20,16 +34,7 @@ export function getGlossMap(dictionary: Dictionary): GlossMap {
     for (const analysis of analyses) {
       const ma = readMorphAnalysisValue(analysis);
       if (ma !== undefined) {
-        const grammaticalMorphemes = getGrammaticalMorphemes(ma);
-        const pos = ma.paradigmClass;
-        for (const grammaticalMorpheme of grammaticalMorphemes) {
-          const {form, label} = grammaticalMorpheme;
-          const key = getKey(form, pos);
-          const grammaticalGloss = removePotentiallyImproperPrefix(
-            removePotentiallyImproperPrefix(label, '-'), '='
-          );
-          add(glossMap, key, grammaticalGloss);
-        }
+        addGlossesFromMorphology(glossMap, ma);
       }
     }
   }
