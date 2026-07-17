@@ -2,12 +2,14 @@ import {GlossMap, getGlossMap, getKey, addGlossesFromMorphology} from './getGlos
 import {getGlobalDictionary} from '../dict/dictionary';
 import {MorphologicalAnalysis} from '../../../model/morphologicalAnalysis';
 
+const useFragmentaryForms = false;
+
 /**
  * Generates a grammatical gloss map from
  * the global dictionary.
  */
 function generateGrammaticalGlossMap(): GlossMap {
-  return getGlossMap(getGlobalDictionary());
+  return getGlossMap(getGlobalDictionary(), useFragmentaryForms);
 }
 
 let glossMap: GlossMap = generateGrammaticalGlossMap();
