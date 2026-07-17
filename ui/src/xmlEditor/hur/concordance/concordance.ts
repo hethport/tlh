@@ -48,8 +48,13 @@ function preprocess(analysis: string): string {
 export function addAttestation(transcription: string, analysis: string, attestation: Attestation,
                                lookupConfig: LookupConfig) {
   if (isValid(analysis)) {
-    addMorphologicalAnalysis(transcription, analysis, lookupConfig);
     add(concordance, preprocess(analysis), attestation.toString());
+    // The analysis should be added to the dictionary
+    // after it has been added to the concordance
+    // because the segmenter is updated together with
+    // the dictionary and relies on analysis
+    // frequencies taken from the concordance.
+    addMorphologicalAnalysis(transcription, analysis, lookupConfig);
   }
 }
 
