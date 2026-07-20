@@ -239,7 +239,12 @@ export default class BasicSegmenter {
             );
             for (const stem of stems) {
               const [underlyingStem, translation] = stem.split('@');
-              if (allomorphyIsValid(surfaceStem, underlyingStem, suffixChain, segmentedSuffixChain, lookupConfig)) {
+              const filteredMorphTags = morphTags.filter((morphTag: string) =>
+                allomorphyIsValid(surfaceStem, underlyingStem, suffixChain,
+                                  segmentedSuffixChain, lookupConfig,
+                                  new SuffixChain(suffixChain, segmentedSuffixChain, morphTag), this.pos)
+              );
+              if (filteredMorphTags.length > 0) {
                 const segmentation = joinStemAndSuffixChain(underlyingStem, segmentedSuffixChain);
                 const suffixChainFrequency = this.getSuffixChainFrequency(suffixChain,
                                                                           segmentedSuffixChain,
@@ -288,7 +293,12 @@ export default class BasicSegmenter {
           const underlyingStem = removeMacron(
             getPrefixWithNonBracketSymbolCount(detailedTranscription, surfaceStem.length)
           );
-          if (allomorphyIsValid(surfaceStem, underlyingStem, suffixChain, segmentedSuffixChain, lookupConfig)) {
+          const filteredMorphTags = morphTags.filter((morphTag: string) =>
+            allomorphyIsValid(surfaceStem, underlyingStem, suffixChain,
+                              segmentedSuffixChain, lookupConfig,
+                              new SuffixChain(suffixChain, segmentedSuffixChain, morphTag), this.pos)
+          );
+          if (filteredMorphTags.length > 0) {
             const translation = '';
             const segmentation = joinStemAndSuffixChain(underlyingStem, segmentedSuffixChain);
             const suffixChainFrequency = this.getSuffixChainFrequency(suffixChain,

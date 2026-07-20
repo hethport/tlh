@@ -26,6 +26,7 @@ import { parseMorphologicalAnalyses } from './parseMorphologicalAnalyses';
 import { writeMorphologicalAnalysesToNode } from './writeMorphologicalAnalysesToNode';
 import { getNegatedFrequencyDifference } from '../concordance/concordance';
 import { shouldBeAnnotated } from './shouldBeAnnotated';
+import { GlossMap, getGlossMap } from '../autoglossing/getGlossMap';
 
 export type Dictionary = Map<string, Set<string>>;
 
@@ -87,6 +88,28 @@ const localStorageKey = 'HurrianDictionary';
 export let dictionary: Dictionary = initializeDictionary(localStorageKey);
 export function locallyStoreHurrianDictionary(): void {
   locallyStoreSetValuedMap(dictionary, localStorageKey);
+}
+
+const useFragmentaryForms = false;
+
+/**
+ * Generates a grammatical gloss map from
+ * the global dictionary.
+ */
+function generateGrammaticalGlossMap(): GlossMap {
+  return getGlossMap(dictionary, useFragmentaryForms);
+}
+
+export let glossMap: GlossMap = generateGrammaticalGlossMap();
+
+/**
+ * Regenerates the grammatical gloss map from
+ * the global dictionary.
+ * Should be called after dictionary
+ * upload or download.
+ */
+export function regenerateGrammaticalGlossMap(): void {
+  glossMap = generateGrammaticalGlossMap();
 }
 
 /*fetch('PrecompiledDictionary.json')

@@ -1,4 +1,5 @@
-import { DictionaryObject, getDictionary, setDictionary, getSuffixChains } from '../dict/dictionary';
+import { DictionaryObject, getDictionary, setDictionary, getSuffixChains,
+  regenerateGrammaticalGlossMap } from '../dict/dictionary';
 import { GlossaryObject, getGlosses, setGlosses } from '../translations/glossProvider';
 import { regenerateTranslationMap } from '../translations/translationProvider';
 import { ConcordanceObject, getConcordance, setConcordance } from '../concordance/concordance';
@@ -8,7 +9,6 @@ import { EnglishTranslationsObject, getEnglishTranslations, updateEnglishTransla
   from '../translations/englishTranslations';
 import { SuffixChainInventories } from '../segmentation/suffixChainInventories';
 import { NumericIDsObject, getNumericIDs, setNumericIDs } from '../numericIDs/numericIDs';
-import { regenerateGrammaticalGlossMap } from '../autoglossing/grammaticalGlossProvider';
 
 export type LexicalData = {
   exportDate?: string;

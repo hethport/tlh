@@ -1,28 +1,6 @@
-import {GlossMap, getGlossMap, getKey, addGlossesFromMorphology} from './getGlossMap';
-import {getGlobalDictionary} from '../dict/dictionary';
+import {getKey, addGlossesFromMorphology} from './getGlossMap';
+import {glossMap} from '../dict/dictionary';
 import {MorphologicalAnalysis} from '../../../model/morphologicalAnalysis';
-
-const useFragmentaryForms = false;
-
-/**
- * Generates a grammatical gloss map from
- * the global dictionary.
- */
-function generateGrammaticalGlossMap(): GlossMap {
-  return getGlossMap(getGlobalDictionary(), useFragmentaryForms);
-}
-
-let glossMap: GlossMap = generateGrammaticalGlossMap();
-
-/**
- * Regenerates the grammatical gloss map from
- * the global dictionary.
- * Should be called after dictionary
- * upload or download.
- */
-export function regenerateGrammaticalGlossMap(): void {
-  glossMap = generateGrammaticalGlossMap();
-}
 
 /**
  * Updates the global grammatical gloss map

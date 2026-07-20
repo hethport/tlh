@@ -20,7 +20,7 @@ export function getGrammaticalMorphemes(morphologicalAnalysis: MorphologicalAnal
   return grammaticalMorphemes;
 }
 
-function preprocessMorphTag(morphTag: string, grammaticalMorphemeString: string): string {
+export function preprocessMorphTag(morphTag: string, grammaticalMorphemeString: string): string {
   if (morphTag.startsWith('=') && grammaticalMorphemeString.startsWith('=') || morphTag.startsWith('.')) {
     return morphTag;
   } else {

@@ -1,11 +1,13 @@
 import { LookupConfig } from '../../lookupConfig';
 import { simplifyTranscription } from '../transduction/simplifyTranscription';
+import { startsWithVowelInitialLexicalAllomorph } from './vowelInitialAllomorphs';
+import { SuffixChain } from './basicSegmenter';
 
 // Do not add the g or y flags to avoid changing
 // the lastIndex property on the RegExp objects.
 const finalVowelAfterCoronalSonorantOrDorsalFricative = /(?<=[lnrġḫ])[aeiouāēīōū]$/;
 const finalVowel = /[aeiouāēīōū]$/;
-const initialVowel = /^[-=]?[aeiouāēīōū]/;
+export const initialVowel = /(?<=^[-=]?)[aeiouāēīōū]/;
 const initialCoronalSonorantOrDorsalFricativeBeforeVowel = /^[-=]?[lnrġḫ][-=]?[aeiouāēīōū]/;
 const initialVowelBeforeIntervocalicLateral = /^[-=]?[aeiouāēīōū][-=]?l[-=]?[aeiouāēīōū]/u;
 const initialPrevocalicCoronalSonorant = /^[-=]?[lnr][-=]?[aeiouāēīōū]/u;
@@ -21,7 +23,7 @@ function endsWithVowel(stem: string): boolean {
   return finalVowel.test(stem);
 }
 
-function startsWithVowel(ending: string): boolean {
+export function startsWithVowel(ending: string): boolean {
   return initialVowel.test(ending);
 }
 
@@ -85,7 +87,8 @@ function areEqualInSimplifiedTranscription(a: string, b: string, lookupConfig: L
 }
 
 function stemAllomorphyIsValid(surfaceStem: string, underlyingStem: string,
-                               surfaceSuffixChain: string): boolean {
+                               surfaceSuffixChain: string, suffixChain: SuffixChain,
+                               pos: string): boolean {
   if (isSumerogram(surfaceStem) && !isSumerogram(underlyingStem)) {
     // Any differences are allowed between Sumerograms
     // and their Hurrian readings.
@@ -93,7 +96,9 @@ function stemAllomorphyIsValid(surfaceStem: string, underlyingStem: string,
   }
   if (finalVowelWasDeleted(underlyingStem, surfaceStem)) {
     if (startsWithVowel(surfaceSuffixChain)) {
-      return true;
+      // Vowel deletion is not allowed before vowel-initial lexical allomorphs,
+      // because such allomorphs are only expected after stems ending in consonants.
+      return !startsWithVowelInitialLexicalAllomorph(suffixChain, pos);
     } else if (endsWithVowelNotAfterCoronalSonorantOrDorsalFricative(underlyingStem)) {
       return startsWithCoronalSonorantOrDorsalFricativeBeforeVowel(surfaceSuffixChain);
     } else {
@@ -128,8 +133,9 @@ function suffixChainAllomorphyIsValid(surfaceSuffixChain: string,
 
 export function allomorphyIsValid(surfaceStem: string, underlyingStem: string,
                                   surfaceSuffixChain: string, underlyingSuffixChain: string,
-                                  lookupConfig: LookupConfig): boolean {
-  return stemAllomorphyIsValid(surfaceStem, underlyingStem, surfaceSuffixChain) &&
+                                  lookupConfig: LookupConfig,
+                                  suffixChain: SuffixChain, pos: string): boolean {
+  return stemAllomorphyIsValid(surfaceStem, underlyingStem, surfaceSuffixChain, suffixChain, pos) &&
          suffixChainAllomorphyIsValid(surfaceSuffixChain, underlyingSuffixChain, surfaceStem, underlyingStem,
                                       lookupConfig);
 }
