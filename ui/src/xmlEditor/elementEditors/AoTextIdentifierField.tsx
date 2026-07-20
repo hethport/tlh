@@ -19,7 +19,9 @@ export function AoTextIdentifierField({source, updateNode}: IProps): ReactElemen
 
   const {t} = useTranslation('common');
 
-  const name = (source.children[0] as XmlTextNode).textContent;
+  const name = source.children.length > 0
+    ? (source.children[0] as XmlTextNode).textContent
+    : '';
   const {nr, joinGroup} = source.attributes;
 
   return (
