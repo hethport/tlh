@@ -35,3 +35,10 @@ export function removePotentiallyImproperSuffix(s: string, suffix: string) {
   }
   return s;
 }
+
+export function removeSuffixIteratively(suffix: string, s: string) {
+  while(s.endsWith(suffix)) {
+    s = s.substring(0, s.length - suffix.length);
+  }
+  return s;
+}

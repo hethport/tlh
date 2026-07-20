@@ -70,13 +70,6 @@ function makeAnalysis(morphemes: Morpheme[]): string {
   return morphemes.slice(1).filter(morpheme => morpheme.kind !== 'fragment').map((morpheme, i) => morpheme.getTag(i)).join('');
 }
 
-function removeSuffix(suffix: string, s: string) {
-  while(s.endsWith(suffix)) {
-    s = s.substring(0, s.length - suffix.length);
-  }
-  return s;
-}
-
 function buildMorphemes(segmentation: string, translation: string, analysis: string): Morpheme[] {
   const forms: [string, string][] = splitSegmentation(segmentation);
   const tags: [string, string][] = analysis === '' ? []
