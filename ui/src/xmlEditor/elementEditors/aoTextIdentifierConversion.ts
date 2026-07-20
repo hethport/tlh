@@ -15,9 +15,12 @@ export const usesOldFormat = (childNodes: XmlNode[]): boolean => childNodes.some
     }
 
     // test if text contains {€\d+}?
-    const {textContent} = node.children[0] as XmlTextNode;
-
-    return textContent.search(oldFragmentFormatRegExp) !== -1;
+    if (node.children.length > 0) {
+      const {textContent} = node.children[0] as XmlTextNode;
+      return textContent.search(oldFragmentFormatRegExp) !== -1;
+    } else {
+      return false;
+    }
   } else {
     // should be <AO:DirectJoin/> or <AO:InDirectJoin/>
     return !!isXmlTextNode(node);
