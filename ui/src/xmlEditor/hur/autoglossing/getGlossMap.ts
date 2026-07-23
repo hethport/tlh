@@ -25,7 +25,9 @@ export function addGlossesFromMorphology(glossMap: GlossMap, ma: MorphologicalAn
     const {form, label} = grammaticalMorpheme;
     const key = getKey(form, pos);
     const grammaticalGloss = removePotentiallyImproperPrefix(
-      removePotentiallyImproperPrefix(label, '-'), '='
+      removePotentiallyImproperPrefix(
+        removePotentiallyImproperPrefix(label, '.'), '-'
+      ), '='
     );
     add(glossMap, key, grammaticalGloss);
   }
