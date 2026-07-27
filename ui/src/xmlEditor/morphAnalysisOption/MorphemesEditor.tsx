@@ -5,6 +5,7 @@ import { formIsFragment } from '../hur/common/utils';
 import { prestemBoundary, splitSegmentation, splitAnalysis } from '../hur/common/morphemeSplitting';
 import { TranslationInput } from '../hur/translations/TranslationInput';
 import { GrammaticalGlossInput } from '../hur/autoglossing/GrammaticalGlossInput';
+import { removePotentiallyImproperSuffix } from '../hur/common/auxiliary';
 
 const minimalInputSize = 5;
 
@@ -16,6 +17,8 @@ interface IProps {
   updateMorphology: (ma: Spec<MorphologicalAnalysis>, analysis: string | null) => void;
   paradigmClass: string;
 }
+
+const absolutiveGloss = '.ABS';
 
 const stemFragmentGloss = '?';
 
@@ -139,6 +142,19 @@ export function MorphemesEditor({
   const onSegmentationAndAnalysisChange = (segmentation: string, analysis: string): void => {
     updateMorphology(updateHurrianAnalysis(segmentation, translation, paradigmClass), analysis);
   };
+
+  const changeTranslationAndAnalysis = (newTranslation: string, newAnalysis: string): void => {
+    updateMorphology({
+      translation: { $set: newTranslation }
+    }, newAnalysis);
+  };
+
+  if (translation.endsWith(absolutiveGloss)) {
+    changeTranslationAndAnalysis(
+      removePotentiallyImproperSuffix(translation, absolutiveGloss),
+      analysis + absolutiveGloss
+    );
+  }
 
   const morphemes = buildMorphemes(segmentation, translation, analysis);
   const newAnalysis = makeAnalysis(morphemes);
