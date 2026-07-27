@@ -100,3 +100,12 @@ export function getTranslationAndMorphTag(analysis: string): [string, string] {
   }
   return [translation, tag];
 }
+
+export function getMorphTag(analysis: string): string {
+  const i: number = findTagBoundary(analysis);
+  let tag = analysis.substring(i);
+  if (tag.startsWith('-')) {
+    tag = tag.substring(1);
+  }
+  return tag;
+}

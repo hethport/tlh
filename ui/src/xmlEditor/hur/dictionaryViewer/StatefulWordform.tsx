@@ -6,6 +6,7 @@ import { getLine } from '../corpus/corpus';
 import { ConcordanceEntryViewer } from '../concordanceEntryViewer/ConcordanceEntryViewer';
 import { areCorrect } from '../dict/morphologicalAnalysisValidator';
 import update from 'immutability-helper';
+import { getMorphTag } from '../common/splitter';
 
 const errorSymbol = <>&#9876;</>;
 
@@ -34,12 +35,12 @@ export function WordformElement({ entry,
 
   const { transcriptions, morphologicalAnalysis, initialMorphologicalAnalysis } = entry;
   const { translation } = morphologicalAnalysis;
-  const morphTags = getMorphTags(morphologicalAnalysis) || [];
+  const initialMorphTags = getMorphTags(morphologicalAnalysis) || [];
 
   const initialState: WordformState = {
     showAttestations: initialShowAttestations,
     segmentation: morphologicalAnalysis.referenceWord,
-    glosses: morphTags.map((tag: string) => {
+    glosses: initialMorphTags.map((tag: string) => {
       const gloss = translation +
         ((tag.startsWith('=') || tag.startsWith('.') || tag === '') ? '' : '-') +
         tag;
@@ -51,7 +52,8 @@ export function WordformElement({ entry,
   
   const attestations = getAttestations(initialMorphologicalAnalysis);
   
-  const isCorrect = morphTags.every(morphTag => {
+  const actualMorphTags = glosses.map((gloss: string) => getMorphTag(gloss));
+  const isCorrect = actualMorphTags.every(morphTag => {
     return areCorrect(segmentation, morphTag);
   });
   
