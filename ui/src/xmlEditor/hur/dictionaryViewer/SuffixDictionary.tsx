@@ -4,7 +4,6 @@ import { GrammaticalMorphemeViewer } from './GrammaticalMorphemeViewer';
 import { Entry } from './Wordform';
 import { DictionaryDownloader } from '../dict/files/DictionaryDownloader';
 import { ChangesDownloader } from '../changes/ChangesDownloader';
-import { writeMorphAnalysisValue } from '../../../model/morphologicalAnalysis';
 import { SetDictionary, getGlobalDictionary } from '../dict/dictionary';
 import { compare } from '../common/comparison';
 import { DictionaryUploader } from '../dict/files/DictionaryUploader';
@@ -62,9 +61,7 @@ export function SuffixDictionary({entries, setDictionary}: IProps): JSX.Element 
           const grammaticalMorphemeRepr = grammaticalMorpheme.toString();
           const group = grouped.get(grammaticalMorphemeRepr);
           const entries: Entry[] = group === undefined ? [] : Array.from(group);
-          const key = grammaticalMorphemeRepr + '@' + entries
-            .map(entry => writeMorphAnalysisValue(entry.morphologicalAnalysis))
-            .join('|');
+          const key = grammaticalMorphemeRepr;
           return (
             <GrammaticalMorphemeViewer
               index={index + 1}

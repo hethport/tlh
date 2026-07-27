@@ -5,6 +5,7 @@ import { getAttestations } from '../concordance/concordance';
 import { getLine } from '../corpus/corpus';
 import { ConcordanceEntryViewer } from '../concordanceEntryViewer/ConcordanceEntryViewer';
 import { areCorrect } from '../dict/morphologicalAnalysisValidator';
+import update from 'immutability-helper';
 
 const errorSymbol = <>&#9876;</>;
 
@@ -16,23 +17,37 @@ export interface Entry {
 
 interface IProps {
   entry: Entry;
-  handleSegmentationInput?: (value: string) => void;
   handleSegmentationBlur: (value: string) => void;
-  handleAnalysisInput?: (value: string, optionIndex: number) => void;
   handleAnalysisBlur: (value: string, optionIndex: number) => void;
   initialShowAttestations: boolean;
 }
 
-export function WordformElement({ entry, handleSegmentationInput,
-  handleSegmentationBlur, handleAnalysisInput, handleAnalysisBlur,
+type WordformState = {
+  showAttestations: boolean;
+  segmentation: string;
+  glosses: string[];
+}
+
+export function WordformElement({ entry,
+  handleSegmentationBlur, handleAnalysisBlur,
   initialShowAttestations }: IProps): JSX.Element {
-  
-  const [showAttestations, setShowAttestations] = useState(initialShowAttestations);
-  
+
   const { transcriptions, morphologicalAnalysis, initialMorphologicalAnalysis } = entry;
-  const segmentation = morphologicalAnalysis.referenceWord;
   const { translation } = morphologicalAnalysis;
   const morphTags = getMorphTags(morphologicalAnalysis) || [];
+
+  const initialState: WordformState = {
+    showAttestations: initialShowAttestations,
+    segmentation: morphologicalAnalysis.referenceWord,
+    glosses: morphTags.map((tag: string) => {
+      const gloss = translation +
+        ((tag.startsWith('=') || tag.startsWith('.') || tag === '') ? '' : '-') +
+        tag;
+      return gloss;
+    }),
+  };
+  const [state, setState] = useState(initialState);
+  const {showAttestations, segmentation, glosses} = state;
   
   const attestations = getAttestations(initialMorphologicalAnalysis);
   
@@ -45,15 +60,16 @@ export function WordformElement({ entry, handleSegmentationInput,
       <div className="flex flex-row">
         <pre className="dict-entry">
           <input value={segmentation}
-                 onInput={event => handleSegmentationInput?.(event.currentTarget.value)}
+                 onChange={event => setState(state => update(state, {
+                   segmentation: {$set: event.target.value}
+                }))}
                  onBlur={event => handleSegmentationBlur(event.target.value)} />
-          {(morphTags).map((tag: string, index: number) => {
-              const gloss = translation + 
-                ((tag.startsWith('=') || tag.startsWith('.') || tag === '') ? '' : '-') +
-                tag;
+          {(glosses).map((gloss: string, index: number) => {
               return (
                 <input value={gloss}
-                       onInput={event => handleAnalysisInput?.(event.currentTarget.value, index)}
+                       onChange={event => setState(state => update(state, {
+                         glosses: {[index]: {$set: event.target.value}}
+                      }))}
                        onBlur={event => handleAnalysisBlur(event.target.value, index)}
                        key={index} />
               );
@@ -63,7 +79,9 @@ export function WordformElement({ entry, handleSegmentationInput,
           <br />
         </pre>
         <div className="p-2 vertical-align: top">
-          <button onClick={() => setShowAttestations(!showAttestations)}>&#8744;</button>
+          <button onClick={() => setState(state => update(state, {
+            showAttestations: {$set: !state.showAttestations}
+          }))}>&#8744;</button>
         </div>
         {!isCorrect &&
           <div className="p-2 error-mark">{errorSymbol}</div>
