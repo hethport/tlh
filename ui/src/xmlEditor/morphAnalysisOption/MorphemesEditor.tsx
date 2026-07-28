@@ -6,6 +6,7 @@ import { prestemBoundary, splitSegmentation, splitAnalysis } from '../hur/common
 import { TranslationInput } from '../hur/translations/TranslationInput';
 import { GrammaticalGlossInput } from '../hur/autoglossing/GrammaticalGlossInput';
 import { removePotentiallyImproperSuffix } from '../hur/common/auxiliary';
+import { restoreLeftBoundary } from '../hur/common/morphTag';
 
 const minimalInputSize = 5;
 
@@ -152,7 +153,7 @@ export function MorphemesEditor({
   if (translation.endsWith(absolutiveGloss)) {
     changeTranslationAndAnalysis(
       removePotentiallyImproperSuffix(translation, absolutiveGloss),
-      analysis + absolutiveGloss
+      absolutiveGloss + restoreLeftBoundary(analysis)
     );
   }
 
