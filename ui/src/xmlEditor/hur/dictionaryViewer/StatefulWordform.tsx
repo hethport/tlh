@@ -7,6 +7,7 @@ import { ConcordanceEntryViewer } from '../concordanceEntryViewer/ConcordanceEnt
 import { areCorrect } from '../dict/morphologicalAnalysisValidator';
 import update from 'immutability-helper';
 import { getMorphTag } from '../common/splitter';
+import { joinTranslationAndMorphTag } from '../common/morphTag';
 
 const errorSymbol = <>&#9876;</>;
 
@@ -26,7 +27,7 @@ interface IProps {
 type WordformState = {
   showAttestations: boolean;
   segmentation: string;
-  glosses: string[];
+  morphTags: string[];
 }
 
 export function WordformElement({ entry,
@@ -40,20 +41,14 @@ export function WordformElement({ entry,
   const initialState: WordformState = {
     showAttestations: initialShowAttestations,
     segmentation: morphologicalAnalysis.referenceWord,
-    glosses: initialMorphTags.map((tag: string) => {
-      const gloss = translation +
-        ((tag.startsWith('=') || tag.startsWith('.') || tag === '') ? '' : '-') +
-        tag;
-      return gloss;
-    }),
+    morphTags: initialMorphTags,
   };
   const [state, setState] = useState(initialState);
-  const {showAttestations, segmentation, glosses} = state;
+  const {showAttestations, segmentation, morphTags} = state;
   
   const attestations = getAttestations(initialMorphologicalAnalysis);
   
-  const actualMorphTags = glosses.map((gloss: string) => getMorphTag(gloss));
-  const isCorrect = actualMorphTags.every(morphTag => {
+  const isCorrect = morphTags.every(morphTag => {
     return areCorrect(segmentation, morphTag);
   });
   
@@ -66,12 +61,17 @@ export function WordformElement({ entry,
                    segmentation: {$set: event.target.value}
                 }))}
                  onBlur={event => handleSegmentationBlur(event.target.value)} />
-          {(glosses).map((gloss: string, index: number) => {
+          {(morphTags).map((morphTag: string, index: number) => {
+              const gloss = joinTranslationAndMorphTag(translation, morphTag);
               return (
                 <input value={gloss}
-                       onChange={event => setState(state => update(state, {
-                         glosses: {[index]: {$set: event.target.value}}
-                      }))}
+                       onChange={event => {
+                         const currentGloss = event.target.value;
+                         const newMorphTag = getMorphTag(currentGloss);
+                         setState(state => update(state, {
+                           morphTags: {[index]: {$set: newMorphTag}}
+                         }));
+                       }}
                        onBlur={event => handleAnalysisBlur(event.target.value, index)}
                        key={index} />
               );
