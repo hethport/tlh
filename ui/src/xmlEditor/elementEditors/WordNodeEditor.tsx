@@ -21,6 +21,7 @@ import {lookupConfigSelector} from '../../newStore';
 import {useSelector} from 'react-redux';
 import {removeMacron} from '../hur/common/utils';
 import {updateLexicalData} from '../hur/lexicalData/lexicalDataUpdater';
+import {removePotentiallyImproperPrefix} from '../hur/common/auxiliary';
 
 type States = 'DefaultState' | 'AddMorphology' | 'EditEditingQuestion' | 'EditFootNoteState' | 'EditContent';
 
@@ -117,7 +118,7 @@ export function WordNodeEditor({node, path, updateEditedNode, setKeyHandlingEnab
       // targetState === undefined || (targetState !== undefined && targetState !== selected)
       return selected
         ? currentMrp0sel.replace(value, '').replaceAll(/\s+/g, ' ')
-        : currentMrp0sel + ' ' + value;
+        : removePotentiallyImproperPrefix(currentMrp0sel, 'DEL') + ' ' + value;
     }
   }
   
