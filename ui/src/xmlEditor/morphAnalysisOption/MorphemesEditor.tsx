@@ -48,6 +48,9 @@ class Morpheme {
     this.kind = kind;
   }
   getForm(i: number): string {
+    if (this.kind === 'delete') {
+      return '';
+    }
     if (this.kind === 'zero') {
       return '';
     }
@@ -58,6 +61,9 @@ class Morpheme {
     return form;
   }
   getTag(i: number): string {
+    if (this.kind === 'delete') {
+      return '';
+    }
     let tag = this.tag;
     if (i > 0 || this.kind === 'zero' || this.kind === 'enclitic') {
       tag = kindToBoundary[this.kind] + tag;
@@ -184,6 +190,7 @@ export function MorphemesEditor({
               <option value='enclitic'>Enklitik</option>
               <option value='zero'>Nullsuf.</option>
               <option value='fragment'>Fragm.</option>
+              <option value='delete'>Löschen</option>
             </select>
           </div>
           <div className="field-box">
