@@ -1,5 +1,5 @@
 export function restoreLeftBoundary(morphTag: string): string {
-  if (morphTag.startsWith('=') || morphTag.startsWith('.')) {
+  if (morphTag === '' || morphTag.startsWith('=') || morphTag.startsWith('.')) {
     return morphTag;
   }
   return '-' + morphTag;
