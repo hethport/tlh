@@ -9,6 +9,7 @@ import { updateHurrianAnalysis, updateHurrianPartOfSpeech } from '../hur/transla
 import { TranslationInput } from '../hur/translations/TranslationInput';
 import { getStem } from '../hur/common/splitter';
 import { CanToggleAnalysisSelection } from './MorphAnalysisOptionContainer';
+import { useRef } from 'react';
 
 interface IProps extends CanToggleAnalysisSelection {
   initialMorphologicalAnalysis: MorphologicalAnalysis;
@@ -58,20 +59,27 @@ export function MorphAnalysisOptionEditor({ initialMorphologicalAnalysis, onSubm
     setMorphAnalysis((ma) => update(ma, { analysisOptions: { $push: [nextAnalysisOpt] } }));
   };
 
+  const submitButtonRef = useRef<HTMLButtonElement>(null);
+
   const convertToMultiAnalysisOption = (sma: SingleMorphologicalAnalysis): void => {
-    if (sma._type === 'SingleMorphAnalysisWithoutEnclitics' ||
-      sma._type === 'SingleMorphAnalysisWithSingleEnclitics') {
-      if (sma.selected) {
-        toggleAnalysisSelection(undefined, undefined, false);
-        toggleAnalysisSelection('a', undefined, true);
-      }
-    } else {
-      for (const option of sma.encliticsAnalysis.analysisOptions) {
-        if (option.selected) {
-          toggleAnalysisSelection(undefined, option.letter, false);
-          toggleAnalysisSelection('a', option.letter, true);
+    const updateMrp0sel = () => {
+      if (sma._type === 'SingleMorphAnalysisWithoutEnclitics' ||
+        sma._type === 'SingleMorphAnalysisWithSingleEnclitics') {
+        if (sma.selected) {
+          toggleAnalysisSelection(undefined, undefined, false);
+          toggleAnalysisSelection('a', undefined, true);
+        }
+      } else {
+        for (const option of sma.encliticsAnalysis.analysisOptions) {
+          if (option.selected) {
+            toggleAnalysisSelection(undefined, option.letter, false);
+            toggleAnalysisSelection('a', option.letter, true);
+          }
         }
       }
+    };
+    if (submitButtonRef.current !== null) {
+      submitButtonRef.current.addEventListener('click', updateMrp0sel, {once: true});
     }
     setMorphAnalysis(convertSingleMorphAnalysisToMultiMorphAnalysis(sma));
   };
@@ -172,7 +180,8 @@ export function MorphAnalysisOptionEditor({ initialMorphologicalAnalysis, onSubm
 
       <div className="mt-2">
         <button type="button" className="px-4 py-2 rounded bg-amber-400" onClick={cancelUpdate}>{t('cancelEdit')}</button>
-        <button type="submit" className="ml-2 px-4 py-2 rounded bg-blue-600 text-white" onClick={() => onSubmit(morphAnalysis)}>{t('updateAnalyses')}</button>
+        <button type="submit" className="ml-2 px-4 py-2 rounded bg-blue-600 text-white" onClick={() => onSubmit(morphAnalysis)}
+        ref={submitButtonRef}>{t('updateAnalyses')}</button>
       </div>
     </div>
   );
