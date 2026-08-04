@@ -8,8 +8,9 @@ import update from 'immutability-helper';
 import { updateHurrianAnalysis, updateHurrianPartOfSpeech } from '../hur/translations/analysisUpdater';
 import { TranslationInput } from '../hur/translations/TranslationInput';
 import { getStem } from '../hur/common/splitter';
+import { CanToggleAnalysisSelection } from './MorphAnalysisOptionContainer';
 
-interface IProps {
+interface IProps extends CanToggleAnalysisSelection {
   initialMorphologicalAnalysis: MorphologicalAnalysis;
   onSubmit: (ma: MorphologicalAnalysis) => void;
   cancelUpdate: () => void;
@@ -31,7 +32,7 @@ function nextAnalysisOption(laos: LetteredAnalysisOption[], alphabet: string[] =
   return { letter, analysis: '', selected: false };
 }
 
-export function MorphAnalysisOptionEditor({ initialMorphologicalAnalysis, onSubmit, cancelUpdate, hurrian }: IProps): JSX.Element {
+export function MorphAnalysisOptionEditor({ initialMorphologicalAnalysis, onSubmit, cancelUpdate, hurrian, toggleAnalysisSelection }: IProps): JSX.Element {
 
   const { t } = useTranslation('common');
   const [morphAnalysis, setMorphAnalysis] = useState(initialMorphologicalAnalysis);
@@ -57,7 +58,23 @@ export function MorphAnalysisOptionEditor({ initialMorphologicalAnalysis, onSubm
     setMorphAnalysis((ma) => update(ma, { analysisOptions: { $push: [nextAnalysisOpt] } }));
   };
 
-  const convertToMultiAnalysisOption = (sma: SingleMorphologicalAnalysis): void => setMorphAnalysis(convertSingleMorphAnalysisToMultiMorphAnalysis(sma));
+  const convertToMultiAnalysisOption = (sma: SingleMorphologicalAnalysis): void => {
+    if (sma._type === 'SingleMorphAnalysisWithoutEnclitics' ||
+      sma._type === 'SingleMorphAnalysisWithSingleEnclitics') {
+      if (sma.selected) {
+        toggleAnalysisSelection(undefined, undefined, false);
+        toggleAnalysisSelection('a', undefined, true);
+      }
+    } else {
+      for (const option of sma.encliticsAnalysis.analysisOptions) {
+        if (option.selected) {
+          toggleAnalysisSelection(undefined, option.letter, false);
+          toggleAnalysisSelection('a', option.letter, true);
+        }
+      }
+    }
+    setMorphAnalysis(convertSingleMorphAnalysisToMultiMorphAnalysis(sma));
+  };
 
   const updateMultiEncliticsAnalysisOption = (index: number, value: string): void =>
     setMorphAnalysis((ma) => update(ma, { encliticsAnalysis: { analysisOptions: { [index]: { analysis: { $set: value } } } } }));
