@@ -2,14 +2,15 @@ import { loadMapFromLocalStorage, locallyStoreMap } from '../dictLocalStorage/lo
 import { hasGivenAnalysis } from './wordType';
 import { Line } from './lineType';
 import { updateMapping, convertMapping } from '../common/utility';
-import { objectToMap, add, makeGlossFromMorphologicalAnalysis } from '../common/utils';
+import { objectToMap, addToArrayValuedMap, makeGlossFromMorphologicalAnalysis } from '../common/utils';
 import { readMorphAnalysisValue } from '../morphologicalAnalysis/auxiliary';
+import { compareLineNumbers } from './lineNumberComparer';
 
 const localStorageKey = 'HurrianCorpus';
 
 export type Corpus = Map<string, Line>;
 export type CorpusObject = { [key: string]: Line };
-type LineNumbers = Map<string, Set<string>>;
+type LineNumbers = Map<string, string[]>;
 
 export let corpus: Corpus;
 try {
@@ -37,14 +38,17 @@ function cleanUpCorpus(): void {
 export function addLineNumber(lineNums: LineNumbers, attestation: string): void {
   if (attestation.includes(',')) {
     const [text, line] = attestation.split(',', 2);
-    add(lineNums, text, line);
+    addToArrayValuedMap(lineNums, text, line);
   }
 }
 
 function defineLineNumbers(): LineNumbers {
-  const lineNumbers = new Map<string, Set<string>>();
+  const lineNumbers = new Map<string, Array<string>>();
   for (const key of corpus.keys()) {
     addLineNumber(lineNumbers, key);
+  }
+  for (const value of lineNumbers.values()) {
+    value.sort(compareLineNumbers);
   }
   return lineNumbers;
 }

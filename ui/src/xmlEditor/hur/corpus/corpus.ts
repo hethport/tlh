@@ -5,7 +5,6 @@ import { makeLine } from './lineConstructor';
 import { makeWord, updateMorphologicalAnalysis } from './wordConstructor';
 import { findLine, findLineStart, getParent } from './lineFinder';
 import { readMorphAnalysisValue } from '../morphologicalAnalysis/auxiliary';
-import { compareLineNumbers } from './lineNumberComparer';
 import { MorphologicalAnalysis } from '../../../model/morphologicalAnalysis';
 import { corpus, lineNumbers, addLineNumber } from './basicCorpus';
 
@@ -83,7 +82,7 @@ export function getText(text: string): TaggedLine[] {
   if (textLines === undefined) {
     return [];
   } else {
-    return Array.from(textLines).sort(compareLineNumbers).map(line => {
+    return Array.from(textLines).map(line => {
       return {id: line, line: getLine(new Attestation(text, line))};
     });
   }

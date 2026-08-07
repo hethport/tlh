@@ -82,6 +82,20 @@ export function add<TKey, TValue>(map: Map<TKey, Set<TValue>>, key: TKey, value:
   current.add(value);
 }
 
+function getValueArray<TKey, TValue>(map: Map<TKey, TValue[]>, key: TKey): TValue[] {
+  let current = map.get(key);
+  if (current === undefined) {
+    current = new Array<TValue>;
+    map.set(key, current);
+  }
+  return current;
+}
+
+export function addToArrayValuedMap<TKey, TValue>(map: Map<TKey, Array<TValue>>, key: TKey, value: TValue) {
+  const current = getValueArray(map, key);
+  current.push(value);
+}
+
 export function remove<TKey, TValue>(map: Map<TKey, Set<TValue>>, key: TKey, value: TValue) {
   const current = map.get(key);
   if (current !== undefined) {
