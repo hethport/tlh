@@ -1,4 +1,4 @@
-const numericCompare = new Intl.Collator(undefined, {numeric: true}).compare;
+export const numericCompare = new Intl.Collator(undefined, {numeric: true}).compare;
 const ordering = ['Vs.', 'Rs.', 'lk. Rd.', 'o. Rd.', 'r. Rd.', 'u. Rd.'];
 const manuscriptIndex = /\{€\d+(\+\d+)*\} */;
 function preprocess(lineNumber: string): string {

@@ -56,6 +56,18 @@ function defineLineNumbers(): LineNumbers {
 
 export let lineNumbers = defineLineNumbers();
 
+export function compareListedLineNumbers(text: string, first: string, second: string): number {
+  const lineOrder = lineNumbers.get(text);
+  if (lineOrder !== undefined) {
+    const firstIndex = lineOrder.findIndex(lineNumber => lineNumber === first);
+    const secondIndex = lineOrder.findIndex(lineNumber => lineNumber === second);
+    if (firstIndex !== -1 && secondIndex !== -1) {
+      return firstIndex - secondIndex;
+    }
+  }
+  return compareLineNumbers(first, second);
+}
+
 export function setCorpus(obj: CorpusObject, lineNumbersObject?: LineNumbersObject): void {
   corpus = objectToMap(obj);
   if (lineNumbersObject === undefined) {

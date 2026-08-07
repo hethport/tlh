@@ -6,11 +6,12 @@ import { writeMorphAnalysisValue, MorphologicalAnalysis } from '../../../model/m
 import { readMorphAnalysisValue } from '../morphologicalAnalysis/auxiliary';
 import { loadSetValuedMapFromLocalStorage, locallyStoreSetValuedMap }
   from '../dictLocalStorage/localStorageUtils';
-import { hasMultipleOccurences } from '../corpus/basicCorpus';
+import { hasMultipleOccurences, compareListedLineNumbers } from '../corpus/basicCorpus';
 import { addMorphologicalAnalysis } from '../dict/dictionaryUpdater';
 import { deleteAnalysisFromHurrianDictionary } from '../dict/dictionary';
 import { reserializeMorphologicalAnalysis } from '../morphologicalAnalysis/reserialization';
 import { LookupConfig } from '../../lookupConfig';
+import { numericCompare } from '../corpus/lineNumberComparer';
 
 export type Concordance = Map<string, Set<string>>;
 export type ConcordanceObject = { [key: string]: string[] };
@@ -97,16 +98,24 @@ export function quickGetAttestations(morphologicalAnalysis: MorphologicalAnalysi
   }
 }
 
+function compareAttestations(first: Attestation, second: Attestation): number {
+  const result = numericCompare(first.text, second.text);
+  if (result === 0) {
+    return compareListedLineNumbers(first.text, first.line, second.line);
+  }
+  return result;
+}
+
 export function getAttestations(morphologicalAnalysis: MorphologicalAnalysis): Attestation[] {
   const analysis = writeMorphAnalysisValue(morphologicalAnalysis);
   const current = concordance.get(analysis);
   if (current === undefined) {
     return [];
   } else {
-    return Array.from(current).sort(compareLineNumbers).map((repr: string) => {
+    return Array.from(current).map((repr: string) => {
       const [text, line] = repr.split(sep);
       return new Attestation(text, line);
-    });
+    }).sort(compareAttestations);
   }
 }
 
