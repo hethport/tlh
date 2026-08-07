@@ -11,6 +11,7 @@ const localStorageKey = 'HurrianCorpus';
 export type Corpus = Map<string, Line>;
 export type CorpusObject = { [key: string]: Line };
 type LineNumbers = Map<string, string[]>;
+export type LineNumbersObject = { [key: string]: string[] };
 
 export let corpus: Corpus;
 try {
@@ -55,9 +56,13 @@ function defineLineNumbers(): LineNumbers {
 
 export let lineNumbers = defineLineNumbers();
 
-export function setCorpus(obj: CorpusObject): void {
+export function setCorpus(obj: CorpusObject, lineNumbersObject?: LineNumbersObject): void {
   corpus = objectToMap(obj);
-  lineNumbers = defineLineNumbers();
+  if (lineNumbersObject === undefined) {
+    lineNumbers = defineLineNumbers();
+  } else {
+    lineNumbers = objectToMap(lineNumbersObject);
+  }
 }
 
 export function getCorpus(): CorpusObject {

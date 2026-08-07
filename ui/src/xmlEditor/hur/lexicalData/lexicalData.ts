@@ -3,7 +3,7 @@ import { DictionaryObject, getDictionary, setDictionary, getSuffixChains,
 import { GlossaryObject, getGlosses, setGlosses } from '../translations/glossProvider';
 import { regenerateTranslationMap } from '../translations/translationProvider';
 import { ConcordanceObject, getConcordance, setConcordance } from '../concordance/concordance';
-import { CorpusObject, getCorpus, setCorpus } from '../corpus/basicCorpus';
+import { CorpusObject, getCorpus, setCorpus, LineNumbersObject } from '../corpus/basicCorpus';
 import { PartsOfSpeech, getPartsOfSpeech, setPartsOfSpeech } from '../partsOfSpeech/partsOfSpeech';
 import { EnglishTranslationsObject, getEnglishTranslations, updateEnglishTranslations }
   from '../translations/englishTranslations';
@@ -20,6 +20,7 @@ export type LexicalData = {
   englishTranslations?: EnglishTranslationsObject;
   suffixChains?: SuffixChainInventories;
   numericIDs?: NumericIDsObject;
+  lineNumbers?: LineNumbersObject;
 }
 
 export function getLexicalData(): LexicalData {
@@ -42,7 +43,8 @@ export function getLexicalData(): LexicalData {
 
 export function setLexicalData(lexicalData: LexicalData): void {
   const {dictionary, glosses, concordance, corpus, partsOfSpeech, englishTranslations,
-    numericIDs
+    numericIDs,
+    lineNumbers,
   } = lexicalData;
   // The undefined checks for required fields are needed for the case the user
   // uploads a JSON file with another structure.
@@ -60,7 +62,7 @@ export function setLexicalData(lexicalData: LexicalData): void {
     setGlosses(glosses);
   }
   if (corpus !== undefined) {
-    setCorpus(corpus);
+    setCorpus(corpus, lineNumbers);
   }
   if (partsOfSpeech !== undefined) {
     setPartsOfSpeech(partsOfSpeech);
