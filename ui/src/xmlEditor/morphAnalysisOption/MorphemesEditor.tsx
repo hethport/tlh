@@ -64,6 +64,9 @@ class Morpheme {
     if (this.kind === 'delete') {
       return '';
     }
+    if (this.kind === 'zero') {
+      return absolutiveGloss;
+    }
     let tag = this.tag;
     if (i > 0 || this.kind === 'zero' || this.kind === 'enclitic') {
       tag = kindToBoundary[this.kind] + tag;
