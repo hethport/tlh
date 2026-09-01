@@ -74,7 +74,7 @@ where review.main_identifier = ?;",
 
           SqlHelpers::executeSingleChangeQuery(
             "update tlh_dig_manuscripts set status = 'XmlConversionPerformed' where main_identifier = ?;",
-            fn(mysqli_stmt $stmt): bool => $stmt->bind_param('s', $mainIdentifier),
+            fn(mysqli_stmt $stmt): bool => $stmt->bind_param('s', $this->mainIdentifier->identifier),
             $conn
           );
         }
