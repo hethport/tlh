@@ -60,6 +60,10 @@ export function readMergeDocument(rootNode: XmlElementNode): MergeDocument {
 }
 
 export function mergeLines(mls: ZipWithOffsetResult<MergeLine>): MergeLine[] {
+  // Reset per-merge state: leftTxtId must not leak stale values from a previous, unrelated
+  // merge performed earlier in the same page session.
+  leftTxtId = '';
+
   return mls.map(([left, right]) => {
     if (left && right) {
       return mergeLine(left, right);

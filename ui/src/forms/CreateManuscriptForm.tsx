@@ -16,7 +16,7 @@ import {Navigate} from 'react-router-dom';
 import {PalaeoClassField} from './PalaeographicField';
 import {manuscriptsUrlFragment} from '../urls';
 import {getNameForManuscriptLanguageAbbreviation, manuscriptLanguageAbbreviations} from './manuscriptLanguageAbbreviations';
-import {blueButtonClasses, defaultInputClasses, redButtonClasses} from '../defaultDesign';
+import {blueButtonClasses, defaultInputClasses, redMessageClasses} from '../defaultDesign';
 import {allKnownProvenances} from '../provenances';
 
 function newManuscriptIdentifier(): ManuscriptIdentifierInput {
@@ -121,7 +121,7 @@ export function CreateManuscriptForm(): JSX.Element {
           </div>
 
 
-          {error && <div className={redButtonClasses}>{error.message}</div>}
+          {error && <div className={redMessageClasses}>{error.message}</div>}
 
           <div className="text-center">
             <button type="submit" disabled={loading || !!newIdentifier} className={classNames(blueButtonClasses, {'is-loading': loading})}>

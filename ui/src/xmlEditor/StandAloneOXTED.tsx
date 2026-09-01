@@ -40,10 +40,10 @@ const autoSave = (filename: string, rootNode: XmlNode): void => {
 };
 
 export const writeXml = (rootNode: XmlElementNode, expand = false): string => {
-  reCountNodeNumbers(rootNode, 'node', 'n');
-  reCountNodeNumbers(rootNode, 'clb', 'nr');
+  const renumberedNodes = reCountNodeNumbers(rootNode, 'node', 'n');
+  const renumberedRootNode = reCountNodeNumbers(renumberedNodes, 'clb', 'nr');
 
-  const lines = writeNode(rootNode, tlhXmlEditorConfig.writeConfig)
+  const lines = writeNode(renumberedRootNode, tlhXmlEditorConfig.writeConfig)
     .join('\n');
 
   if (expand) {

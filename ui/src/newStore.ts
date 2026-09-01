@@ -7,7 +7,15 @@ import { defaultLookupConfig, LookupConfig, lookupConfigKey } from './xmlEditor/
 
 function loadFromLocalStorage<T>(key: string, defaultValue: T): T {
   const foundString = localStorage.getItem(key);
-  return foundString ? JSON.parse(foundString) : defaultValue;
+  if (!foundString) {
+    return defaultValue;
+  }
+  try {
+    return JSON.parse(foundString);
+  } catch (error) {
+    console.error(`Could not parse localStorage entry "${key}", falling back to default value:`, error);
+    return defaultValue;
+  }
 }
 
 // User slice

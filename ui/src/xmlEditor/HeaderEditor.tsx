@@ -182,6 +182,15 @@ export const condenseXmlEvents = (xml: string): string => {
   return serializer.serializeToString(doc);
 };
 
+// Converts a stored UTC ISO date string to the value a <input type="datetime-local"> expects
+// (local time, no timezone designator), so that re-parsing it back via `new Date(v)` on submit
+// - which treats a timezone-less string as local time - round-trips to the same UTC instant.
+const toDatetimeLocalValue = (isoDateString: string): string => {
+  const date = new Date(isoDateString);
+  const pad = (n: number) => String(n).padStart(2, '0');
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+};
+
 export const HeaderEditor: React.FC<HeaderEditorProps> = ({
   xml,
   onSave,
@@ -683,7 +692,7 @@ export const HeaderEditor: React.FC<HeaderEditorProps> = ({
               lang="en-DE"
               className={inputClasses}
               name={`${namePrefix}.date`}
-              defaultValue={ev.date.slice(0, 16)}
+              defaultValue={toDatetimeLocalValue(ev.date)}
             />
           </div>
 
@@ -812,7 +821,7 @@ export const HeaderEditor: React.FC<HeaderEditorProps> = ({
                   type="datetime-local"
                   lang="en-DE"
                   name={`${namePrefix}.nestedMerge.date`}
-                  defaultValue={doc.nestedMerge?.date.slice(0, 16) ?? ''}
+                  defaultValue={doc.nestedMerge?.date ? toDatetimeLocalValue(doc.nestedMerge.date) : ''}
                 />
               </div>
               <div>
@@ -973,7 +982,7 @@ export const HeaderEditor: React.FC<HeaderEditorProps> = ({
                 type="datetime-local"
                 lang="en-DE"
                 name="merge.date"
-                defaultValue={merge.date.slice(0, 16)}
+                defaultValue={toDatetimeLocalValue(merge.date)}
               />
             </div>
             <div>

@@ -162,6 +162,23 @@ export function XmlDocumentEditor({
     return () => document.removeEventListener('keydown', handleJumpKey);
   });
 
+  useEffect(() => {
+    if (state.lbCuneiformDirtyPath === undefined) {
+      return;
+    }
+    const path = state.lbCuneiformDirtyPath;
+
+    fetchCuneiform(state.rootNode as XmlElementNode, path)
+      .then((cuneiform) => setState((state) => update(state, {
+        rootNode: buildSpec(path, {attributes: {cu: {$set: cuneiform}}}),
+        lbCuneiformDirtyPath: {$set: undefined}
+      })))
+      .catch((error) => {
+        console.error('Could not refetch cuneiform rendering:', error);
+        setState((state) => update(state, {lbCuneiformDirtyPath: {$set: undefined}}));
+      });
+  }, [state.lbCuneiformDirtyPath]);
+
   function exportXml(condenseEvents?: boolean): void {
     setState((state) => update(state, {changed: {$set: false}}));
 
@@ -429,6 +446,16 @@ export function XmlDocumentEditor({
       affectedParentKeys.add('');
     }
 
+    // If any deleted node is a 'w' (word) node, the preceding <lb>'s cached cuneiform needs a
+    // refetch - same as the single-node deleteNode.
+    let lbCuneiformDirtyPath: number[] | undefined;
+    for (const path of sortedPaths) {
+      if (findElement(state.rootNode as XmlElementNode, path).tagName === 'w') {
+        lbCuneiformDirtyPath = getPriorSiblingPath(state.rootNode as XmlElementNode, path, 'lb');
+        break;
+      }
+    }
+
     setState((state) => {
       let rootNode = state.rootNode;
       for (const path of sortedPaths) {
@@ -441,7 +468,8 @@ export function XmlDocumentEditor({
         rootNode: {$set: rootNode},
         deleteModeActive: {$set: false},
         markedForDeletion: {$set: []},
-        changed: {$set: true}
+        changed: {$set: true},
+        lbCuneiformDirtyPath: {$set: lbCuneiformDirtyPath}
       });
     });
   }
@@ -528,16 +556,6 @@ export function XmlDocumentEditor({
     markedForDeletion: state.markedForDeletion,
     onToggleMarkForDeletion: toggleMarkForDeletion
   };
-
-  if (state.lbCuneiformDirtyPath !== undefined) {
-    const path = state.lbCuneiformDirtyPath;
-
-    fetchCuneiform(state.rootNode as XmlElementNode, path)
-      .then((cuneiform) => setState((state) => update(state, {
-        rootNode: buildSpec(path, {attributes: {cu: {$set: cuneiform}}}),
-        lbCuneiformDirtyPath: {$set: undefined}
-      })));
-  }
 
   const makeOtherButton = ({color, onClick, title}: ButtonConfig): ReactElement => (
     <button type="button" className={coloredButtonClasses(color)} onClick={() => onClick(state.rootNode as XmlElementNode)}>{title}</button>

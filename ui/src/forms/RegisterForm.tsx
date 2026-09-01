@@ -10,7 +10,7 @@ const initialValues: UserInput = {username: '', password: '', passwordRepeat: ''
 const validationSchema: yup.ObjectSchema<UserInput> = yup.object({
   username: yup.string().min(4).max(50).required(),
   password: yup.string().min(4).max(50).required(),
-  passwordRepeat: yup.string().min(4).max(50).required(),
+  passwordRepeat: yup.string().min(4).max(50).required().oneOf([yup.ref('password')]),
   name: yup.string().required(),
   email: yup.string().email().required(),
   affiliation: yup.string().notRequired()

@@ -29,9 +29,9 @@ export function DocumentMerger({firstDocument, secondDocument, onMerge}: IProps)
   const [offset, setOffset] = useState(0);
   const forceUpdate = useReducer(() => ({}), {})[1] as () => void;
 
-  let firstLines = firstDocument.lines;
+  const firstLines = firstDocument.lines;
   const firstPublMap = firstDocument.publMap;
-  let secondLines = secondDocument.lines;
+  const secondLines = secondDocument.lines;
   const secondPublMap = secondDocument.publMap;
 
   let publicationMap: Map<string, string[]> = new Map<string, string[]>();
@@ -106,10 +106,10 @@ export function DocumentMerger({firstDocument, secondDocument, onMerge}: IProps)
 
     if (isLeft) {
       if (offset < 0) index = index + offset;
-      firstLines = firstLines.splice(index + 1, 0, emptyLine as MergeLine);
+      firstLines.splice(index + 1, 0, emptyLine as MergeLine);
     } else {
       if (offset > 0) index = index - offset;
-      secondLines = secondLines.splice(index + 1, 0, undef as MergeLine);
+      secondLines.splice(index + 1, 0, undef as MergeLine);
     }
     //removeDoubleUndefined();
     data = zipWithOffset(firstLines, secondLines, offset);
