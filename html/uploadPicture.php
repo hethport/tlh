@@ -1,9 +1,12 @@
 <?php
 
 require_once __DIR__ . '/cors.php';
+require_once __DIR__ . '/auth_helpers.php';
 require_once __DIR__ . '/model/Manuscript.php';
+require_once __DIR__ . '/model/Rights.php';
 
 use model\Manuscript;
+use model\Rights;
 
 cors();
 
@@ -21,8 +24,17 @@ function fileTypeAllowed(string $fileType): bool
 function doUpload(string $manuscriptId): string
 {
   // check if manuscript exists
-  if (!Manuscript::selectManuscriptById($manuscriptId)) {
+  $manuscript = Manuscript::selectManuscriptById($manuscriptId);
+  if (!$manuscript) {
     throw new Exception('No such manifest exists!');
+  }
+
+  $user = resolveUser();
+  if (is_null($user)) {
+    throw new Exception('Not logged in!');
+  }
+  if ($manuscript->creatorUsername !== $user->username && $user->rights !== Rights::ExecutiveEditor) {
+    throw new Exception('Insufficient rights!');
   }
 
   if (count($_FILES) == 0) {
