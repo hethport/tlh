@@ -429,6 +429,16 @@ export function XmlDocumentEditor({
       affectedParentKeys.add('');
     }
 
+    // If any deleted node is a 'w' (word) node, the preceding <lb>'s cached cuneiform needs a
+    // refetch - same as the single-node deleteNode.
+    let lbCuneiformDirtyPath: number[] | undefined;
+    for (const path of sortedPaths) {
+      if (findElement(state.rootNode as XmlElementNode, path).tagName === 'w') {
+        lbCuneiformDirtyPath = getPriorSiblingPath(state.rootNode as XmlElementNode, path, 'lb');
+        break;
+      }
+    }
+
     setState((state) => {
       let rootNode = state.rootNode;
       for (const path of sortedPaths) {
@@ -441,7 +451,8 @@ export function XmlDocumentEditor({
         rootNode: {$set: rootNode},
         deleteModeActive: {$set: false},
         markedForDeletion: {$set: []},
-        changed: {$set: true}
+        changed: {$set: true},
+        lbCuneiformDirtyPath: {$set: lbCuneiformDirtyPath}
       });
     });
   }
