@@ -564,7 +564,7 @@ Manuscript::$graphQLMutationsType = new ObjectType([
         if (is_null($user)) {
           throw new MySafeGraphQLException('Not logged in!');
         }
-        if ($manuscript->creatorUsername !== $user->username || $user->rights !== Rights::ExecutiveEditor) {
+        if ($manuscript->creatorUsername !== $user->username && $user->rights !== Rights::ExecutiveEditor) {
           throw new MySafeGraphQLException('Insufficient rights!');
         }
 

@@ -66,10 +66,9 @@ where first_xml_rev.main_identifier = ?;",
     try {
       SqlHelpers::executeQueriesInTransactions(
         function (mysqli $conn) use ($reviewerUsername, $xml): void {
-          SqlHelpers::executeSingleReturnRowQuery(
+          SqlHelpers::executeSingleChangeQuery(
             "insert into tlh_dig_second_xml_reviews (main_identifier, input, reviewer_username) values (?, ?, ?);",
             fn(mysqli_stmt $stmt): bool => $stmt->bind_param('sss', $this->mainIdentifier->identifier, $xml, $reviewerUsername),
-            fn(array $row): string => $row['review_date'],
             $conn
           );
 
