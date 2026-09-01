@@ -4,7 +4,7 @@ import {homeUrl} from './urls';
 import {Rights, UsersOverviewQuery, useUpdateUserRightsMutation, useUsersOverviewLazyQuery} from './graphql';
 import {WithQuery} from './WithQuery';
 import {PaginatedTable} from './PaginatedTable';
-import {JSX, useState} from 'react';
+import {JSX, useEffect, useState} from 'react';
 
 const allRights = [Rights.ExecutiveEditor, Rights.Reviewer, Rights.Author];
 
@@ -56,10 +56,12 @@ export function UserManagement(): JSX.Element {
   const [page, setPage] = useState(0);
   const [executeUsersOverviewQuery, usersOverviewQuery] = useUsersOverviewLazyQuery();
 
-  if (!usersOverviewQuery.called) {
+  useEffect(() => {
+    // Intentionally run once on mount only - not on every `page` change, which goes through
+    // the queryPage callback passed down to Inner instead.
     executeUsersOverviewQuery({variables: {page}})
       .catch((error) => console.error(error));
-  }
+  }, []);
 
   const queryPage = (page: number): void => {
     executeUsersOverviewQuery({variables: {page}})

@@ -68,10 +68,12 @@ export function Home(): JSX.Element {
       .catch((error) => console.error(error));
   }
 
-  if (!indexQuery.called) {
+  useEffect(() => {
+    // Intentionally run once on mount only - not on every `page` change, which goes through
+    // the queryPage callback passed down to ManuscriptsOverview instead.
     queryPage(page);
-  }
- 
+  }, []);
+
   return (
     <div className="container mx-auto">
       <h1 className="font-bold text-2xl text-center mb-4">TLH<sup>dig</sup></h1>
