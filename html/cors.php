@@ -1,22 +1,21 @@
 <?php
 /**
- *  An example CORS-compliant method.  It will allow any GET, POST, or OPTIONS requests from any
- *  origin.
- *
- *  In a production environment, you probably want to be more restrictive, but this gives you
- *  the general idea of what is involved.  For the nitty-gritty low-down, read:
- *
- *  - https://developer.mozilla.org/en/HTTP_access_control
- *  - https://fetch.spec.whatwg.org/#http-cors-protocol
- *
+ * In production the frontend is served from the same origin as this API (see urls.ts /
+ * documentation/de/deployment.md), so this allowlist only needs to cover local development,
+ * where the React dev server (localhost:3000) talks to the PHP dev server (localhost:8066).
  */
+const allowedCorsOrigins = [
+  'http://localhost:3000',
+  'http://127.0.0.1:3000',
+];
+
 function cors(): void
 {
 
-  // Allow from any origin
-  if (isset($_SERVER['HTTP_ORIGIN'])) {
-    // Decide if the origin in $_SERVER['HTTP_ORIGIN'] is one
-    // you want to allow, and if so:
+  // Only allow the configured, known frontend origins - reflecting any origin back together
+  // with Access-Control-Allow-Credentials would let any website make authenticated requests
+  // on behalf of a logged-in user.
+  if (isset($_SERVER['HTTP_ORIGIN']) && in_array($_SERVER['HTTP_ORIGIN'], allowedCorsOrigins, true)) {
     header("Access-Control-Allow-Origin: {$_SERVER['HTTP_ORIGIN']}");
     header('Access-Control-Allow-Credentials: true');
     header('Access-Control-Max-Age: 86400');    // cache for 1 day
