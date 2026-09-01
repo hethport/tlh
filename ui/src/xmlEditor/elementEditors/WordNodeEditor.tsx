@@ -197,8 +197,30 @@ export function WordNodeEditor({node, path, updateEditedNode, setKeyHandlingEnab
   }
 
   function deleteMorphology(number: number): void {
-    updateEditedNode({attributes: {$unset: [`mrp${number}`]}});
+    const attribute = `mrp${number}`;
+    const oldValue = node.attributes[attribute];
+    const morphology = morphologies.find((m) => m.number === number);
+
+    updateEditedNode({attributes: {$unset: [attribute]}});
     setState('DefaultState');
+
+    if (isHurrian && oldValue !== undefined && morphology !== undefined && isSelected(morphology)) {
+      // Remove the (deferred, deferred-once) concordance attestation the same way
+      // updateMorphology does, so a deleted analysis doesn't leave a dangling attestation.
+      if (!globalUpdateButtonRef) {
+        throw new Error('No global update button passed.');
+      }
+      if (!globalUpdateButtonRef.current) {
+        console.log('The global update button is null.');
+      } else if (!removers.current.has(number)) {
+        const remover = () => {
+          removeAttestation(transcription, oldValue, attestation);
+          removers.current.delete(number);
+        };
+        removers.current.set(number, remover);
+        globalUpdateButtonRef.current.addEventListener('click', remover, {once: true});
+      }
+    }
   }
 
   const nextMorphAnalysis = (): MorphologicalAnalysis => multiMorphAnalysisWithoutEnclitics(Math.max(0, ...morphologies.map(({number}) => number)) + 1, node.attributes.trans || '');
