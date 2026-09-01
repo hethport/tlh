@@ -9,6 +9,7 @@ import {MyLeft, parseNewXml, XmlElementNode} from 'simple_xml';
 import {writeXml} from '../xmlEditor/StandAloneOXTED';
 import {tlhXmlEditorConfig} from '../xmlEditor/tlhXmlEditorConfig';
 import {makeDownload} from '../downloadHelper';
+import {redMessageClasses} from '../defaultDesign';
 
 interface IProps {
   mainIdentifier: string;
@@ -18,7 +19,7 @@ interface IProps {
 function Inner({mainIdentifier, initialXml}: IProps): JSX.Element {
 
   const {t} = useTranslation('common');
-  const [submitApproval, {data, loading/*, error*/}] = useSubmitApprovalMutation();
+  const [submitApproval, {data, loading, error}] = useSubmitApprovalMutation();
 
   const rootNodeParseResult = parseNewXml(initialXml, tlhXmlEditorConfig.readConfig);
 
@@ -28,10 +29,12 @@ function Inner({mainIdentifier, initialXml}: IProps): JSX.Element {
 
   const onExport = async (rootNode: XmlElementNode): Promise<void | undefined> => {
     try {
-      makeDownload(writeXml(rootNode), mainIdentifier + '.xml');
+      // Only download the exported XML once the approval has actually been persisted - downloading
+      // first would let the user walk away with a "successful" export even if the mutation failed.
       await submitApproval({variables: {mainIdentifier, input: writeXml(rootNode)}});
-    } catch (error) {
-      console.error(error);
+      makeDownload(writeXml(rootNode), mainIdentifier + '.xml');
+    } catch (submitError) {
+      console.error(submitError);
     }
   };
 
@@ -46,9 +49,12 @@ function Inner({mainIdentifier, initialXml}: IProps): JSX.Element {
   }
 
   return (
-    <XmlDocumentEditor node={rootNodeParseResult.value as XmlElementNode} filename={mainIdentifier} onExportXml={onExport} onExportDict={() => {
-      // do nothing
-    }} exportDisabled={loading}/>
+    <>
+      {error && <div className={redMessageClasses}>{error.message}</div>}
+      <XmlDocumentEditor node={rootNodeParseResult.value as XmlElementNode} filename={mainIdentifier} onExportXml={onExport} onExportDict={() => {
+        // do nothing
+      }} exportDisabled={loading}/>
+    </>
   );
 }
 
