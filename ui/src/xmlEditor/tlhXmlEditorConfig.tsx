@@ -15,26 +15,36 @@ import {wsepConfig} from './elementEditors/wsepEditor';
 
 export const selectedNodeClass = 'bg-teal-400';
 
-export function reCountNodeNumbers(rootNode: XmlElementNode, tagName: string, attrName: string): void {
+// Returns a renumbered copy of rootNode instead of mutating it in place - the input may be a
+// live React-state tree (e.g. exported directly from XmlDocumentEditor's state.rootNode), and
+// mutating it would leave React unaware of the change (same object identity, no re-render) while
+// also corrupting any other code holding a reference to the same, pre-renumbering tree.
+export function reCountNodeNumbers(rootNode: XmlElementNode, tagName: string, attrName: string): XmlElementNode {
 
-  function go(node: XmlNode, currentCount: number): number {
+  function go(node: XmlNode, currentCount: number): [XmlNode, number] {
     if (isXmlTextNode(node) || isXmlCommentNode(node)) {
-      return currentCount;
-    } else {
-      if (node.tagName === tagName) {
-        node.attributes[attrName] = currentCount.toString();
-        currentCount++;
-      }
-
-      for (const child of node.children) {
-        currentCount = go(child, currentCount);
-      }
-
-      return currentCount;
+      return [node, currentCount];
     }
+
+    let count = currentCount;
+    let attributes = node.attributes;
+    if (node.tagName === tagName) {
+      attributes = {...node.attributes, [attrName]: count.toString()};
+      count++;
+    }
+
+    const children: XmlNode[] = [];
+    for (const child of node.children) {
+      const [newChild, newCount] = go(child, count);
+      children.push(newChild);
+      count = newCount;
+    }
+
+    return [{...node, attributes, children}, count];
   }
 
-  go(rootNode, 1);
+  const [result] = go(rootNode, 1);
+  return result as XmlElementNode;
 }
 
 const letterCorrections: LetterCorrection = [
