@@ -5,7 +5,7 @@ import {useTranslation} from 'react-i18next';
 import {reconstructTransliterationForNodes} from '../../transliterationReconstruction';
 import {inputClasses, redMessageClasses} from '../../../defaultDesign';
 import update from 'immutability-helper';
-import {myOk} from '../../../newResult';
+import {myError, myOk} from '../../../newResult';
 
 interface IProps {
   preLbContent: XmlNode[];
@@ -38,7 +38,13 @@ export function WordWithLbContentEditor({preLbContent, lbNode, postLbContent, la
 
       onNewParseResult(myOk(xmlElementNode('w', {}, newChildren)));
     } else {
-      console.info(preLbParseResult.status + ' :: ' + postLbParseResult.status);
+      // Surface the invalid state to the parent instead of silently leaving it on the last
+      // successful parse - otherwise the result panel would keep showing a stale, submittable
+      // value while one half of the word is actually invalid.
+      onNewParseResult(myError([
+        ...(preLbParseResult.status ? [] : preLbParseResult.error),
+        ...(postLbParseResult.status ? [] : postLbParseResult.error)
+      ]));
     }
   };
 
