@@ -13,7 +13,7 @@ function DiffDisplay({change, number}: { change: Change, number: number }): JSX.
 
   const {value, removed, added} = change;
 
-  const className = added ? leftColorClass : (removed ? rightColorClass : undefined);
+  const className = added ? rightColorClass : (removed ? leftColorClass : undefined);
 
   return (
     <div id={`change_${number}`}>
