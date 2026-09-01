@@ -1,7 +1,7 @@
 import {StrictMode} from 'react';
 import './index.css';
 import {RouterProvider} from 'react-router-dom';
-import * as serviceWorkerRegistration from './serviceWorkerRegistration';
+import {registerSW} from 'virtual:pwa-register';
 import {ApolloProvider} from '@apollo/client';
 import {Provider as StoreProvider} from 'react-redux';
 import i18n from 'i18next';
@@ -38,7 +38,6 @@ root.render(
   </StrictMode>
 );
 
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://bit.ly/CRA-PWA
-serviceWorkerRegistration.register();
+// Registers the precaching service worker so the app (in particular /OXTED)
+// keeps working fully offline once the shell has been loaded once.
+registerSW({immediate: true});

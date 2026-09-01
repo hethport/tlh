@@ -18,7 +18,7 @@ export function ForgotPasswordForm(): ReactElement {
 
   const onSubmit = async ({mail}: BaseFormValues): Promise<void> => {
     try {
-      await forgotPassword({variables: {mail, version: process.env.REACT_APP_VERSION || ''}});
+      await forgotPassword({variables: {mail, version: import.meta.env.VITE_VERSION || ''}});
     } catch (exception) {
       console.error(exception);
     }
