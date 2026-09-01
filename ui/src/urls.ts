@@ -1,8 +1,8 @@
-const baseServerUrl = process.env.NODE_ENV !== 'development'
-  ? `/tlh_editor/${process.env.REACT_APP_VERSION}`
+const baseServerUrl = import.meta.env.PROD
+  ? `/tlh_editor/${import.meta.env.VITE_VERSION}`
   : 'http://localhost:8066';
 
-export const baseUrl = process.env.NODE_ENV !== 'development'
+export const baseUrl = import.meta.env.PROD
   ? `${baseServerUrl}/public`
   : '';
 
@@ -63,7 +63,7 @@ export const approveDocumentUrl = 'approveDocument';
 
 // Foreign urls
 
-const tlhAnalyzerBaseUrl = process.env.NODE_ENV === 'development'
+const tlhAnalyzerBaseUrl = import.meta.env.DEV
   ? 'https://www.hethport3.uni-wuerzburg.de/'
   : '';
 

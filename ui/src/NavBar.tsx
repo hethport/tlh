@@ -34,7 +34,7 @@ export function NavBar(): JSX.Element {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const buildDate = process.env.REACT_APP_BUILD_DATE;
+  const buildDate = import.meta.env.VITE_BUILD_DATE;
 
   function onLogout() {
     dispatch(logout());
@@ -47,7 +47,7 @@ export function NavBar(): JSX.Element {
 
   return (
     <nav className="flex flex-row bg-gray-800 text-white">
-      <NavLink className="p-4 hover:bg-slate-700 font-extrabold" title={buildDate} to={homeUrl}>TLH<sup>dig</sup> ({process.env.REACT_APP_VERSION})</NavLink>
+      <NavLink className="p-4 hover:bg-slate-700 font-extrabold" title={buildDate} to={homeUrl}>TLH<sup>dig</sup> ({import.meta.env.VITE_VERSION})</NavLink>
 
       {user && <NavLink className={buttonClasses} to={createManuscriptUrl}>{t('createManuscript')}</NavLink>}
       <NavLink className={buttonClasses} to={oxtedUrl}>{t('editDocument')}</NavLink>
