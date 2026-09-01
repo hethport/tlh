@@ -11,10 +11,20 @@ export function isSelected(morphologicalAnalysis: MorphologicalAnalysis): boolea
   switch (morphologicalAnalysis._type) {
     case 'SingleMorphAnalysisWithoutEnclitics':
       return morphologicalAnalysis.selected;
+    case 'SingleMorphAnalysisWithSingleEnclitics':
+      return morphologicalAnalysis.selected;
+    case 'SingleMorphAnalysisWithMultiEnclitics':
+      return morphologicalAnalysis.encliticsAnalysis.analysisOptions
+        .some(analysisOption => analysisOption.selected);
     case 'MultiMorphAnalysisWithoutEnclitics':
       return morphologicalAnalysis.analysisOptions.some(analysisOption => analysisOption.selected);
+    case 'MultiMorphAnalysisWithSingleEnclitics':
+      return morphologicalAnalysis.analysisOptions.some(analysisOption => analysisOption.selected);
+    case 'MultiMorphAnalysisWithMultiEnclitics':
+      return morphologicalAnalysis.selectedAnalysisCombinations.length > 0;
     default:
-      return false;
+      // This case should never occur because the list of cases above is exhaustive.
+      return true;
   }
 }
 
