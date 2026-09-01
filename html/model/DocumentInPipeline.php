@@ -82,7 +82,7 @@ class DocumentInPipeline
     }
 
     if ($filterByCreator && $filterByCreator !== 'all') {
-      $conditions[] = "manuscript.creator_username = '" . addslashes($filterByCreator) . "'";
+      $conditions[] = "manuscript.creator_username = ?";
     }
 
     return count($conditions) > 0 ? ' WHERE ' . implode(' AND ', $conditions) : '';
@@ -91,6 +91,7 @@ class DocumentInPipeline
   static function selectCount(?string $filterByStep = null, ?string $filterByCreator = null): int
   {
     $whereClause = self::buildWhereClause($filterByStep, $filterByCreator);
+    $hasCreatorFilter = $filterByCreator && $filterByCreator !== 'all';
 
     return SqlHelpers::executeSingleReturnRowQuery(
       "
@@ -107,7 +108,9 @@ FROM tlh_dig_released_transliterations as translits
     LEFT OUTER JOIN tlh_dig_second_xml_reviews as second_xml_rev USING(main_identifier)
     LEFT OUTER JOIN tlh_dig_approved_transliterations as approved_trans USING(main_identifier)
 $whereClause;",
-      null,
+      $hasCreatorFilter
+        ? fn(mysqli_stmt $stmt): bool => $stmt->bind_param('s', $filterByCreator)
+        : null,
       fn(array $row): int => (int)$row['count']
     );
   }
@@ -137,6 +140,7 @@ $whereClause;",
     $sortDir = strtoupper($sortDirection) === 'ASC' ? 'ASC' : 'DESC';
 
     $whereClause = self::buildWhereClause($filterByStep, $filterByCreator);
+    $hasCreatorFilter = $filterByCreator && $filterByCreator !== 'all';
 
     return SqlHelpers::executeMultiSelectQuery(
       "
@@ -175,7 +179,9 @@ FROM tlh_dig_released_transliterations as translits
 $whereClause
 ORDER BY $sortField $sortDir
 LIMIT ?, ?;",
-      fn(mysqli_stmt $stmt): bool => $stmt->bind_param('ii', $firstIndex, $pageSize),
+      $hasCreatorFilter
+        ? fn(mysqli_stmt $stmt): bool => $stmt->bind_param('sii', $filterByCreator, $firstIndex, $pageSize)
+        : fn(mysqli_stmt $stmt): bool => $stmt->bind_param('ii', $firstIndex, $pageSize),
       fn(array $row): DocumentInPipeline => new DocumentInPipeline(
         $row['main_identifier'],
         $row['author'],
