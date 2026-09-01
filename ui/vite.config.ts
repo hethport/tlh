@@ -24,9 +24,6 @@ export default defineConfig({
       strategies: 'injectManifest',
       injectManifest: {
         maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
-        // Default (terser) pulls in serialize-javascript, which reads the
-        // global `crypto` object - not available on Node 18. esbuild avoids it.
-        minify: 'esbuild',
       },
       manifest: false,
       injectRegister: false,
