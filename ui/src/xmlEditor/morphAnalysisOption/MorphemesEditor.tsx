@@ -168,7 +168,7 @@ export function MorphemesEditor({
 
   const morphemes = buildMorphemes(segmentation, translation, analysis);
   const newAnalysis = makeAnalysis(morphemes);
-  if (newAnalysis !== analysis) {
+  if (newAnalysis.trim() !== analysis) {
     onAnalysisChange(newAnalysis);
   }
   return (
