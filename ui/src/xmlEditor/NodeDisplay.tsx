@@ -158,7 +158,7 @@ export function NodeDisplay({
     : '';
 
   return (
-    <div
+    <span
       className={`group/item inline ${markedClass || deleteModeHoverClass}`}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
@@ -190,6 +190,6 @@ export function NodeDisplay({
 
       {/*  Any posterior JSX the node config returned */}
       {posterior}
-    </div>
+    </span>
   );
 }
