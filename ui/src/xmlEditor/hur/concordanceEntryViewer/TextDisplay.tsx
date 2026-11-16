@@ -3,7 +3,6 @@ import { useParams } from 'react-router-dom';
 import { getText } from '../corpus/corpus';
 import { LineViewer } from './LineViewer';
 import { readMorphAnalysisValue } from '../morphologicalAnalysis/auxiliary';
-import { escapeHtmlSpecialCharacters } from '../common/escaping';
 
 export function TextDisplay(): ReactElement {
   const {text} = useParams<'text'>();
@@ -12,9 +11,8 @@ export function TextDisplay(): ReactElement {
     ? undefined
     : readMorphAnalysisValue(highlightedAnalysis);
   const lines = text === undefined ? [] : getText(text);
-  const escapedTextNumber = text === undefined ? '' : escapeHtmlSpecialCharacters(text);
   return (<>
-    <div>{escapedTextNumber}</div>
+    <div>{text}</div>
     <div>{lines.map(({ id, line }) => {
       return (<div className="display: table-row" key={id}>
         <div className="info-box no-line-break">{id}</div>
