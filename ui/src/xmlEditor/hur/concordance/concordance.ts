@@ -36,6 +36,10 @@ export function locallyStoreHurrianConcordance(): void {
   locallyStoreSetValuedMap(concordance, localStorageKey);
 }
 
+export function deleteHurrianConcordanceFromLocalStorage(): void {
+  localStorage.removeItem(localStorageKey);
+}
+
 function preprocess(analysis: string): string {
   analysis = normalize(analysis, true, false) || analysis;
   const ma = readMorphAnalysisValue(analysis);

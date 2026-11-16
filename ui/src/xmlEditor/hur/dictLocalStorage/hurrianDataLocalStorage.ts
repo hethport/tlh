@@ -3,15 +3,15 @@ import { locallyStoreHurrianStemTranslations } from '../translations/glossProvid
 import { locallyStoreHurrianPartsOfSpeech } from '../partsOfSpeech/partsOfSpeech';
 import { locallyStoreHurrianDictionaryChanges,
          locallyStoreHurrianMorphologicalAnalysisSources } from '../changes/changesAccumulator';
-import { locallyStoreHurrianConcordance } from '../concordance/concordance';
 import { deleteHurrianCorpusFromLocalStorage } from '../corpus/basicCorpus';
+import { deleteHurrianConcordanceFromLocalStorage } from '../concordance/concordance';
 
 export function locallyStoreHurrianData() {
   deleteHurrianCorpusFromLocalStorage();
+  deleteHurrianConcordanceFromLocalStorage();
   locallyStoreHurrianDictionary();
   locallyStoreHurrianStemTranslations();
   locallyStoreHurrianPartsOfSpeech();
   locallyStoreHurrianDictionaryChanges();
   locallyStoreHurrianMorphologicalAnalysisSources();
-  locallyStoreHurrianConcordance();
 }
